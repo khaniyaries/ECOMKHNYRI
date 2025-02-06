@@ -17,7 +17,7 @@ export function Countdown() {
   const time = formatTime(timeLeft)
 
   return (
-    <div className="flex items-center gap-2 text-4xl font-bold">
+    <div className="flex items-center gap-2 lg:text-4xl md:text-2xl text-xl font-bold">
       <div>{time.days}</div>
       <div className="text-red-500">:</div>
       <div>{time.hours}</div>

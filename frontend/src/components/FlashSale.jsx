@@ -1,9 +1,6 @@
 "use client"
-
-import { ChevronLeft, ChevronRight } from "lucide-react"
 import { useState } from "react"
 import ProductCard from "@/components/ProductCard.jsx"
-import { Countdown } from "@/components/countdown.jsx"
 
 const products = [
   {
@@ -56,47 +53,20 @@ const FlashSales = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-12">
-      <div className="flex items-start gap-20 mb-8">
-        <div>
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-5 h-10 bg-red-500 rounded" />
-            <span className="text-red-500">Today's</span>
-          </div>
-          <h2 className="text-4xl font-bold">Flash Sales</h2>
-        </div>
-        <div className="flex flex-col mt-5 items-start gap-4">
-          <div className="flex items-center gap-8">
-            <div className="text-center">
-              <div className="text-xs text-gray-500 mb-1">Days</div>
+    <div className="max-w-7xl mx-auto mt-0 pb-12">
+      {/* 🔄 Modified container structure for small screens */}
+
+      <div className="overflow-x-auto pb-4 scrollbar-hide flash-scroll-container">
+        <div className="flex gap-6 min-w-max">
+          {products.slice(currentIndex, currentIndex + 4).map((product, index) => (
+            <div className="w-[300px]" key={index}>
+              <ProductCard {...product} />
             </div>
-            <div className="text-center">
-              <div className="text-xs text-gray-500 mb-1">Hours</div>
-            </div>
-            <div className="text-center">
-              <div className="text-xs text-gray-500 mb-1">Minutes</div>
-            </div>
-            <div className="text-center">
-              <div className="text-xs text-gray-500 mb-1">Seconds</div>
-            </div>
-          </div>
-          <Countdown />
-          {/* <div className="flex gap-2">
-            <button onClick={prev} className="p-2 border rounded-full hover:bg-gray-100">
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <button onClick={next} className="p-2 border rounded-full hover:bg-gray-100">
-              <ChevronRight className="w-6 h-6" />
-            </button>
-          </div> */}
+          ))}
         </div>
       </div>
-      <div className="grid grid-cols-4 gap-6">
-        {products.slice(currentIndex, currentIndex + 4).map((product, index) => (
-          <ProductCard key={index} {...product} />
-        ))}
-      </div>
-      <div className="mt-8 text-center">
+
+      <div className="md:mt-8 text-center">
         <button className="bg-red-500 text-white px-8 py-3 rounded-md hover:bg-red-600 transition-colors">
           View All Products
         </button>
@@ -105,4 +75,4 @@ const FlashSales = () => {
   )
 }
 
-export default FlashSales;
+export default FlashSales

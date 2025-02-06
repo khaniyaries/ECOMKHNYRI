@@ -35,7 +35,7 @@ const Navbar = () => {
                 <div className="lg:w-[30%] md:w-[40%] hidden md:visible md:flex md:flex-row md:justify-evenly font-poppins">
                     <Link href='/' className="">Home</Link>
                     <Link href='/' className="">Contact</Link>
-                    <Link href='/' className="">About</Link>
+                    <Link href='/user/about' className="">About</Link>
                     <Link href='/' className="">Sign Up</Link>
                 </div>
                 <div className="w-[50%] lg:w-[45%] md:w-[50%] flex flex-row gap-1 mr-2 md:mr-4 lg:mr-0 justify-end lg:justify-center lg:gap-4 md:gap-2">
