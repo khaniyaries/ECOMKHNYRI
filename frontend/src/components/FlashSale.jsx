@@ -44,14 +44,6 @@ const products = [
 const FlashSales = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
 
-  const next = () => {
-    setCurrentIndex((prev) => (prev + 1) % (products.length - 3))
-  }
-
-  const prev = () => {
-    setCurrentIndex((prev) => (prev - 1 + (products.length - 3)) % (products.length - 3))
-  }
-
   return (
     <div className="max-w-7xl mx-auto mt-0 pb-12">
       {/* 🔄 Modified container structure for small screens */}
