@@ -5,6 +5,7 @@ import { HiOutlineArrowSmLeft, HiOutlineArrowSmRight } from "react-icons/hi";
 import { Countdown } from "@/components/countdown";
 import CategoryCard from "@/components/CategoryCard.jsx";
 import React, {useState} from "react";
+import ServiceBenefitsFooter from "@/components/ServiceBenefitsFooter";
 
 export default function Home() {
 
@@ -133,6 +134,8 @@ export default function Home() {
         </div>
         
       </div>
+
+      <ServiceBenefitsFooter />
     </div>
   );
 }

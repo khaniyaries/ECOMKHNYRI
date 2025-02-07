@@ -1,4 +1,4 @@
-'use client'
+"use client"
 import { useState, useEffect } from 'react';
 import { AiOutlineSend } from "react-icons/ai";
 import { RiFacebookLine, RiLinkedinLine } from "react-icons/ri";
@@ -10,13 +10,6 @@ import Image from 'next/image';
 
 const Footer = () => {
     const [email, setEmail] = useState('');
-
-    const [currentYear, setCurrentYear] = useState(null);
-
-    useEffect(() => {
-        // Set the current year only on the client side
-        setCurrentYear(new Date().getFullYear());
-    }, []);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -111,7 +104,7 @@ const Footer = () => {
                 </div>
 
                 <div className="text-center text-gray-400/50 text-sm mt-10">
-                    {currentYear && `© ${currentYear} Yarees. All rights reserved`}
+                     © 2025 Yarees. All rights reserved
                 </div>
             </div>
         </footer>

@@ -88,7 +88,7 @@ const Navbar = () => {
             </div>
             <hr className=" mt-4 md:hidden"/>
             {/* Mobile Side Menu */}
-            <div className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden`}>
+            <div className={`fixed top-0 left-0 h-full w-64 z-50 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden`}>
                 <CgCloseO className="right-4 top-4 absolute h-5 w-5" onClick={() => toggleMenu()}/>
                 <div className="flex flex-col p-4 space-y-4 font-poppins">
                     <Link href='/' className="">Home</Link>
