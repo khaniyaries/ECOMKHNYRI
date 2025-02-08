@@ -41,15 +41,14 @@ const products = [
     },
   ]
 
-const BestSellers = ({ numberOfProducts }) => {
-  const displayProducts = products.slice(0, numberOfProducts)
+const WishList = () => {
 
   return (
     <div className="w-full pt-5 pb-12">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {displayProducts.map((product, index) => (
+        {products.map((product, index) => (
           <div key={index}>
-            <ProductCard {...product} />
+            <ProductCard {...product} isWishlist={true} />
           </div>
         ))}
       </div>
@@ -57,4 +56,4 @@ const BestSellers = ({ numberOfProducts }) => {
   )
 }
 
-export default BestSellers;
+export default WishList;
