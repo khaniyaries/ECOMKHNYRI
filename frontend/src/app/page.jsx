@@ -1,5 +1,6 @@
 "use client"
 import Image from "next/image";
+import Link from "next/link";
 import FlashSales from "@/components/FlashSale.jsx";
 import { HiOutlineArrowSmLeft, HiOutlineArrowSmRight } from "react-icons/hi";
 import { Countdown } from "@/components/countdown";
@@ -8,6 +9,8 @@ import React, {useState, useEffect} from "react";
 import ServiceBenefitsFooter from "@/components/ServiceBenefitsFooter";
 import BestSellers from "@/components/BestSellers.jsx";
 import OurProducts from "@/components/OurProducts.jsx";
+import { FaApple } from "react-icons/fa";
+import { BsArrowRight } from "react-icons/bs";
 
 export default function Home() {
 
@@ -34,7 +37,12 @@ export default function Home() {
 
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
+  const [activeIndex, setActiveIndex] = useState(2);
 
+  const handleDotClick = (index) => {
+      setActiveIndex(index);
+      // Here you can add functionality to navigate slides when a dot is clicked
+    };
 
   const scrollContainer = (direction, containerClass) => {
     const container = document.querySelector(containerClass);
@@ -64,7 +72,7 @@ export default function Home() {
   return (
     <div className="w-full h-full">
       <div className="flex md:px-40 p-20 px-5 flex-col md:flex-row w-full justify-evenly">
-        <div className="md:w-[15%] w-max flex-col">
+        <div className="hidden md:flex md:w-[15%] md:flex-col">
           {categories.map((category) => (
               <div key={category} className="group">
                 <a
@@ -81,8 +89,47 @@ export default function Home() {
             ))}
         </div>
         {/* <div className="border-l border-black mx-8 h-[360px]" /> */}
-        <div className="md:w-[70%] h-10 md:h-auto bg-black">
-          
+        <div className="h-[60vh]  md:h-full z-5 md:w-[70%] bg-black lg:py-10 lg:px-14 md:py-10 md:px-5 p-10 flex flex-col md:flex-row justify-center gap-5 md:gap-3 lg:gap-5 relative">
+          <div className="w-full h-[50%] md:w-[50%] md:h-full flex flex-col gap-5 md:gap-10 items-start">
+            <div className="flex flex-row items-center justify-center gap-2">
+              <FaApple color="white" className="h-10 w-10"/>
+              <h2 className="text-base text-white font-normal font-poppins">
+                iPhone 14 Series
+              </h2>
+            </div>
+            <h1 className="lg:text-4xl md:3xl text-white font-semibold font-inter">
+              Up to 10% <br/> off Voucher 
+            </h1>
+            <Link 
+            href="/user/products"
+            className="text-white text-base font-medium font-poppins underline flex items-center gap-2 justify-center"
+            >
+              Shop Now! <span className="no-underline"><BsArrowRight/></span>
+            </Link>
+          </div>
+          <div className="w-full h-[50%] md:w-[70%] md:h-auto relative">
+            <div className="relative h-full w-full">
+              <Image
+                  src="/images/iphone.png"
+                  alt="Product Picture"
+                  fill
+                  className="z-50 relative"
+              />
+            </div>
+          </div>
+          <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex justify-center gap-2">
+            {[0, 1, 2, 3, 4].map((index) => (
+                <button
+                    key={index} 
+                    className={`w-3 h-3 rounded-full transition-all duration-300
+                    ${activeIndex === index 
+                        ? "bg-red-500 border-2 border-white outline outline-2 outline-gray-400" 
+                        : "bg-gray-400"
+                    }`}
+                    onClick={() => handleDotClick(index)}
+                ></button>
+            ))}
+        </div>
         </div>
 
       </div>
@@ -94,7 +141,7 @@ export default function Home() {
               <div className="w-5 h-10 bg-red-500 rounded" />
               <span className="text-red-500 font-bold text-xs">Today's</span>
             </div>
-            <h2 className="md:text-2xl lg:text-4xl text-2xl font-bold">Flash Sales</h2>
+            <h2 className="md:text-2xl lg:text-4xl text-xl font-bold">Flash Sales</h2>
           </div>
 
           {/* 🔄 Time display - right aligned on small screens */}
@@ -118,7 +165,7 @@ export default function Home() {
         </div>
 
         {/* 🔄 Second row for small screens - centered navigation */}
-        <div className="flex justify-center mt-5 md:mt-0 md:justify-end gap-2 md:ml-auto w-full md:w-auto">
+        <div className="hidden md:flex justify-center mt-5 md:mt-0 md:justify-end gap-2 md:ml-auto w-full md:w-auto">
           <button onClick={() => scrollContainer('left', '.flash-scroll-container')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
             <HiOutlineArrowSmLeft className="w-6 h-6" />
           </button>
@@ -138,7 +185,7 @@ export default function Home() {
             </div>
             <h2 className="md:text-2xl lg:text-4xl text-2xl font-bold">Browse By Category</h2>
           </div>
-          <div className="flex mt-12 justify-end gap-2 ml-auto w-auto">
+          <div className="hidden md:flex mt-12 justify-end gap-2 ml-auto w-auto">
             <button onClick={() => scrollContainer('left', '.category-scroll-container')} className="p-2 border bg-gray-100 rounded-full hover:bg-gray-200">
               <HiOutlineArrowSmLeft className="w-6 h-6 " />
             </button>
@@ -169,7 +216,7 @@ export default function Home() {
         </div>
       </div>
       <div className="md:py-0 lg:px-40 md:px-14 h-full w-full px-5 py-20 flex flex-col md:flex-row">
-        <div className="h-screen md:h-full md:w-screen w-[100%] bg-black lg:py-20 lg:px-14 md:py-20 md:px-5 p-10 flex flex-col md:flex-row justify-center gap-5 md:gap-3 lg:gap-5">
+        <div className="h-[70vh] md:h-full md:w-screen w-[100%] bg-black lg:py-20 lg:px-14 md:py-20 md:px-5 p-10 flex flex-col md:flex-row justify-center gap-5 md:gap-3 lg:gap-5">
           <div className="w-full h-[50%] md:w-[50%] md:h-full flex flex-col gap-5 md:gap-10 items-start">
             <h2 className="text-xs text-green-500 font-semibold font-poppins">
               Categories
@@ -222,7 +269,7 @@ export default function Home() {
             </div>
             <h2 className="md:text-2xl lg:text-4xl text-2xl font-bold mb-5">Explore Our Products</h2>
           </div>
-          <div className="flex mt-12 justify-end gap-2 ml-auto w-auto">
+          <div className="hidden md:flex mt-12 justify-end gap-2 ml-auto w-auto">
             <button onClick={() => scrollProducts('left')} className="p-2 border bg-gray-100 rounded-full hover:bg-gray-200">
               <HiOutlineArrowSmLeft className="w-6 h-6 " />
             </button>
@@ -238,10 +285,102 @@ export default function Home() {
           setTotalPages={setTotalPages}/>
         </div>
       </div>
-      <div className="flex flex-col md:py-16 lg:px-40 md:px-20 px-5 py-5">
-        
-      </div>
 
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+              <div className="w-5 h-10 bg-red-500 rounded" />
+              <span className="text-red-500 font-bold text-xs">Featured</span>
+          </div>
+          <h2 className="text-4xl font-semibold font-inter">New Arrival</h2>
+        </div>
+
+        {/* Grid Layout */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* PlayStation Card */}
+          <div className="relative group overflow-hidden rounded-lg">
+            <div className="aspect-[4/3] bg-black">
+              <Image
+                fill
+                src="/images/ps5.png"
+                alt="PlayStation 5 Black and White"
+                className="w-full h-full object-contain opacity-90"
+              />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent p-8 flex flex-col justify-end">
+              <h3 className="text-white text-2xl font-bold mb-2">PlayStation 5</h3>
+              <p className="text-gray-200 mb-4">Black and White version of the PS5 coming out on sale.</p>
+              <a href="#" className="text-white inline-block hover:underline w-fit">
+                Shop Now
+              </a>
+            </div>
+          </div>
+
+          {/* Right Column Grid */}
+          <div className="grid grid-rows-[1.5fr,1fr] gap-6">
+            {/* Women's Collections Card */}
+            <div className="relative group overflow-hidden rounded-lg">
+              <div className="aspect-[2/1] bg-black">
+                <Image
+                  fill
+                  src="/images/lady.png"
+                  alt="Women's Collections"
+                  className="w-full h-full object-contain opacity-90"
+                />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent p-6 flex flex-col justify-end">
+                <h3 className="text-white text-2xl font-bold mb-2">Women's Collections</h3>
+                <p className="text-gray-200 mb-4">Featured woman collections that give you another vibe.</p>
+                <a href="#" className="text-white inline-block hover:underline w-fit">
+                  Shop Now
+                </a>
+              </div>
+            </div>
+
+            {/* Bottom Row Grid */}
+            <div className="grid grid-cols-2 gap-6">
+              {/* Speakers Card */}
+              <div className="relative group overflow-hidden rounded-lg">
+                <div className="aspect-square bg-black">
+                  <Image
+                    fill
+                    src="/images/speaker.png"
+                    alt="Amazon Speakers"
+                    className="w-full h-full object-contain opacity-90"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent p-4 flex flex-col justify-end">
+                  <h3 className="text-white text-xl font-bold mb-1">Speakers</h3>
+                  <p className="text-gray-200 text-sm mb-2">Amazon wireless speakers</p>
+                  <a href="#" className="text-white text-sm inline-block hover:underline w-fit">
+                    Shop Now
+                  </a>
+                </div>
+              </div>
+
+              {/* Perfume Card */}
+              <div className="relative group overflow-hidden rounded-lg">
+                <div className="aspect-square bg-black">
+                  <Image
+                    src="/images/gucci.png"
+                    alt="Gucci Perfume"
+                    fill
+                    className="w-full h-full object-cover opacity-90"
+                  />
+                </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent p-4 flex flex-col justify-end">
+                  <h3 className="text-white text-xl font-bold mb-1">Perfume</h3>
+                  <p className="text-gray-200 text-sm mb-2">GUCCI INTENSE OUD EDP</p>
+                  <a href="#" className="text-white text-sm inline-block hover:underline w-fit">
+                    Shop Now
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       <ServiceBenefitsFooter />
     </div>
   );

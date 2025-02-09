@@ -155,6 +155,11 @@ return (
                 </div>
             </div>
         </div>
+        <div className="md:mt-8 text-center">
+        <button className="bg-red-500 text-white px-8 py-3 rounded-md hover:bg-red-600 transition-colors">
+          View All Products
+        </button>
+      </div>
     </div>
 )
 
