@@ -113,7 +113,7 @@ export default function Home() {
                   src="/images/iphone.png"
                   alt="Product Picture"
                   fill
-                  className="z-50 relative"
+                  className=" object-containz-50 relative"
               />
             </div>
           </div>
@@ -300,18 +300,18 @@ export default function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* PlayStation Card */}
           <div className="relative group overflow-hidden rounded-lg">
-            <div className="aspect-[4/3] bg-black">
+            <div className="aspect-[4/3]">
               <Image
                 fill
                 src="/images/ps5.png"
                 alt="PlayStation 5 Black and White"
-                className="w-full h-full object-contain opacity-90"
+                className="w-full h-full object-cover opacity-90 z-10"
               />
             </div>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent p-8 flex flex-col justify-end">
-              <h3 className="text-white text-2xl font-bold mb-2">PlayStation 5</h3>
-              <p className="text-gray-200 mb-4">Black and White version of the PS5 coming out on sale.</p>
-              <a href="#" className="text-white inline-block hover:underline w-fit">
+            <div className="absolute inset-0 bg-black to-transparent p-8 flex flex-col justify-end">
+              <h3 className="text-white text-2xl z-10 font-bold mb-2">PlayStation 5</h3>
+              <p className="text-gray-200 z-10 mb-4">Black and White version of the PS5 coming out on sale.</p>
+              <a href="#" className="text-white z-10 inline-block hover:underline w-fit">
                 Shop Now
               </a>
             </div>
@@ -321,18 +321,18 @@ export default function Home() {
           <div className="grid grid-rows-[1.5fr,1fr] gap-6">
             {/* Women's Collections Card */}
             <div className="relative group overflow-hidden rounded-lg">
-              <div className="aspect-[2/1] bg-black">
+              <div className="aspect-[2/1]">
                 <Image
                   fill
                   src="/images/lady.png"
                   alt="Women's Collections"
-                  className="w-full h-full object-contain opacity-90"
+                  className="w-full h-full object-cover z-10 opacity-90"
                 />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent p-6 flex flex-col justify-end">
-                <h3 className="text-white text-2xl font-bold mb-2">Women's Collections</h3>
-                <p className="text-gray-200 mb-4">Featured woman collections that give you another vibe.</p>
-                <a href="#" className="text-white inline-block hover:underline w-fit">
+              <div className="absolute inset-0 bg-black p-6 flex flex-col justify-end">
+                <h3 className="text-white text-2xl z-10 font-bold mb-2">Women's Collections</h3>
+                <p className="text-gray-200 z-10 mb-4">Featured woman collections that give you another vibe.</p>
+                <a href="#" className="text-white z-10 inline-block hover:underline w-fit">
                   Shop Now
                 </a>
               </div>
@@ -342,18 +342,18 @@ export default function Home() {
             <div className="grid grid-cols-2 gap-6">
               {/* Speakers Card */}
               <div className="relative group overflow-hidden rounded-lg">
-                <div className="aspect-square bg-black">
+                <div className="aspect-square">
                   <Image
                     fill
                     src="/images/speaker.png"
                     alt="Amazon Speakers"
-                    className="w-full h-full object-contain opacity-90"
+                    className="w-full h-full object-contain z-10 opacity-90"
                   />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent p-4 flex flex-col justify-end">
-                  <h3 className="text-white text-xl font-bold mb-1">Speakers</h3>
-                  <p className="text-gray-200 text-sm mb-2">Amazon wireless speakers</p>
-                  <a href="#" className="text-white text-sm inline-block hover:underline w-fit">
+                <div className="absolute inset-0 bg-black p-4 flex flex-col justify-end">
+                  <h3 className="text-white text-xl z-10 font-bold mb-1">Speakers</h3>
+                  <p className="text-gray-200 text-sm z-10 mb-2">Amazon wireless speakers</p>
+                  <a href="#" className="text-white z-10 text-sm inline-block hover:underline w-fit">
                     Shop Now
                   </a>
                 </div>
@@ -361,18 +361,18 @@ export default function Home() {
 
               {/* Perfume Card */}
               <div className="relative group overflow-hidden rounded-lg">
-                <div className="aspect-square bg-black">
+                <div className="aspect-square">
                   <Image
                     src="/images/gucci.png"
                     alt="Gucci Perfume"
                     fill
-                    className="w-full h-full object-cover opacity-90"
+                    className="w-full h-full object-cover z-10 opacity-90"
                   />
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/50 to-transparent p-4 flex flex-col justify-end">
-                  <h3 className="text-white text-xl font-bold mb-1">Perfume</h3>
-                  <p className="text-gray-200 text-sm mb-2">GUCCI INTENSE OUD EDP</p>
-                  <a href="#" className="text-white text-sm inline-block hover:underline w-fit">
+                <div className="absolute inset-0 bg-black p-4 flex flex-col justify-end">
+                  <h3 className="text-white text-xl z-10 font-bold mb-1">Perfume</h3>
+                  <p className="text-gray-200 text-sm z-10 mb-2">GUCCI INTENSE OUD EDP</p>
+                  <a href="#" className="text-white z-10 text-sm inline-block hover:underline w-fit">
                     Shop Now
                   </a>
                 </div>
