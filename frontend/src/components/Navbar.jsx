@@ -1,7 +1,7 @@
 "use client"
 import Link from "next/link";
 import Image from "next/image"
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { LuSearch } from "react-icons/lu";
 import { FaRegHeart } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
@@ -16,6 +16,25 @@ const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
 
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            // Handle mobile menu
+            const sidebarElement = document.querySelector('.mobile-menu');
+            if (isOpen && sidebarElement && !sidebarElement.contains(event.target) && !event.target.closest('.menu-trigger')) {
+                setIsOpen(false);
+            }
+
+            // Handle profile dropdown
+            const profileElement = document.querySelector('.profile-trigger');
+            if (isProfileOpen && profileElement && !profileElement.contains(event.target) && !event.target.closest('.profile-trigger')) {
+                setIsProfileOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isOpen, isProfileOpen]);
+
     const toggleMenu = () => {
         setIsOpen(!isOpen);
     }
@@ -24,10 +43,14 @@ const Navbar = () => {
         setIsProfileOpen(!isProfileOpen);
     }
 
+    const handleLinkClick = () => {
+        setIsOpen(false);
+    };
+
     return(
         <>
             <nav className="h-full w-full md:p-2 lg:p-0 items-center md:border-b flex flex-row">
-                <div className="md:hidden ml-2" onClick={() => toggleMenu()}>
+                <div className="md:hidden ml-2 menu-trigger" onClick={() => toggleMenu()}>
                     <CgMenuBoxed className="h-6 w-6"/>
                 </div>
                 <Link 
@@ -69,7 +92,7 @@ const Navbar = () => {
                     href="/user/cart">
                         <IoCartOutline />
                     </Link>
-                    <div className="bg-red-500 rounded-full p-1 md:p-2 cursor-pointer relative" onClick={toggleProfileMenu}>
+                    <div className="bg-red-500 rounded-full p-1 md:p-2 cursor-pointer relative profile-trigger" onClick={toggleProfileMenu}>
                         <GoPerson color="white" />
                         {/* Profile Dropdown */}
                         {isProfileOpen && (
@@ -104,13 +127,13 @@ const Navbar = () => {
             </div>
             <hr className=" mt-4 md:hidden"/>
             {/* Mobile Side Menu */}
-            <div className={`fixed top-0 left-0 h-full w-64 z-50 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden`}>
+            <div className={`mobile-menu fixed top-0 left-0 h-full w-64 z-50 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden`}>
                 <CgCloseO className="right-4 top-4 absolute h-5 w-5" onClick={() => toggleMenu()}/>
                 <div className="flex flex-col p-4 space-y-4 font-poppins">
-                    <Link href='/' className="">Home</Link>
-                    <Link href='/user/contact-us' className="">Contact</Link>
-                    <Link href='/user/about' className="">About</Link>
-                    <Link href='/user/signup' className="">Sign Up</Link>
+                    <Link href='/' onClick={handleLinkClick} className="">Home</Link>
+                    <Link href='/user/contact-us' onClick={handleLinkClick} className="">Contact</Link>
+                    <Link href='/user/about' onClick={handleLinkClick} className="">About</Link>
+                    <Link href='/user/signup' onClick={handleLinkClick} className="">Sign Up</Link>
                 </div>
             </div>
         </>

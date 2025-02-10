@@ -46,7 +46,7 @@ const About = () => {
                     </div>
                 </div>
             </div>
-            <div className="w-full px-28 py-10 md:py-20">
+            <div className="w-full px-16 md:px-28 py-10 md:py-20">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
                     <div className="group flex flex-col h-[230px] justify-center items-center gap-1 p-4 bg-white border-[2px] border-gray-300 hover:border-red-500 rounded-md transition-transform duration-300 hover:bg-red-500">
                         <div className="rounded-full bg-gray-300 mb-2 h-max w-max p-2 z-10 group-hover:bg-gray-200/50">
@@ -134,7 +134,7 @@ const About = () => {
                     </div>
                 </div>
             </div>
-            <div className="md:px-10 px-28 lg:px-32 py-10 md:py-20">
+            <div className="md:px-10 px-10 lg:px-32 py-10 md:py-20">
                 <div className="flex flex-col justify-center gap-4">
                     <div className="flex w-full justify-center gap-10 md:gap-4 lg:gap-10 md:flex-row flex-col items-center">
                         <div className="h-auto w-full md:max-w-[370px] bg-white relative md:border-0 md:p-0 border-2 p-1">

@@ -2,10 +2,24 @@
 
 import Link from "next/link"
 import { useState } from "react"
+import { CgCloseO } from "react-icons/cg";
 import SidebarContent from "@/components/SidebarContent.jsx"
+import { useEffect } from 'react';
 
 export default function AccountPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      const sidebarElement = document.querySelector('.sidebar-menu');
+      if (isMenuOpen && sidebarElement && !sidebarElement.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isMenuOpen]);
 
   return (
     <div className="container w-full h-full mx-auto px-4 md:px-20 lg:px-40 py-20">
@@ -35,8 +49,12 @@ export default function AccountPage() {
         </button>
 
         {/* Mobile Sidebar */}
-        <div className={`lg:hidden fixed inset-y-0 left-0 transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} w-64 bg-white shadow-lg transition-transform duration-200 ease-in-out z-50 p-4`}>
-          <SidebarContent />
+        <div className={`sidebar-menu lg:hidden fixed inset-y-0 left-0 transform ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'} w-64 bg-white shadow-lg transition-transform duration-200 ease-in-out z-50 p-4`}>
+          <CgCloseO 
+            className="absolute right-4 top-4 h-5 w-5 cursor-pointer" 
+            onClick={() => setIsMenuOpen(false)}
+          />
+          <SidebarContent setIsMenuOpen={setIsMenuOpen} />
         </div>
 
         {/* Desktop Sidebar */}
