@@ -31,8 +31,8 @@ const SidebarContent = ({ setIsMenuOpen }) => {
             </li>
             <li>
               <Link 
-              href="/user/address" 
-              className={`${linkStyle('/user/address')} font-poppins font-normal text-base`}
+              href="/user/myaccount/manage-address" 
+              className={`${linkStyle('/user/myaccount/manage-address')} font-poppins font-normal text-base`}
               onClick={handleLinkClick}
               >
                 Address Book
@@ -40,8 +40,8 @@ const SidebarContent = ({ setIsMenuOpen }) => {
             </li>
             <li>
               <Link 
-              href="/user/payment-book" 
-              className={`${linkStyle('/user/payment-book')} font-poppins font-normal text-base`}
+              href="/user/myaccount/payment-options" 
+              className={`${linkStyle('/user/myaccount/payment-options')} font-poppins font-normal text-base`}
               onClick={handleLinkClick}
               >
                 My Payment Options
@@ -54,8 +54,8 @@ const SidebarContent = ({ setIsMenuOpen }) => {
           <ul className="space-y-2 ml-4  text-sm">
             <li>
               <Link 
-              href="/user/returns" 
-              className={`${linkStyle('/user/returns')} font-poppins font-normal text-base`}
+              href="/user/myaccount/returns" 
+              className={`${linkStyle('/user/myaccount/returns')} font-poppins font-normal text-base`}
               onClick={handleLinkClick}
               >
                 My Returns
@@ -63,8 +63,8 @@ const SidebarContent = ({ setIsMenuOpen }) => {
             </li>
             <li>
               <Link 
-              href="/user/cancellations" 
-              className={`${linkStyle('/user/cancellations')} font-poppins font-normal text-base`}
+              href="/user/myaccount/cancellations" 
+              className={`${linkStyle('/user/myaccount/cancellations')} font-poppins font-normal text-base`}
               onClick={handleLinkClick}
               >
                 My Cancellations
@@ -75,7 +75,7 @@ const SidebarContent = ({ setIsMenuOpen }) => {
         <Link
         href="/user/wishlist"
         >
-          <h3 className="font-medium font-poppins text-base mb-2">My Wishlist</h3>
+          <h3 className="font-medium font-poppins text-base mb-2 mt-4">My Wishlist</h3>
         </Link>
       </div>
     )

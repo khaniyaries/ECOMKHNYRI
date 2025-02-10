@@ -17,23 +17,12 @@ export default function Home() {
   const categories = [
     "Women's Fashion",
     "Men's Fashion",
-    "Electronics",
     "Home & Lifestyle",
-    "Medicine",
     "Sports & Outdoor",
     "Baby's & Toys",
     "Groceries & Pets",
     "Health & Beauty",
   ];
-
-  const cardCategories = [
-    "Phones",
-    "Computers",
-    "SmartWatch",
-    "Camera",
-    "Headphones",
-    "Gaming",
-  ]
 
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
@@ -71,13 +60,13 @@ export default function Home() {
 
   return (
     <div className="w-full h-full">
-      <div className="flex md:px-40 p-20 px-5 flex-col md:flex-row w-full justify-evenly">
+      <div className="flex md:px-10 lg:px-40 p-20 px-5 flex-col md:flex-row w-full justify-evenly">
         <div className="hidden md:flex md:w-[15%] md:flex-col">
           {categories.map((category) => (
               <div key={category} className="group">
                 <a
                   href="#"
-                  className="py-2 text-black font-poppins font-normal relative w-full flex justify-between items-center"
+                  className="py-2 text-black font-poppins text-sm lg:text-base font-normal relative w-full flex justify-between items-center"
                 >
                   {category}
                   {(category === "Women's Fashion" || category === "Men's Fashion") && (

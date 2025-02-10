@@ -55,16 +55,15 @@ const Navbar = () => {
                 </div>
                 <Link 
                 href="/"
-                className="lg:w-[25%] md:w-[25%] w-[40%] flex justify-end md:justify-center items-center flex-row gap-2"
+                className="lg:w-[25%] md:w-[25%] w-[40%] flex justify-start md:justify-center items-center"
                 >
                     <Image 
                         src="/images/logo.png" 
                         alt="Yarees Logo" 
-                        width={40} 
-                        height={28} 
+                        width={60} 
+                        height={35} 
                         className="object-contain"
                     />
-                    <h1 className="font-extrabold text-xl md:text-2xl font-inter text-left md:text-center">YAREES</h1>
                 </Link>
                 <div className="lg:w-[30%] md:w-[40%] hidden md:visible md:flex md:flex-row md:justify-evenly font-poppins">
                     <Link href='/' className="md:text-sm lg:text-base">Home</Link>
