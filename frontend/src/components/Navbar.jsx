@@ -67,9 +67,9 @@ const Navbar = () => {
                 </Link>
                 <div className="lg:w-[30%] md:w-[40%] hidden md:visible md:flex md:flex-row md:justify-evenly font-poppins">
                     <Link href='/' className="md:text-sm lg:text-base">Home</Link>
-                    <Link href='/user/contact-us' className="md:text-sm lg:text-base">Contact</Link>
-                    <Link href='/user/about' className="md:text-sm lg:text-base">About</Link>
-                    <Link href='/user/signup' className="md:text-sm lg:text-base">Sign Up</Link>
+                    <Link href='/contact-us' className="md:text-sm lg:text-base">Contact</Link>
+                    <Link href='/about' className="md:text-sm lg:text-base">About</Link>
+                    <Link href='/signup' className="md:text-sm lg:text-base">Sign Up</Link>
                 </div>
                 <div className="w-[50%] lg:w-[45%] md:w-[50%] flex flex-row gap-1 mr-2 md:mr-4 lg:mr-0 justify-end lg:justify-center lg:gap-4 md:gap-2">
                     <div className="md:flex md:flex-row items-center hidden md:visible relative">
@@ -102,7 +102,7 @@ const Navbar = () => {
                                 <Link href="/" className="flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded">
                                 <   FiShoppingBag /> My Order
                                 </Link>
-                                <Link href="/" className="flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded">
+                                <Link href="/user/myaccount/cancellations" className="flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded">
                                     <CgCloseO/> My Cancellations
                                 </Link>
                                 <Link href="/" className="flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded">

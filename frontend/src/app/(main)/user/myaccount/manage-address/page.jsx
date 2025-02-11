@@ -66,7 +66,7 @@ const SavedAddresses = () => {
         {/* Mobile Menu Trigger */}
         <button 
           onClick={() => setIsMenuOpen(!isMenuOpen)}
-          className="lg:hidden mb-4 px-4 py-2 border rounded-md flex items-center gap-2"
+          className="lg:hidden mb-4 px-4 py-2 w-max border rounded-md flex items-center gap-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -89,15 +89,15 @@ const SavedAddresses = () => {
         <div className="hidden lg:block">
           <SidebarContent />
         </div>
-    <div className="w-full mx-auto p-10">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold">Saved Addresses</h1>
+    <div className="w-full lg:w-[70%] lg:shadow-[0px_1px_13px_0px_rgba(0,0,0,0.05)] mx-auto p-5 md:p-10">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-0 justify-between items-center mb-6">
+        <h1 className="text-lg md:text-2xl font-semibold">Saved Addresses</h1>
         <button
           onClick={() => {
             setEditingAddress(null);
             setShowAddForm(true);
           }}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          className="px-4 py-2 bg-blue-600 text-sm md:text-base text-white rounded-lg hover:bg-blue-700"
         >
           Add New Address
         </button>
@@ -119,7 +119,7 @@ const SavedAddresses = () => {
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-col md:flex-row items-center gap-2">
                 <button
                   onClick={() => {
                     setEditingAddress(address);
@@ -163,7 +163,7 @@ const SavedAddresses = () => {
       {/* Add/Edit Address Form Modal */}
       {showAddForm && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full">
+          <div className="bg-white rounded-lg p-6 max-w-md h-[60vh] w-full scrollbar-hide overflow-x-auto ">
             <h2 className="text-xl font-semibold mb-4">
               {editingAddress ? 'Edit Address' : 'Add New Address'}
             </h2>

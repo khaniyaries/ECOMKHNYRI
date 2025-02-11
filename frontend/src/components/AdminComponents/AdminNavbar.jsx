@@ -64,7 +64,7 @@ const AdminNavbar = () => {
 
         <nav className="p-4 space-y-2">
           <Link 
-            href="/admin" 
+            href="/admin/dashboard" 
             className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg"
             onClick={() => isMobile && setIsSidebarOpen(false)}
           >
