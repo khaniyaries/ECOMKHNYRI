@@ -1,7 +1,12 @@
 import Link from "next/link"
 import Image from "next/image"
+import { useAdminAuth } from '@/hooks/useAdminAuth.js'
+
 
 export default function Products() {
+
+  useAdminAuth();
+
   return (
     <div className="space-y-8">
       {/* Page Header */}

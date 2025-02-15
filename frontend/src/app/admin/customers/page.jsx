@@ -1,5 +1,7 @@
 import Link from "next/link"
 import Image from "next/image"
+import { useAdminAuth } from '@/hooks/useAdminAuth.js'
+
 
 // Sample customer data
 const customers = [
@@ -26,6 +28,9 @@ const customers = [
 ]
 
 export default function Customers() {
+
+  useAdminAuth();
+  
   return (
     <div className="space-y-8">
       {/* Page Header */}

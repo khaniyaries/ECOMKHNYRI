@@ -1,12 +1,19 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
+import { useAdminAuth } from '@/hooks/useAdminAuth'
 import Image from "next/image"
 
 const AdminNavbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
+  const { isAuthenticated, logout } = useAdminAuth()
 
   useEffect(() => {
+
+    if (!isAuthenticated) {
+      return
+    }
+
     const handleResize = () => {
       setIsMobile(window.innerWidth < 1024)
       setIsSidebarOpen(window.innerWidth >= 1024)
@@ -16,6 +23,10 @@ const AdminNavbar = () => {
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
+
+  if (!isAuthenticated) {
+    return null
+  }
 
   return (
     <>
@@ -74,6 +85,21 @@ const AdminNavbar = () => {
             Dashboard
           </Link>
           <Link 
+            href="/admin/analytics" 
+            className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg"
+            onClick={() => isMobile && setIsSidebarOpen(false)}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                strokeWidth="2" 
+                d="M3 3v18h18M7 16v-4m4 4V9m4 7v-2m4 2V7"
+              />
+            </svg>
+            Analytics
+          </Link>
+          <Link 
             href="/admin/products" 
             className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg"
             onClick={() => isMobile && setIsSidebarOpen(false)}
@@ -118,6 +144,15 @@ const AdminNavbar = () => {
             </svg>
             Customers
           </Link>
+          <button
+            className="flex w-full items-center gap-2 p-2 hover:bg-gray-50 rounded-lg"
+            onClick={() => {
+              isMobile && setIsSidebarOpen(false)
+              logout()
+            }}
+          >
+            Logout
+          </button>
         </nav>
       </aside>
     </>

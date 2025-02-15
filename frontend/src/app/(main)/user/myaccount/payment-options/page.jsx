@@ -37,6 +37,7 @@ const SavedPaymentMethods = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [isMenuOpen]);
+    
     return(
         <div className="container w-full h-full mx-auto px-4 md:px-20 lg:px-40 py-20">
             <div className="flex flex-col lg:flex-row justify-center">

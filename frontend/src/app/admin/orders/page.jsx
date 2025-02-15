@@ -1,6 +1,10 @@
 import Link from "next/link"
+import { useAdminAuth } from '@/hooks/useAdminAuth.js'
 
 export default function Orders() {
+
+  useAdminAuth();
+  
   return (
     <div className="space-y-8">
       {/* Page Header */}
