@@ -5,9 +5,98 @@ import { useState } from "react"
 import { CgCloseO } from "react-icons/cg";
 import SidebarContent from "@/components/SidebarContent.jsx"
 import { useEffect } from 'react';
+import toast from 'react-hot-toast'
+
 
 export default function AccountPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const [passwords, setPasswords] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  })
+
+  const [userData, setUserData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    address: '',
+    authProvider: 'local' // default value
+  })
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = localStorage.getItem('token')
+        const response = await fetch('http://localhost:8080/api/v1/user/profile', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        })
+        const data = await response.json()
+        
+        // Split name into first and last name
+        const [firstName = '', lastName = ''] = data.user.name?.split(' ') || []
+            
+        setUserData({
+            firstName,
+            lastName,
+            email: data.user.email || '',
+            address: data.user.address || '',
+            authProvider: data.user.authProvider || 'local'
+        })
+      } catch (error) {
+        toast.error('Failed to load profile data')
+      }
+    }
+
+    fetchUserData()
+  }, [])
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      const token = localStorage.getItem('token')
+
+      const updateData = {
+        name: `${userData.firstName} ${userData.lastName}`,
+        email: userData.email,
+        address: userData.address
+      }
+
+      // Add password update if passwords are provided
+      if (passwords.currentPassword && passwords.newPassword) {
+          if (passwords.newPassword !== passwords.confirmPassword) {
+              toast.error('New passwords do not match')
+              return
+          }
+          updateData.currentPassword = passwords.currentPassword
+          updateData.newPassword = passwords.newPassword
+      }
+
+      const response = await fetch('http://localhost:8080/api/v1/user/profile/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(updateData)
+      })
+
+      if (response.ok) {
+        toast.success('Profile updated successfully')
+        setPasswords({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+      }
+    } catch (error) {
+      toast.error('Failed to update profile')
+    }
+  }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -30,7 +119,7 @@ export default function AccountPage() {
           <span className="text-black">My Account</span>
         </nav>
         <div className="md:text-sm text-xs">
-          Welcome! <span className="text-red-500">Md Rimel</span>
+          Welcome! <span className="text-red-500">{userData.firstName} {userData.lastName}</span>
         </div>
       </div>
 
@@ -66,62 +155,72 @@ export default function AccountPage() {
         <div className="lg:col-span-3 md:shadow-[0px_1px_13px_0px_rgba(0,0,0,0.05)] md:py-6 md:px-14">
           <div className="space-y-6">
             <h2 className="text-xl font-medium font-poppins text-red-500">Edit Your Profile</h2>
-            <form className="space-y-4 md:space-y-6 lg:space-y-8">
+            <form className="space-y-4 md:space-y-6 lg:space-y-8" onSubmit={handleSubmit}>
               <div className="grid md:grid-cols-2 gap-4 md:gap-8">
                 <div>
                   <label className="text-sm md:text-base font-poppins font-normal block mb-1">First Name</label>
                   <input 
-                    placeholder="Md" 
+                    value={userData.firstName}
+                    onChange={(e) => setUserData({...userData, firstName: e.target.value})}
                     className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
                   />
                 </div>
                 <div>
                   <label className="text-sm md:text-base font-poppins font-normal block mb-1">Last Name</label>
                   <input 
-                    placeholder="Rimel" 
+                    value={userData.lastName}
+                    onChange={(e) => setUserData({...userData, lastName: e.target.value})}
                     className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
                   />
                 </div>
               </div>
+
               <div className="grid md:grid-cols-2 gap-4 md:gap-8">
                 <div>
                   <label className="text-sm md:text-base font-poppins font-normal block mb-1">Email</label>
                   <input 
-                    placeholder="rimel111@gmail.com" 
+                    value={userData.email}
+                    onChange={(e) => setUserData({...userData, email: e.target.value})}
                     className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
                   />
                 </div>
                 <div>
                   <label className="text-sm md:text-base font-poppins font-normal block mb-1">Address</label>
                   <input 
-                    placeholder="Kingston, 5236, United State" 
+                    value={userData.address}
+                    onChange={(e) => setUserData({...userData, address: e.target.value})}
                     className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
                   />
                 </div>
               </div>
-              <div className="space-y-4">
-                <h3 className="text-sm md:text-base font-poppins font-normal">Password Changes</h3>
-                
-                <input
-                placeholder="Current Password" 
-                type="password" 
-                className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
-                />
-            
-                <input 
-                placeholder="New Password"
-                type="password" 
-                className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
-                />
-            
-            
-                <input
-                placeholder="Confirm New Password" 
-                type="password" 
-                className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
-                />
-                
-              </div>
+
+              {userData.authProvider === 'local' && (
+                <div className="space-y-4">
+                  <h3 className="text-sm md:text-base font-poppins font-normal">Password Changes</h3>
+                  <input
+                    type="password"
+                    placeholder="Current Password" 
+                    value={passwords.currentPassword}
+                    onChange={(e) => setPasswords({...passwords, currentPassword: e.target.value})}
+                    className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
+                  />
+                  <input 
+                    type="password"
+                    placeholder="New Password"
+                    value={passwords.newPassword}
+                    onChange={(e) => setPasswords({...passwords, newPassword: e.target.value})}
+                    className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
+                  />
+                  <input
+                    type="password"
+                    placeholder="Confirm New Password" 
+                    value={passwords.confirmPassword}
+                    onChange={(e) => setPasswords({...passwords, confirmPassword: e.target.value})}
+                    className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
+                  />
+                </div>
+              )}
+
               <div className="flex justify-end gap-4 pt-4">
                 <button type="button" className="px-4 py-2 border rounded-md">
                   Cancel

@@ -1,0 +1,34 @@
+.image-section {
+    display: grid;
+    gap: 1rem;
+    margin: 1rem 0;
+  }
+  
+  .image-container {
+    position: relative;
+    display: inline-block;
+    margin: 0.5rem;
+  }
+  
+  .image-controls {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .delete-btn {
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+  }
+  
+  .file-input {
+    margin-top: 1rem;
+  }
+  

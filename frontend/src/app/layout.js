@@ -1,4 +1,5 @@
 import "./globals.css"
+import "../../config/firebase.js"
 import { Geist, Geist_Mono } from "next/font/google"
 import ToasterProvider from '@/components/ToasterProvider.jsx'
 

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import Image from "next/image"
 import React, { useState, useEffect } from "react";
+import { useRouter } from 'next/navigation'
 import { LuSearch } from "react-icons/lu";
 import { FaRegHeart } from "react-icons/fa";
 import { IoCartOutline } from "react-icons/io5";
@@ -9,12 +10,27 @@ import { GoPerson } from "react-icons/go";
 import { CgMenuBoxed, CgCloseO } from "react-icons/cg";
 import { FiShoppingBag } from "react-icons/fi";
 import { IoIosStarOutline } from "react-icons/io";
-import { TbLogout2 } from "react-icons/tb";
+import { TbLogout2, TbLogin2 } from "react-icons/tb";
+import { useAuth } from '@/hooks/userAuth.js'
+
 
 const Navbar = () => {
-
+    const { isAuthenticated, user, logout } = useAuth()
     const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+    const router = useRouter()
+
+    const handleProfileAction = (path) => {
+        if (!isAuthenticated) {
+            // Store the intended destination
+            localStorage.setItem('redirectAfterLogin', path)
+            router.push('/user/signin')
+            return
+        }
+        router.push(path)
+    }
+
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -69,7 +85,10 @@ const Navbar = () => {
                     <Link href='/' className="md:text-sm lg:text-base">Home</Link>
                     <Link href='/contact-us' className="md:text-sm lg:text-base">Contact</Link>
                     <Link href='/about' className="md:text-sm lg:text-base">About</Link>
-                    <Link href='/signup' className="md:text-sm lg:text-base">Sign Up</Link>
+                    {!isAuthenticated ? (
+                        <Link href='/signup' className="md:text-sm lg:text-base">Sign Up</Link>
+                    ) : ""}
+                    
                 </div>
                 <div className="w-[50%] lg:w-[45%] md:w-[50%] flex flex-row gap-1 mr-2 md:mr-4 lg:mr-0 justify-end lg:justify-center lg:gap-4 md:gap-2">
                     <div className="md:flex md:flex-row items-center hidden md:visible relative">
@@ -96,21 +115,45 @@ const Navbar = () => {
                         {/* Profile Dropdown */}
                         {isProfileOpen && (
                             <div className="absolute right-[50%] top-full mt-0 md:text-base text-white text-sm bg-black/25 backdrop-blur-3xl shadow-lg rounded-lg w-48 md:w-max p-2 font-poppins z-50">
-                                <Link href="/user/myaccount" className="flex items-center gap-2 py-2 px-3 hover:bg-black/30 rounded">
+                                <button 
+                                    onClick={() => handleProfileAction('/user/myaccount')} 
+                                    className="w-full flex items-center gap-2 py-2 px-3 hover:bg-black/30 rounded"
+                                >
                                     <GoPerson /> Manage My Account
-                                </Link>
-                                <Link href="/" className="flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded">
+                                </button>
+                                <button 
+                                    onClick={() => handleProfileAction('/user/orders')} 
+                                    className="w-full flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded"
+                                >
                                 <   FiShoppingBag /> My Order
-                                </Link>
-                                <Link href="/user/myaccount/cancellations" className="flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded">
+                                </button>
+                                <button 
+                                    onClick={() => handleProfileAction('/user/cancellations')} 
+                                    className="w-full flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded"
+                                >
                                     <CgCloseO/> My Cancellations
-                                </Link>
-                                <Link href="/" className="flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded">
+                                </button>
+                                <button 
+                                    onClick={() => handleProfileAction('/user/reviews')} 
+                                    className="w-full flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded"
+                                >
                                     <IoIosStarOutline /> My Reviews
-                                </Link>
-                                <Link href="/" className="flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded">
-                                    <TbLogout2 /> Logout
-                                </Link>
+                                </button>
+                                {isAuthenticated ? (
+                                    <button 
+                                        onClick={logout} 
+                                        className="w-full flex items-center gap-2 py-2 px-3 hover:bg-black/30 rounded"
+                                    >
+                                        <TbLogout2 /> Logout
+                                    </button>
+                                ) : (
+                                    <button 
+                                        onClick={() => router.push('/sign-in')} 
+                                        className="w-full flex items-center gap-2 py-2 px-3 hover:bg-black/30 rounded"
+                                    >
+                                        <TbLogin2 /> Login
+                                    </button>
+                                )}
                             </div>
                         )}
                     </div>
