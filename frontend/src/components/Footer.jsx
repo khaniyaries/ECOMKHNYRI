@@ -68,11 +68,18 @@ const Footer = () => {
                         <h3 className="text-lg md:text-xl font-poppins font-medium">Quick Link</h3>
                         <nav>
                             <ul className="mt-2 space-y-1">
-                                {['Privacy Policy', 'Terms Of Use', 'FAQ', 'Contact'].map((item) => (
-                                    <li key={item}>
-                                        <Link href="/" className="text-sm md:text-base hover:underline">{item}</Link>
-                                    </li>
-                                ))}
+                                <li>
+                                    <Link href="/privacy-policy" className="text-sm md:text-base hover:underline">Privacy Policy</Link>
+                                </li>
+                                <li>
+                                    <Link href="/terms-of-use" className="text-sm md:text-base hover:underline">Terms Of Use</Link>
+                                </li>
+                                <li>
+                                    <Link href="/return-policy" className="text-sm md:text-base hover:underline">Return Policy</Link>
+                                </li>
+                                <li>
+                                    <Link href="/contact-us" className="text-sm md:text-base hover:underline">Contact</Link>
+                                </li>
                             </ul>
                         </nav>
                     </div>
