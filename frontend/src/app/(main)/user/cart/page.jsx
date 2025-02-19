@@ -2,6 +2,8 @@
 
 import Image from "next/image"
 import Link from "next/link"
+import { useCart } from '@/hooks/useCart.js';
+import { LoadingSpinner } from "@/components/LoadingSpinner.jsx";
 import { useState } from "react"
 
 const QuantityInput = ({ value, onChange }) => {
@@ -29,38 +31,18 @@ const QuantityInput = ({ value, onChange }) => {
     )
 }
 
-const cartProducts = [
-  {
-    id: 1,
-    name: "LCD Monitor",
-    price: 650,
-    quantity: 1,
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-zlL0OWhntfotAEP0EDkW8P7xVwY37s.png"
-  },
-  {
-    id: 2,
-    name: "H1 Gamepad",
-    price: 550,
-    quantity: 2,
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-zlL0OWhntfotAEP0EDkW8P7xVwY37s.png"
-  }
-]
-
 export default function ShoppingCart() {
 
-    const [quantities, setQuantities] = useState(
-        cartProducts.reduce((acc, product) => ({
-          ...acc,
-          [product.id]: product.quantity
-        }), {})
-      )
-    
-      const handleQuantityChange = (productId, newQuantity) => {
-        setQuantities(prev => ({
+  const { cartProducts, quantities, setQuantities, isLoading } = useCart();
+
+  const handleQuantityChange = (productId, newQuantity) => {
+      setQuantities(prev => ({
           ...prev,
           [productId]: newQuantity
-        }))
-      }
+      }));
+  };
+
+  if (isLoading) return <LoadingSpinner />;
 
   return (
     <div className="container w-full h-full mx-auto px-4 md:px-10 lg:px-20 py-20">
@@ -80,15 +62,15 @@ export default function ShoppingCart() {
 
         <div className="space-y-6">
           {cartProducts.map((product) => (
-            <div key={product.id} className="grid mx-auto w-[80%] md:w-full md:grid-cols-[2fr,1fr,1fr,1fr] gap-4 items-center p-4 shadow-[0_0_15px_rgba(0,0,0,0.05)]">
+            <div key={product._id} className="grid mx-auto w-[80%] md:w-full md:grid-cols-[2fr,1fr,1fr,1fr] gap-4 items-center p-4 shadow-[0_0_15px_rgba(0,0,0,0.05)]">
               <div className="flex items-center gap-4">
-                <Image
-                  src={product.image}
+              <Image
+                  src={product.images[0]?.url || '/images/placeholder.svg'}
                   alt={product.name}
                   width={80}
                   height={80}
                   className="rounded-lg"
-                />
+              />
                 <span className="font-medium">{product.name}</span>
               </div>
               <div className="md:text-center">
@@ -98,13 +80,13 @@ export default function ShoppingCart() {
               <div className="md:flex md:justify-center">
                 <span className="md:hidden font-medium mr-2">Quantity: </span>
                 <QuantityInput 
-                  value={quantities[product.id]} 
-                  onChange={(newQuantity) => handleQuantityChange(product.id, newQuantity)}
+                  value={quantities[product._id]} 
+                  onChange={(newQuantity) => handleQuantityChange(product._id, newQuantity)}
                 />
               </div>
               <div className="md:text-right">
                 <span className="md:hidden font-medium mr-2">Subtotal: </span>
-                ${product.price * quantities[product.id]}
+                ${product.price * quantities[product._id]}
               </div>
             </div>
           ))}

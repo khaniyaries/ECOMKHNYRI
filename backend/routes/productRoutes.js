@@ -3,6 +3,7 @@ import multer from 'multer';
 
 import {
   getAllProducts,
+  cartProducts,
   getFlashSaleProducts,
   getBestSellingProducts,
   getProductsByCategory,
@@ -27,6 +28,7 @@ router.get('/products/best-selling', getBestSellingProducts);
 router.get('/products/category/:category', getProductsByCategory);
 router.get('/products/random/:count', getRandomProducts);
 router.get('/products/:id', getProductById);
+router.post('/products/bulk', cartProducts);
 
 // New routes with file upload handling
 router.post('/products', upload.array('images'), createProduct);

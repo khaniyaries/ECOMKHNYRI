@@ -17,7 +17,10 @@ const ProductModal = ({ isOpen, onClose, onSubmit, initialData}) => {
     isFlashSale: initialData?.isFlashSale || false
   });
   
-  
+  const [categories, setCategories] = useState([]);
+  const [subcategories, setSubcategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState(initialData?.category || '');
+  const [selectedSubcategory, setSelectedSubcategory] = useState(initialData?.subcategory || '');
   const [existingImages, setExistingImages] = useState(initialData?.images || []);
   const [newFiles, setNewFiles] = useState([]);
   const [selectedColors, setSelectedColors] = useState(initialData?.colors || []);
@@ -31,16 +34,30 @@ const ProductModal = ({ isOpen, onClose, onSubmit, initialData}) => {
   const [newSize, setNewSize] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  const categories = [
-    'Electronics',
-    'Clothing',
-    'Books',
-    'Home & Garden',
-    'Sports',
-    'Toys',
-    'Beauty',
-    'Automotive'
-  ];
+  useEffect(() => {
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/categories');
+            const data = await response.json();
+            
+            // Filter using isSubcategory flag
+            const mainCategories = data.filter(cat => !cat.isSubcategory);
+            const subCategories = data.filter(cat => cat.isSubcategory);
+            
+            setCategories(mainCategories);
+            setSubcategories(subCategories);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
+    fetchCategories();
+}, []);
+
+// Get subcategories for selected category
+const getSubcategoriesForCategory = (categoryId) => {
+    return subcategories.filter(subcat => subcat.parent === categoryId);
+};
+
 
 
   const deleteImageFromCloudinary = async (imageUrl) => {
@@ -167,25 +184,31 @@ const ProductModal = ({ isOpen, onClose, onSubmit, initialData}) => {
 
 
   
-  useEffect(() => {
-    if (initialData) {
+useEffect(() => {
+  if (initialData) {
+
+      const currentCategory = categories.find(cat => cat._id === initialData.category);
+      const currentSubcategory = subcategories.find(subcat => subcat._id === initialData.subcategory);
       setFormData({
-        name: initialData.name || '',
-        price: initialData.price || '',
-        description: initialData.description || '',
-        category: initialData.category || '',
-        stock: initialData.stock || '',
-        colors: initialData.colors || [],
-        sizes: initialData.sizes || [],
-        percentageOff: initialData.percentageOff || 0,
-        isFlashSale: initialData.isFlashSale || false
+          name: initialData.name || '',
+          price: initialData.price || '',
+          description: initialData.description || '',
+          category: initialData.category || '',
+          subcategory: initialData.subcategory || '',
+          stock: initialData.stock || '',
+          colors: initialData.colors || [],
+          sizes: initialData.sizes || [],
+          percentageOff: initialData.percentageOff || 0,
+          isFlashSale: initialData.isFlashSale || false
       });
       setExistingImages(initialData.images || []);
       setPrimaryImageIndex(initialData.images?.findIndex(img => img.isPrimary) || 0);
       setSelectedColors(initialData.colors || []);
       setSelectedSizes(initialData.sizes || []);
-    }
-  }, [initialData]);
+      setSelectedCategory(currentCategory?._id || initialData.category);
+      setSelectedSubcategory(currentSubcategory?._id || initialData.subcategory);
+  }
+}, [initialData, categories, subcategories]);
   
 
   if (!isOpen) return null;
@@ -221,17 +244,51 @@ const ProductModal = ({ isOpen, onClose, onSubmit, initialData}) => {
               <label className="block text-sm font-medium text-gray-700">Category</label>
               <select
                 name="category"
-                value={formData.category}
-                onChange={handleInputChange}
+                value={selectedCategory}
+                onChange={(e) => {
+                    setSelectedCategory(e.target.value);
+                    setSelectedSubcategory('');
+                    setFormData(prev => ({
+                        ...prev,
+                        category: e.target.value
+                    }));
+                }}
                 className="mt-1 block w-full rounded-md p-2 bg-black/5 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 required
-              >
+            >
                 <option value="">Select Category</option>
                 {categories.map(cat => (
-                  <option key={cat} value={cat}>{cat}</option>
+                    <option key={cat._id} value={cat._id}>
+                        {cat.name}
+                    </option>
                 ))}
+            </select>
+          </div>
+
+          <div>
+              <label className="block text-sm font-medium text-gray-700">Subcategory</label>
+              <select
+                  name="subcategory"
+                  value={selectedSubcategory}
+                  onChange={(e) => {
+                      setSelectedSubcategory(e.target.value);
+                      setFormData(prev => ({
+                          ...prev,
+                          subcategory: e.target.value
+                      }));
+                  }}
+                  className="mt-1 block w-full rounded-md p-2 bg-black/5 border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  required
+                  disabled={!selectedCategory}
+              >
+                  <option value="">Select Subcategory</option>
+                  {selectedCategory && getSubcategoriesForCategory(selectedCategory).map(subcat => (
+                      <option key={subcat._id} value={subcat._id}>
+                          {subcat.name}
+                      </option>
+                  ))}
               </select>
-            </div>
+          </div>
           </div>
 
           {/* Price and Stock */}

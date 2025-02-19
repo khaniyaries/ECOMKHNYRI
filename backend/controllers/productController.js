@@ -10,6 +10,17 @@ export const getAllProducts = async (req, res) => {
   }
 };
 
+export const cartProducts = async (req, res) => {
+  try {
+      const { productIds } = req.body;
+      const products = await Product.find({ _id: { $in: productIds } });
+      res.json({ data: products });
+  } catch (error) {
+      res.status(500).json({ message: 'Error fetching products' });
+  }
+};
+
+
 export const getFlashSaleProducts = async (req, res) => {
   try {
     const flashSaleProducts = await Product.find({ isFlashSale: true });
@@ -83,11 +94,18 @@ export const getProductById = async (req, res) => {
   }
 };
 
-// Add these new controller functions
-
 export const createProduct = async (req, res) => {
   try {
       const productData = req.body;
+      
+      // Ensure required fields are present
+      const requiredFields = ['name', 'price', 'description', 'category', 'stock'];
+      for (const field of requiredFields) {
+          if (!productData[field]) {
+              return res.status(400).json({ message: `Missing required field: ${field}` });
+          }
+      }
+      
       const product = new Product(productData);
       await product.save();
       res.status(201).json(product);
@@ -95,6 +113,7 @@ export const createProduct = async (req, res) => {
       res.status(400).json({ message: error.message });
   }
 };
+
 
 export const updateProduct = async (req, res) => {
   try {

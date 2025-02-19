@@ -1,12 +1,24 @@
+import { usePathname } from 'next/navigation'
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useAdminAuth } from '@/hooks/useAdminAuth'
 import Image from "next/image"
+import { TbLogout2 } from "react-icons/tb";
+import { MdCategory } from "react-icons/md";
+import { GiKnightBanner } from "react-icons/gi";
 
 const AdminNavbar = () => {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false)
   const [isMobile, setIsMobile] = useState(false)
   const { isAuthenticated, logout } = useAdminAuth()
+
+  const pathname = usePathname()
+
+  useEffect(() => {
+    if (isMobile) {
+        setIsSidebarOpen(false)
+    }
+}, [pathname, isMobile])
 
   useEffect(() => {
 
@@ -22,7 +34,7 @@ const AdminNavbar = () => {
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  }, [isAuthenticated])
 
   if (!isAuthenticated) {
     return null
@@ -50,19 +62,20 @@ const AdminNavbar = () => {
       {/* Overlay for mobile when sidebar is open */}
       {isMobile && isSidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={() => setIsSidebarOpen(false)}
+            className="fixed inset-0 bg-black bg-opacity-50 z-30"
+            onClick={() => setIsSidebarOpen(false)}
+            aria-hidden="true"
         />
       )}
 
       {/* Sidebar */}
       <aside className={`
-        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        fixed inset-y-0 left-0 z-40
+        w-72 bg-white border-r border-gray-200
         transform transition-transform duration-300 ease-in-out
-        fixed lg:relative left-0 top-0 z-40
-        w-64 h-full bg-white border-r border-gray-200
-        lg:translate-x-0 lg:transition-none
-      `}>
+        ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        lg:translate-x-0 lg:static lg:z-0
+    `}>
         <div className="flex items-center gap-2 p-6 border-b">
           <Image 
             src="/images/logo.png" 
@@ -71,6 +84,26 @@ const AdminNavbar = () => {
             className="rounded" 
           />
           <span className="font-semibold text-xl">Admin Panel</span>
+          {isMobile && (
+            <button 
+                onClick={() => setIsSidebarOpen(false)}
+                className="ml-auto hover:bg-gray-100 rounded-full border"
+            >
+                <svg 
+                    className="w-6 h-6" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                >
+                    <path 
+                        strokeLinecap="round" 
+                        strokeLinejoin="round" 
+                        strokeWidth="2" 
+                        d="M6 18L18 6M6 6l12 12"
+                    />
+                </svg>
+            </button>
+        )}
         </div>
 
         <nav className="p-4 space-y-2">
@@ -144,6 +177,22 @@ const AdminNavbar = () => {
             </svg>
             Customers
           </Link>
+          <Link 
+            href="/admin/categories" 
+            className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg"
+            onClick={() => isMobile && setIsSidebarOpen(false)}
+          >
+            <MdCategory />
+            Categories
+          </Link>
+          <Link 
+            href="/admin/banners" 
+            className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg"
+            onClick={() => isMobile && setIsSidebarOpen(false)}
+          >
+            <GiKnightBanner />
+            Banners
+          </Link>
           <button
             className="flex w-full items-center gap-2 p-2 hover:bg-gray-50 rounded-lg"
             onClick={() => {
@@ -151,6 +200,7 @@ const AdminNavbar = () => {
               logout()
             }}
           >
+            <TbLogout2 />
             Logout
           </button>
         </nav>

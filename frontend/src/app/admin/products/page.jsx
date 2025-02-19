@@ -5,10 +5,10 @@ import ProductModal from '@/components/AdminComponents/ProductModal.jsx';
 import { fetchProducts, deleteProduct, uploadImages, createProduct, updateProduct } from '@/utils/productapi.js';
 import { processCSV } from '@/utils/csvProcessor.js';
 import Image from "next/image";
-import Link from "next/link";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 export default function Products() {
+  const [categories, setCategories] = useState([]);
   const { isAuthenticated } = useAdminAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [products, setProducts] = useState([]);
@@ -17,7 +17,8 @@ export default function Products() {
   const [filters, setFilters] = useState({
     search: '',
     category: 'All Categories',
-    status: 'All Status'
+    status: 'All Status',
+    special: 'All Products' 
   });
   const [editingProduct, setEditingProduct] = useState(null);
 
@@ -26,10 +27,26 @@ export default function Products() {
   }, [filters]);
 
   const handleEditProduct = (product) => {
-    setSelectedProduct(product);
+    setSelectedProduct({
+        ...product,
+        category: typeof product.category === 'object' ? product.category._id : product.category,
+        subcategory: typeof product.subcategory === 'object' ? product.subcategory._id : product.subcategory
+    });
     setIsModalOpen(true);
-  };
-  
+};
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/categories');
+            const data = await response.json();
+            setCategories(data);
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    };
+    fetchCategories();
+  }, []);
 
   // In your loadProducts function, update the status filter handling
 const loadProducts = async () => {
@@ -57,6 +74,17 @@ const loadProducts = async () => {
                       return true;
               }
           });
+      }
+
+      if (filters.special !== 'All Products') {
+        filteredProducts = filteredProducts.filter(product => {
+            switch (filters.special) {
+                case 'No Images': return !product.images?.length;
+                case 'Flash Sale': return product.isFlashSale;
+                case 'Best Selling': return product.averageRating >= 4;
+                default: return true;
+            }
+        });
       }
       
       setProducts(filteredProducts);
@@ -185,6 +213,16 @@ const loadProducts = async () => {
           <option>Low Stock</option>
           <option>Out of Stock</option>
         </select>
+        <select
+            value={filters.special}
+            onChange={(e) => setFilters(prev => ({ ...prev, special: e.target.value }))}
+            className="px-4 py-2 border rounded-lg"
+        >
+            <option>All Products</option>
+            <option>No Images</option>
+            <option>Flash Sale</option>
+            <option>Best Selling</option>
+        </select>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm">
@@ -233,7 +271,7 @@ const loadProducts = async () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {product.category}
+                    {categories.find(cat => cat._id === product.category)?.name || product.category}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     ${product.price.toFixed(2)}

@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js'
 import categoryRoutes from './routes/categoryRoutes.js'
+import cartRoutes from './routes/cartRoutes.js'
 
 const port = 8080;
 const app = express();
@@ -28,6 +29,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1', productRoutes);
 app.use('/api/v1', categoryRoutes);
+app.use('/api/v1/cart', cartRoutes);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

@@ -29,7 +29,11 @@ const customers = [
 
 export default function Customers() {
 
-  useAdminAuth();
+  const { isAuthenticated } = useAdminAuth()
+
+    if (!isAuthenticated) {
+        return null
+    }
   
   return (
     <div className="space-y-8">

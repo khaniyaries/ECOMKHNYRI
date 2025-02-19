@@ -27,7 +27,11 @@ const orderData = [
 
 export default function CustomerDetails({ params }) {
 
-  useAdminAuth();
+  const { isAuthenticated } = useAdminAuth()
+
+    if (!isAuthenticated) {
+        return null
+    }
   return (
     <div className="space-y-8">
       {/* Page Header */}

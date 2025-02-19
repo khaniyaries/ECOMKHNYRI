@@ -1,9 +1,17 @@
 import { Heart, Eye } from "lucide-react";
 import { IoTrashOutline } from "react-icons/io5";
 import { IoCartOutline } from "react-icons/io5";
+import { useCart } from '@/hooks/useCart.js';
 import Image from "next/image";
 
 const ProductCard = ({ name, image, price, originalPrice, discount, rating, reviews, isWishlist }) => {
+
+  
+  const { addToCart } = useCart();
+  const handleAddToCart = () => {
+    addToCart(product._id, 1);
+  };
+
   if (isWishlist) {
     return (
       <div className="relative bg-white rounded-lg p-4 group ">
@@ -51,10 +59,12 @@ const ProductCard = ({ name, image, price, originalPrice, discount, rating, revi
         </div>
         <Image src={image || "/placeholder.svg"} alt={name} fill className="object-contain" />
         <div className="absolute bottom-0 w-full">
-          <button className="w-full p-1 bg-black text-white md:py-2 flex flex-row justify-center gap-1 md:gap-2 rounded-b-md opacity-0 group-hover:opacity-100 transition-opacity">
+          <button 
+            onClick={handleAddToCart}
+            className="w-full p-1 bg-black text-white md:py-2 flex flex-row justify-center gap-1 md:gap-2 rounded-b-md">
             <IoCartOutline className="h-3 w-3 md:h-5 md:w-5"/> 
             <h1 className="text-xs md:text-base">Add To Cart</h1>
-          </button>
+        </button>
         </div> 
       </div>
       <h3 className="font-medium text-lg mb-2">{name}</h3>

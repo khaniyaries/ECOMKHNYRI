@@ -3,7 +3,11 @@ import { useAdminAuth } from '@/hooks/useAdminAuth.js'
 
 export default function Orders() {
 
-  useAdminAuth();
+  const { isAuthenticated } = useAdminAuth()
+
+    if (!isAuthenticated) {
+        return null
+    }
   
   return (
     <div className="space-y-8">

@@ -24,13 +24,20 @@ const About = () => {
                     <section className="max-w-[90%] md:max-w-[50%] md:pr-20">
                         <h1 className="text-4xl font-bold mb-6">Our Story</h1>
                         <p className="mb-6">
-                            Launced in 2015, Exclusive is South Asia's premier online shopping makterplace with an active presense in Bangladesh. 
-                            Supported by wide range of tailored marketing, data and service solutions, Exclusive has 10,500 sallers and 300 brands 
-                            and serves 3 millioons customers across the region. 
+                        Welcome to Yarees, your one-stop online store in Jammu and Kashmir, India, where quality meets affordability.
+                        We bring you the best brands with the best deals, offering a wide range of products to cater to your every need.
+                        Whether you're looking for fashion, electronics, home essentials, or local Kashmiri specialties,
+                        we’ve got it all in one place.
                         </p>
+                        <p className="mb-6">
+                        At Yarees, we prioritize customer satisfaction, ensuring a seamless shopping experience with trusted brands,
+                        secure payments, and reliable delivery. Our mission is to provide the people of J&K and beyond with an easy, 
+                        convenient, and affordable way to shop online.
+
+                        </p>
+
                         <p>
-                            Exclusive has more than 1 Million products to offer, growing at a very fast. 
-                            Exclusive offers a diverse assotment in categories ranging from consumer.
+                        Start shopping today and discover the best of everything at Yarees – Where Quality Meets Convenience!
                         </p>
                     </section>
                     
@@ -134,7 +141,7 @@ const About = () => {
                     </div>
                 </div>
             </div>
-            <div className="md:px-10 px-10 lg:px-32 py-10 md:py-20">
+            {/* <div className="md:px-10 px-10 lg:px-32 py-10 md:py-20">
                 <div className="flex flex-col justify-center gap-4">
                     <div className="flex w-full justify-center gap-10 md:gap-4 lg:gap-10 md:flex-row flex-col items-center">
                         <div className="h-auto w-full md:max-w-[370px] bg-white relative md:border-0 md:p-0 border-2 p-1">
@@ -214,7 +221,6 @@ const About = () => {
                             </div>
                         </div>
                     </div>
-                    {/* Dots Navigation */}
                     <div className="w-full h-full flex mt-4 justify-center gap-4">
                         {[0, 1, 2, 3, 4].map((index) => (
                             <button
@@ -230,7 +236,7 @@ const About = () => {
                     </div>
 
                 </div>
-            </div>
+            </div> */}
             <ServiceBenefitsFooter />
         </div>
     )
