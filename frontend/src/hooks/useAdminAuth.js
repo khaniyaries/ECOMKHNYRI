@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import toast from 'react-hot-toast'
-import { env } from "../../../../config/config.js"
+import { env } from "../../config/config.js"
 
 export function useAdminAuth() {
   const router = useRouter()
