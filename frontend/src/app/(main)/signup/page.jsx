@@ -7,6 +7,7 @@ import Image from "next/image"
 import Link from "next/link"
 import toast from 'react-hot-toast'
 
+
 export default function SignupPage() {
     const router = useRouter()
     const [formData, setFormData] = useState({
@@ -22,7 +23,7 @@ export default function SignupPage() {
     const handleSubmit = async (e) => {
       e.preventDefault()
       try {
-          const response = await fetch(`http://localhost:8080/api/v1/auth/signup`, {
+          const response = await fetch(`${env.API_URL}/api/v1/auth/signup`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify(formData)
@@ -48,7 +49,7 @@ export default function SignupPage() {
             const provider = new GoogleAuthProvider()
             const result = await signInWithPopup(auth, provider)
             
-            const response = await fetch(`http://localhost:8080/api/v1/auth/google/signup`, {
+            const response = await fetch(`${env.API_URL}/api/v1/auth/google/signup`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

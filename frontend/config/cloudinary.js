@@ -1,8 +1,9 @@
 import { Cloudinary } from "@cloudinary/url-gen";
+import { env } from "./config";
 const cloudinaryConfig = {
-  cloudName: "daqh8noyb",
-  apiKey: "857738445194783",
-  apiSecret: "b0kW2Cd6tZtd0FcTH22ejgwUA9E"
+  cloudName: env.CLOUDINARY_NAME,
+  apiKey: env.CLOUDINARY_API,
+  apiSecret: env.CLOUDINARY_API_SECRET
 };
 
 const cld = new Cloudinary({

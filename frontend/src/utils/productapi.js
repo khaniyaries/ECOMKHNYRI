@@ -1,5 +1,7 @@
+import { env } from "../../config/config.js";
+
 export const fetchProducts = async (queryString = '') => {
-    const response = await fetch(`http://localhost:8080/api/v1/products?${queryString}`);
+    const response = await fetch(`${env.API_URL}/api/v1/products?${queryString}`);
     
     if (!response.ok) {
       const error = await response.text();
@@ -11,7 +13,7 @@ export const fetchProducts = async (queryString = '') => {
   
   
   export const deleteProduct = async (productId) => {
-    const response = await fetch(`http://localhost:8080/api/v1/products/${productId}`, {
+    const response = await fetch(`${env.API_URL}/api/v1/products/${productId}`, {
       method: 'DELETE',
     });
     return response.json();
@@ -29,7 +31,7 @@ export const fetchProducts = async (queryString = '') => {
     });
     formData.append('primaryImageIndex', primaryImageIndex);
   
-    const response = await fetch('http://localhost:8080/api/v1/upload', {
+    const response = await fetch(`${env.API_URL}/api/v1/upload`, {
       method: 'POST',
       body: formData
     });
@@ -39,7 +41,7 @@ export const fetchProducts = async (queryString = '') => {
   
   
   export const createProduct = async (productData) => {
-    const response = await fetch('http://localhost:8080/api/v1/products', {
+    const response = await fetch(`${env.API_URL}/api/v1/products`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -57,7 +59,7 @@ export const fetchProducts = async (queryString = '') => {
   };
 
   export const updateProduct = async (productId, productData) => {
-    const response = await fetch(`http://localhost:8080/api/v1/products/${productId}`, {
+    const response = await fetch(`${env.API_URL}/api/v1/products/${productId}`, {
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',

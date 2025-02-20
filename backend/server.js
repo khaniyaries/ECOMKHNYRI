@@ -8,15 +8,19 @@ import productRoutes from './routes/productRoutes.js'
 import categoryRoutes from './routes/categoryRoutes.js'
 import cartRoutes from './routes/cartRoutes.js'
 
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+
 const port = 8080;
 const app = express();
 
 app.use(cors({
-    origin: "http://localhost:3000",
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+app.options('*', cors())
 
 app.use(express.json());
 

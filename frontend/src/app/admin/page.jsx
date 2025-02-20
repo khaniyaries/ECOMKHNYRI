@@ -2,7 +2,6 @@
   import React, { useState } from 'react';
   import Link from 'next/link';
   import { useAdminAuth } from '@/hooks/useAdminAuth'
-  import { API_URL } from "../../../config/config.js"
 
   const AdminLogin = () => {
     const [username, setUsername] = useState('');

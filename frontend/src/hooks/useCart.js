@@ -2,6 +2,7 @@ import { useAuth } from "./userAuth.js";
 import { useState, useEffect } from "react";
 import { cartStorage } from '@/utils/cartStorage';
 import { cartApi } from '@/utils/cartapi.js';
+import { env } from "../../config/config.js"
 
 export const useCart = () => {
     const { user } = useAuth();
@@ -18,7 +19,7 @@ export const useCart = () => {
         try {
             let products = [];  // Initialize with empty array
             if (user) {
-                const response = await fetch('http://localhost:8080/api/v1/cart/user');
+                const response = await fetch(`${env.API_URL}/api/v1/cart/user`);
                 products = await response.json();
             } else {
                 const cartItems = cartStorage.getCartItems();
@@ -44,7 +45,7 @@ export const useCart = () => {
     };
     const addToCart = async (productId, quantity) => {
         if (user) {
-            const response = await fetch('http://localhost:8080/api/v1/cart/add', {
+            const response = await fetch(`${env.API_URL}/api/v1/cart/add`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ productId, quantity })

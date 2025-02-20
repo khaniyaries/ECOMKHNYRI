@@ -6,6 +6,7 @@ import { fetchProducts, deleteProduct, uploadImages, createProduct, updateProduc
 import { processCSV } from '@/utils/csvProcessor.js';
 import Image from "next/image";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { env } from "../../../../config/config.js"
 
 export default function Products() {
   const [categories, setCategories] = useState([]);
@@ -38,7 +39,7 @@ export default function Products() {
   useEffect(() => {
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/categories');
+            const response = await fetch(`${env.API_URL}/api/v1/categories`);
             const data = await response.json();
             setCategories(data);
         } catch (error) {

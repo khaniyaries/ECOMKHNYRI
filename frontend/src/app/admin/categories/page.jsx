@@ -5,6 +5,8 @@ import { useAdminAuth } from '@/hooks/useAdminAuth';
 import CategoryModal from '@/components/AdminComponents/CategoryModal.jsx';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import Image from 'next/image';
+import { env } from "../../../../config/config.js"
+
 
 export default function Categories() {
     const { isAuthenticated } = useAdminAuth();
@@ -51,7 +53,7 @@ export default function Categories() {
     const loadCategories = async () => {
         setIsLoading(true);
         try {
-            const response = await fetch('http://localhost:8080/api/v1/categories');
+            const response = await fetch(`${env.API_URL}/api/v1/categories`);
             const data = await response.json();
             
             const mainCategories = data.filter(cat => !cat.isSubcategory);
@@ -78,13 +80,13 @@ export default function Categories() {
         setIsLoading(true);
         try {
             if (selectedCategory) {
-                await fetch(`http://localhost:8080/api/v1/categories/${selectedCategory._id}`, {
+                await fetch(`${env.API_URL}/api/v1/categories/${selectedCategory._id}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
                 });
             } else {
-                await fetch('http://localhost:8080/api/v1/categories', {
+                await fetch(`${env.API_URL}/api/v1/categories`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
@@ -116,7 +118,7 @@ export default function Categories() {
                 }
     
                 // Delete category from database
-                await fetch(`http://localhost:8080/api/v1/categories/${categoryId}`, {
+                await fetch(`${env.API_URL}/api/v1/categories/${categoryId}`, {
                     method: 'DELETE'
                 });
                 

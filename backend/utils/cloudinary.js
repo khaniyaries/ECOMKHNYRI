@@ -1,9 +1,15 @@
 import { v2 as cloudinary } from 'cloudinary';
 
+const cloudinaryConfig = {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_CLOUD_API,
+    apiSecret: process.env.CLOUDINARY_CLOUD_API_SECRECT
+  };
+
 cloudinary.config({
-    cloud_name: "daqh8noyb",
-    api_key: "857738445194783",
-    api_secret: "b0kW2Cd6tZtd0FcTH22ejgwUA9E"
+    cloud_name: cloudinaryConfig.cloudName,
+    api_key: cloudinaryConfig.apiKey,
+    api_secret: cloudinaryConfig.apiSecret
 });
 
 export const deleteImages = async (publicIds) => {

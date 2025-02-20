@@ -5,6 +5,8 @@ import Link from "next/link"
 import { useCart } from '@/hooks/useCart.js';
 import { LoadingSpinner } from "@/components/LoadingSpinner.jsx";
 import { useState } from "react"
+import { env } from "../../../../../config/config.js"
+
 
 const QuantityInput = ({ value, onChange }) => {
     return (

@@ -6,6 +6,8 @@ import { CgCloseO } from "react-icons/cg";
 import SidebarContent from "@/components/SidebarContent.jsx"
 import { useEffect } from 'react';
 import toast from 'react-hot-toast'
+import { env } from "../../../../../config/config.js"
+
 
 
 export default function AccountPage() {
@@ -29,7 +31,7 @@ export default function AccountPage() {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch('http://localhost:8080/api/v1/user/profile', {
+        const response = await fetch(`${env.API_URL}/api/v1/user/profile`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -76,7 +78,7 @@ export default function AccountPage() {
           updateData.newPassword = passwords.newPassword
       }
 
-      const response = await fetch('http://localhost:8080/api/v1/user/profile/update', {
+      const response = await fetch(`${env.API_URL}/api/v1/user/profile/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

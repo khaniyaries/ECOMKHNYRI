@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { uploadToCloudinary, deleteFromCloudinary } from '../../../config/cloudinary.js';
 import { LoadingSpinner } from "../LoadingSpinner";
+import { env } from "../../../config/config.js"
 
 const ProductModal = ({ isOpen, onClose, onSubmit, initialData}) => {
   const [formData, setFormData] = useState({
@@ -37,7 +38,7 @@ const ProductModal = ({ isOpen, onClose, onSubmit, initialData}) => {
   useEffect(() => {
     const fetchCategories = async () => {
         try {
-            const response = await fetch('http://localhost:8080/api/v1/categories');
+            const response = await fetch(`${env.API_URL}/api/v1/categories`);
             const data = await response.json();
             
             // Filter using isSubcategory flag

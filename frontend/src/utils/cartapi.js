@@ -1,6 +1,8 @@
+import { env } from "../../config/config.js";
+
 export const cartApi = {
     fetchProductsByIds: async (productIds) => {
-        const response = await fetch('http://localhost:8080/api/v1/products/bulk', {
+        const response = await fetch(`${env.API_URL}/api/v1/products/bulk`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ productIds })
@@ -9,7 +11,7 @@ export const cartApi = {
     },
 
     migrateGuestCart: async (cartItems) => {
-        const response = await fetch('http://localhost:8080/api/v1/cart/migrate', {
+        const response = await fetch(`${env.API_URL}/api/v1/cart/migrate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ items: cartItems })

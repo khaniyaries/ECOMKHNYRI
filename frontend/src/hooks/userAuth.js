@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 import { cartStorage } from '@/utils/cartStorage.js'
 import { cartApi } from '@/utils/cartapi.js'
 
+
 export function useAuth() {
     const router = useRouter()
     const [isAuthenticated, setIsAuthenticated] = useState(() => {

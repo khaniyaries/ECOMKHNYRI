@@ -8,6 +8,7 @@ import Link from "next/link"
 import { auth } from '../../../../config/firebase.js'
 import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import toast from 'react-hot-toast'
+import { env } from "../../../../config/config.js"
 
 export default function SigninPage() {
     const router = useRouter()
@@ -25,7 +26,7 @@ export default function SigninPage() {
     const handleSubmit = async (e) => {
       e.preventDefault()
       try {
-          const response = await fetch(`http://localhost:8080/api/v1/auth/login`, {
+          const response = await fetch(`${env.API_URL}/api/v1/auth/login`, {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
@@ -64,7 +65,7 @@ export default function SigninPage() {
         const provider = new GoogleAuthProvider()
         const result = await signInWithPopup(auth, provider)
         
-        const response = await fetch(`http://localhost:8080/api/v1/auth/google/signin`, {
+        const response = await fetch(`${env.API_URL}/api/v1/auth/google/signin`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

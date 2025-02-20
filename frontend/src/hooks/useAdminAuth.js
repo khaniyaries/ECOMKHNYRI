@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import toast from 'react-hot-toast'
+import { env } from "../../../../config/config.js"
 
 export function useAdminAuth() {
   const router = useRouter()
@@ -19,7 +20,7 @@ export function useAdminAuth() {
 
   const login = async ({ username, password }) => {
     try {
-      const response = await axios.post(`http://localhost:8080/api/v1/adminLogin`, {
+      const response = await axios.post(`${env.API_URL}/api/v1/adminLogin`, {
         username,
         password
       })
