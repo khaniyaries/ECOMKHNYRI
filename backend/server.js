@@ -24,8 +24,8 @@ app.options('*', cors())
 
 app.use(express.json());
 
-// Connect to the specific database
-await connectdb("yarees");
+// Connect to the database
+connectdb();
 
 // Mount routes
 

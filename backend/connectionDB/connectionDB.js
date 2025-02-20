@@ -1,26 +1,39 @@
-import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
 
 dotenv.config();
 
 const MONGODB_URL = process.env.MONGODB_URL;
+
 mongoose.connection.setMaxListeners(15);
 
-const connectdb = async (dbName) => {
+const connectdb = async () => {
     try {
-        const mongoURL = `${MONGODB_URL}/${dbName}`;
-        console.log('Attempting to connect to:', mongoURL);
+        await mongoose.connect(MONGODB_URL, {
+            serverSelectionTimeoutMS: 15000,
+            socketTimeoutMS: 45000,
+        });
         
-        const connection = await mongoose.connect(mongoURL);
-        console.log('Database Name:', connection.connection.db.databaseName);
-        console.log('Collections:', await connection.connection.db.listCollections().toArray());
+        console.log("MongoDB connected successfully");
         
-        return connection;
-    } catch (error) {
-        console.log('Connection Error Details:', error);
-        return null;
-    }
-};
+        // Monitor connection events
+        mongoose.connection.on('connected', () => {
+            console.log('Database connection established');
+        });
 
+        mongoose.connection.on('disconnected', () => {
+            console.log('Database connection lost, attempting reconnection...');
+        });
+
+        mongoose.connection.on('reconnected', () => {
+            console.log('Database reconnected successfully');
+        });
+
+    } catch (error) {
+        console.log('Database connection error:', error.message);
+        // Implement retry logic
+        setTimeout(connectdb, 5000);
+    }
+}
 
 export default connectdb;
