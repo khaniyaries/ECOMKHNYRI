@@ -25,7 +25,7 @@ const Navbar = () => {
         if (!isAuthenticated) {
             // Store the intended destination
             localStorage.setItem('redirectAfterLogin', path)
-            router.push('/user/sign-in')
+            router.push('/sign-in')
             return
         }
         router.push(path)
