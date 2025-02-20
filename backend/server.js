@@ -7,7 +7,6 @@ import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js'
 import categoryRoutes from './routes/categoryRoutes.js'
 import cartRoutes from './routes/cartRoutes.js'
-import routes from './routes'
 
 const port = 8080;
 const app = express();
@@ -26,7 +25,6 @@ await connectdb("yarees");
 
 // Mount routes
 
-app.use('/', routes)
 app.use('/api/v1', adminRoute);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/user', userRoutes);
