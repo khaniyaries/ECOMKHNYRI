@@ -83,7 +83,7 @@ export default function Home() {
             <div className="flex flex-row items-center justify-center gap-2">
               <FaApple color="white" className="h-10 w-10"/>
               <h2 className="text-base text-white font-normal font-poppins">
-                iPhone 14 Series
+                New iPhone 14 Series
               </h2>
             </div>
             <h1 className="lg:text-4xl md:3xl text-white font-semibold font-inter">
