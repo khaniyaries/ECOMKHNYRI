@@ -182,7 +182,7 @@ export default function SigninPage() {
 
                     <div className="text-center text-gray-600">
                         Don't have an account yet?{" "}
-                        <Link href="/user/signup" className="text-gray-900 hover:underline">
+                        <Link href="/signup" className="text-gray-900 hover:underline">
                             Sign Up
                         </Link>
                     </div>
