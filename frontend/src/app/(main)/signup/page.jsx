@@ -6,7 +6,7 @@ import { GoogleAuthProvider, signInWithPopup } from 'firebase/auth'
 import Image from "next/image"
 import Link from "next/link"
 import toast from 'react-hot-toast'
-
+import { env } from "../../../../config/config.js"
 
 export default function SignupPage() {
     const router = useRouter()
