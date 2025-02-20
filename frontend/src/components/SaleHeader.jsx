@@ -6,7 +6,7 @@ const SaleHeader = () => {
                 <h1 className="text-sm font-poppins font-normal">
                     Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%!
                     <Link 
-                    href="/user/products"
+                    href="/products"
                     className="ml-2 font-semibold underline"
                     > 
                         ShopNow

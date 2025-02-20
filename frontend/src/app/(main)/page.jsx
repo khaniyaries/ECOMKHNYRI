@@ -83,14 +83,14 @@ export default function Home() {
             <div className="flex flex-row items-center justify-center gap-2">
               <FaApple color="white" className="h-10 w-10"/>
               <h2 className="text-base text-white font-normal font-poppins">
-                New iPhone 14 Series
+                iPhone 14 Series
               </h2>
             </div>
             <h1 className="lg:text-4xl md:3xl text-white font-semibold font-inter">
               Up to 10% <br/> off Voucher 
             </h1>
             <Link 
-            href="/user/products"
+            href="/products"
             className="text-white text-base font-medium font-poppins underline flex items-center gap-2 justify-center"
             >
               Shop Now! <span className="no-underline"><BsArrowRight/></span>
