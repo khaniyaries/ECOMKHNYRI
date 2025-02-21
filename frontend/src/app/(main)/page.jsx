@@ -33,17 +33,25 @@ export default function Home() {
       // Here you can add functionality to navigate slides when a dot is clicked
     };
 
-  const scrollContainer = (direction, containerClass) => {
-    const container = document.querySelector(containerClass);
-    const scrollAmount = 340;
-    
-    if (container) {
-      container.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
-  };
+  // Create separate scroll handlers for each component
+const scrollFlashSales = (direction) => {
+  if (window.scrollFlashSales) {
+    window.scrollFlashSales(direction)
+  }
+};
+
+const scrollCategories = (direction) => {
+  const container = document.querySelector('.category-scroll-container');
+  const scrollAmount = 340;
+  
+  if (container) {
+    container.scrollBy({
+      left: direction === 'left' ? -scrollAmount : scrollAmount,
+      behavior: 'smooth'
+    });
+  }
+};
+
 
   const scrollProducts = (direction) => {
     const container = document.querySelector('.product-scroll-container');
@@ -155,12 +163,12 @@ export default function Home() {
 
         {/* 🔄 Second row for small screens - centered navigation */}
         <div className="hidden md:flex justify-center mt-5 md:mt-0 md:justify-end gap-2 md:ml-auto w-full md:w-auto">
-          <button onClick={() => scrollContainer('left', '.flash-scroll-container')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
-            <HiOutlineArrowSmLeft className="w-6 h-6" />
-          </button>
-          <button onClick={() => scrollContainer('right', '.flash-scroll-container')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
-            <HiOutlineArrowSmRight className="w-6 h-6" />
-          </button>
+        <button onClick={() => scrollFlashSales('left')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
+          <HiOutlineArrowSmLeft className="w-6 h-6" />
+        </button>
+        <button onClick={() => scrollFlashSales('right')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
+          <HiOutlineArrowSmRight className="w-6 h-6" />
+        </button>
         </div>
       </div>
       <FlashSales/>
@@ -175,12 +183,12 @@ export default function Home() {
             <h2 className="md:text-2xl lg:text-4xl text-2xl font-bold">Browse By Category</h2>
           </div>
           <div className="hidden md:flex mt-12 justify-end gap-2 ml-auto w-auto">
-            <button onClick={() => scrollContainer('left', '.category-scroll-container')} className="p-2 border bg-gray-100 rounded-full hover:bg-gray-200">
-              <HiOutlineArrowSmLeft className="w-6 h-6 " />
-            </button>
-            <button onClick={() => scrollContainer('right', '.category-scroll-container')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
-              <HiOutlineArrowSmRight className="w-6 h-6" />
-            </button>
+          <button onClick={() => scrollCategories('left')} className="p-2 border bg-gray-100 rounded-full hover:bg-gray-200">
+            <HiOutlineArrowSmLeft className="w-6 h-6" />
+          </button>
+          <button onClick={() => scrollCategories('right')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
+            <HiOutlineArrowSmRight className="w-6 h-6" />
+          </button>
           </div>
         </div>
         <div className="w-full">
@@ -201,7 +209,7 @@ export default function Home() {
           </button>
         </div>
         <div className="w-full">
-          <BestSellers />
+          <BestSellers numberOfProducts={4}/>
         </div>
       </div>
       <div className="md:py-0 lg:px-40 md:px-14 h-full w-full px-5 py-20 flex flex-col md:flex-row">

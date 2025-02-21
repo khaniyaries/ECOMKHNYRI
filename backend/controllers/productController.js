@@ -23,15 +23,27 @@ export const cartProducts = async (req, res) => {
 
 export const getFlashSaleProducts = async (req, res) => {
   try {
-    const flashSaleProducts = await Product.find({ isFlashSale: true });
+    let query = Product.find({ isFlashSale: true })
+      .sort({ percentageOff: -1, createdAt: -1 });
+    
+    // Only apply limit if it's specified in the query
+    if (req.query.limit) {
+      const limit = parseInt(req.query.limit);
+      query = query.limit(limit);
+    }
+
+    const flashSaleProducts = await query;
     res.status(200).json(flashSaleProducts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+
 export const getBestSellingProducts = async (req, res) => {
   try {
+    const limit = parseInt(req.query.limit) || 20
+
     const products = await Product.aggregate([
       {
         $lookup: {
@@ -50,7 +62,7 @@ export const getBestSellingProducts = async (req, res) => {
         $sort: { totalSales: -1 }
       },
       {
-        $limit: 10
+        $limit: limit
       }
     ]);
     res.status(200).json(products);

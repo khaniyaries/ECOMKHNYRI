@@ -1,138 +1,200 @@
 "use client"
+import { useState, useEffect } from "react"
+import { useParams } from "next/navigation"
 import Image from "next/image"
 import { Heart, Truck, RotateCcw, Star } from "lucide-react"
-import { HiOutlineArrowSmLeft, HiOutlineArrowSmRight } from "react-icons/hi";
+import { HiOutlineArrowSmLeft, HiOutlineArrowSmRight } from "react-icons/hi"
 import FlashSales from "@/components/FlashSale.jsx"
+import { env } from "../../../../../../config/config.js"
 
 export default function ProductPage() {
+  const { id } = useParams()
+  const [product, setProduct] = useState(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [quantity, setQuantity] = useState(1)
+  const [selectedImage, setSelectedImage] = useState(null)
+  const [selectedColor, setSelectedColor] = useState('')
+  const [selectedSize, setSelectedSize] = useState('')
+  const [categoryId, setCategoryId] = useState('');
+  const [categoryName, setCategoryName] = useState('');
+
+  useEffect(() => {
+    const fetchCategory = async () => {
+      if (categoryId) {  // Only fetch if categoryId exists
+        try {
+          const response = await fetch(`${env.API_URL}/api/v1/categories/get/${categoryId}`);
+          const data = await response.json();
+          setCategoryName(data.name);
+        } catch (error) {
+          console.error('Error fetching category:', error)
+        }
+      }
+    }
+  
+    fetchCategory()
+  }, [categoryId])
+  
+  
+
+  useEffect(() => {
+    if (product) {
+      setSelectedColor(product.colors[0])
+      setSelectedSize(product.sizes[0])
+      setCategoryId(product.category)
+    }
+  }, [product])
+
+  useEffect(() => {
+    if (product?.images) {
+      const primaryImage = product.images.find(img => img.isPrimary)?.url || product.images[0]?.url
+      setSelectedImage(primaryImage)
+    }
+  }, [product])
+
+  useEffect(() => {
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`${env.API_URL}/api/v1/products/${id}`)
+        const data = await response.json()
+        setProduct(data)
+        setCategoryId(data.category)
+      } catch (error) {
+        console.error('Error fetching product:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchProduct()
+  }, [id])
 
   const scrollContainer = (direction, containerClass) => {
-    const container = document.querySelector(containerClass);
-    const scrollAmount = 340;
+    const container = document.querySelector(containerClass)
+    const scrollAmount = 340
     
     if (container) {
       container.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
         behavior: 'smooth'
-      });
+      })
     }
-  };
+  }
+
+  if (isLoading) {
+    return <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+    </div>
+  }
+
+  if (!product) {
+    return <div>Product not found</div>
+  }
 
   return (
     <main className="container w-full h-full mx-auto px-4 md:px-10 lg:px-20 py-20">
       <nav className="mb-8">
         <ol className="flex items-center space-x-2 text-sm text-muted-foreground">
-          <li>
-            <a href="#" className="text-slate-400">
-              Products
-            </a>
-          </li>
+          <li><a href="#" className="text-slate-400">Products</a></li>
           <li className="text-slate-400">/</li>
-          <li>
-            <a href="#" className="text-slate-400">
-              Gaming
-            </a>
-          </li>
+          <li><a href="#" className="text-slate-400">{categoryName}</a></li>
           <li className="text-slate-400">/</li>
-          <li>Havic HV G-92 Gamepad</li>
+          <li>{product.name}</li>
         </ol>
       </nav>
 
       <section className="grid gap-8 md:grid-cols-2">
         <article className="grid gap-4 lg:grid-cols-[100px,1fr] lg:gap-8">
-            {/* Main Image */}
-            <div className="relative order-1 aspect-square overflow-hidden rounded-lg border bg-muted lg:order-2">
-                <Image
-                    src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-Lu0etEJQR5wqtva35BlhDJ4eev2htx.png"
-                    alt="Havic HV G-92 Gamepad"
-                    fill
-                    className="object-contain"
-                    priority
-                />
-            </div>
+        <div className="relative order-1 aspect-square overflow-hidden rounded-lg border bg-muted lg:order-2">
+          <Image
+            src={selectedImage || "/images/placeholder.svg"}
+            alt={product.name}
+            fill
+            className="object-contain"
+            priority
+          />
+        </div>
 
-            {/* Navigation Images */}
-            <div className="order-2 grid grid-cols-4 gap-4 lg:order-1 lg:grid-cols-1">
-                {[1, 2, 3, 4].map((i) => (
-                    <button
-                        key={i}
-                        className="relative aspect-square w-full overflow-hidden rounded-lg border bg-muted hover:border-primary lg:h-[100px]"
-                    >
-                        <Image
-                            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-Lu0etEJQR5wqtva35BlhDJ4eev2htx.png"
-                            alt={`Product view ${i}`}
-                            fill
-                            className="object-contain"
-                        />
-                    </button>
-                ))}
-            </div>
+        <div className="order-2 grid grid-cols-4 gap-4 lg:order-1 lg:grid-cols-1">
+          {product.images.map((image) => (
+            <button
+              key={image._id}
+              onClick={() => setSelectedImage(image.url)}
+              className={`relative aspect-square w-full overflow-hidden rounded-lg border hover:border-primary lg:h-[100px] ${
+                selectedImage === image.url ? 'border-2 border-primary' : 'border-muted'
+              }`}
+            >
+              <Image
+                src={image.url}
+                alt={`${product.name} view`}
+                fill
+                className="object-contain"
+              />
+            </button>
+          ))}
+        </div>
         </article>
 
         <article className="space-y-8">
           <div className="space-y-4">
-            <h1 className="text-2xl font-bold md:text-3xl">Havic HV G-92 Gamepad</h1>
+            <h1 className="text-2xl font-bold md:text-3xl">{product.name}</h1>
             <div className="flex items-center space-x-2">
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
                   <Star
                     key={i}
-                    className={`h-5 w-5 ${i < 4 ? "fill-primary text-primary" : "fill-muted text-muted-foreground"}`}
+                    className={`h-5 w-5 ${i < product.rating ? "fill-primary text-primary" : "fill-muted text-muted-foreground"}`}
                   />
                 ))}
               </div>
-              <span className="text-sm text-muted-foreground">(150 Reviews)</span>
+              <span className="text-sm text-muted-foreground">({product.reviews} Reviews)</span>
             </div>
-            <p className="text-lg font-semibold md:text-xl">$192.00</p>
-            <p className="text-sm text-muted-foreground">
-              PlayStation 5 Controller Skin High quality vinyl sticker with air channel adhesive for easy bubble-free
-              keep & mess free removal Pressure sensitive.
-            </p>
+            <p className="text-lg font-semibold md:text-xl">${product.price}</p>
+            <p className="text-sm text-muted-foreground">{product.description}</p>
           </div>
 
           <div className="space-y-4">
-            
+          {product && product.colors.length > 0 && (
             <div className="space-y-2">
-                <h2 className="font-medium">Colors:</h2>
-                <div className="flex items-center space-x-3">
-                    <div className="flex items-center space-x-2">
-                        <input 
-                            type="radio" 
-                            name="color" 
-                            id="white" 
-                            value="white" 
-                            defaultChecked
-                            className="w-4 h-4 border-2"
-                        />
-                        <label htmlFor="white">White</label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                        <input 
-                            type="radio" 
-                            name="color" 
-                            id="red" 
-                            value="red"
-                            className="w-4 h-4 border-2"
-                        />
-                        <label htmlFor="red">Red</label>
-                    </div>
-                </div>
-            </div>
-
-
-            <div className="space-y-2">
-              <h2 className="font-medium">Size:</h2>
-              <div className="flex space-x-2">
-                {["XS", "S", "L", "XL"].map((size) => (
-                  <button
-                    key={size}
-                    className="rounded-md border px-4 py-2 text-sm hover:border-primary hover:bg-primary/10"
-                  >
-                    {size}
-                  </button>
+              <h2 className="font-medium">Colors:</h2>
+              <div className="flex items-center space-x-3">
+                {product.colors.map((color) => (
+                  <div key={color} className="flex items-center space-x-2">
+                    <input 
+                      type="radio" 
+                      name="color" 
+                      id={color} 
+                      value={color}
+                      checked={selectedColor === color}
+                      onChange={() => setSelectedColor(color)}
+                      className="w-4 h-4 border-2"
+                    />
+                    <label htmlFor={color}>{color}</label>
+                  </div>
                 ))}
               </div>
             </div>
+          )}
+
+          {product && product.sizes.length > 0 &&(
+          <div className="space-y-2">
+            <h2 className="font-medium">Size:</h2>
+            <div className="flex space-x-2">
+              {product.sizes.map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`rounded-md border px-4 py-2 text-sm transition-colors
+                    ${selectedSize === size 
+                      ? 'border-primary bg-primary/10' 
+                      : 'hover:border-primary hover:bg-primary/10'
+                    }`}
+                >
+                  {size}
+                </button>
+              ))}
+            </div>
+          </div>
+          )}
 
             <div className="flex items-center space-x-4">
               <div className="flex items-center border rounded-md">
@@ -140,7 +202,7 @@ export default function ProductPage() {
                 <span className="px-4 py-2">2</span>
                 <button className="px-4 py-2 hover:bg-muted">+</button>
               </div>
-              <button size="lg">Buy Now</button>
+              <button className="bg-black text-white rounded-md py-2 px-3">Buy Now</button>
               <button size="lg" variant="outline">
                 <Heart className="h-5 w-5" />
               </button>

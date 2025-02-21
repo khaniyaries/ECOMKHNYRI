@@ -1,68 +1,84 @@
 "use client"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import ProductCard from "@/components/ProductCard.jsx"
+import { env } from "../../config/config.js"
+import Link from "next/link.js"
 
-const products = [
-  {
-    name: "HAVIT HV-G92 Gamepad",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cOJaVKYVNPstyxx9h8vDV4tAtnpVRp.png",
-    price: 120,
-    originalPrice: 160,
-    discount: 40,
-    rating: 5,
-    reviews: 88,
-  },
-  {
-    name: "AK-900 Wired Keyboard",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cOJaVKYVNPstyxx9h8vDV4tAtnpVRp.png",
-    price: 960,
-    originalPrice: 1160,
-    discount: 35,
-    rating: 4,
-    reviews: 75,
-  },
-  {
-    name: "IPS LCD Gaming Monitor",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cOJaVKYVNPstyxx9h8vDV4tAtnpVRp.png",
-    price: 370,
-    originalPrice: 400,
-    discount: 30,
-    rating: 5,
-    reviews: 99,
-  },
-  {
-    name: "S-Series Comfort Chair",
-    image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cOJaVKYVNPstyxx9h8vDV4tAtnpVRp.png",
-    price: 375,
-    originalPrice: 400,
-    discount: 25,
-    rating: 4.5,
-    reviews: 99,
-  },
-]
-
-const FlashSales = () => {
+const FlashSales = ({ numberOfProducts }) => {
+  const [products, setProducts] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
+  const productsPerPage = 4
+
+  useEffect(() => {
+    const fetchFlashSales = async () => {
+      setIsLoading(true)
+      try {
+        const url = numberOfProducts 
+          ? `${env.API_URL}/api/v1/products/flash-sale?limit=${numberOfProducts}`
+          : `${env.API_URL}/api/v1/products/flash-sale`
+        
+        const response = await fetch(url)
+        const data = await response.json()
+        setProducts(data)
+      } catch (error) {
+        console.error('Error fetching flash sales:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchFlashSales()
+  }, [numberOfProducts])
+
+  const handleScroll = (direction) => {
+    if (direction === 'right') {
+      setCurrentIndex((prev) => 
+        prev + productsPerPage >= products.length ? 0 : prev + productsPerPage
+      )
+    } else {
+      setCurrentIndex((prev) => 
+        prev - productsPerPage < 0 ? Math.max(0, products.length - productsPerPage) : prev - productsPerPage
+      )
+    }
+  }
+
+  // Expose scroll method to parent
+  useEffect(() => {
+    if (window) {
+      window.scrollFlashSales = handleScroll
+    }
+  }, [products.length])
+
+  const visibleProducts = products.slice(currentIndex, currentIndex + productsPerPage)
 
   return (
     <div className="max-w-7xl mx-auto mt-0 pb-12">
-      {/* 🔄 Modified container structure for small screens */}
-
-      <div className="overflow-x-auto pb-4 scrollbar-hide flash-scroll-container">
-        <div className="flex gap-6 min-w-max">
-          {products.slice(currentIndex, currentIndex + 4).map((product, index) => (
-            <div className="w-[300px]" key={index}>
-              <ProductCard {...product} />
-            </div>
-          ))}
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="overflow-x-auto pb-4 scrollbar-hide flash-scroll-container">
+            <div className="flex gap-6 min-w-max">
+              {visibleProducts.map((product) => (
+                <Link 
+                href={`/products/${product.category}/${product._id}`}
+                className="w-[300px]" key={product._id}>
+                  <ProductCard {...product} />
+                </Link>
+              ))}
+            </div>
+          </div>
 
-      <div className="md:mt-8 text-center">
-        <button className="bg-red-500 text-white px-8 py-3 rounded-md hover:bg-red-600 transition-colors">
-          View All Products
-        </button>
-      </div>
+          <div className="md:mt-8 text-center">
+            <button className="bg-red-500 text-white px-8 py-3 rounded-md hover:bg-red-600 transition-colors">
+              View All Products
+            </button>
+          </div>
+        </>
+      )}
     </div>
   )
 }

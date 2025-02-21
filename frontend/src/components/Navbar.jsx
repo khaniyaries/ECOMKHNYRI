@@ -66,12 +66,9 @@ const Navbar = () => {
     return(
         <>
             <nav className="h-full w-full md:p-2 lg:p-0 items-center md:border-b flex flex-row">
-                <div className="md:hidden ml-2 menu-trigger" onClick={() => toggleMenu()}>
-                    <CgMenuBoxed className="h-6 w-6"/>
-                </div>
                 <Link 
                 href="/"
-                className="lg:w-[25%] md:w-[25%] w-[40%] flex justify-start md:justify-center items-center"
+                className="lg:w-[25%] md:w-[25%] w-[40%] flex ml-2 justify-start md:justify-center items-center"
                 >
                     <Image 
                         src="/images/logo.png" 
@@ -156,6 +153,9 @@ const Navbar = () => {
                                 )}
                             </div>
                         )}
+                    </div>
+                    <div className="md:hidden menu-trigger" onClick={() => toggleMenu()}>
+                        <CgMenuBoxed className="h-6 w-6"/>
                     </div>
                 </div> 
             </nav>

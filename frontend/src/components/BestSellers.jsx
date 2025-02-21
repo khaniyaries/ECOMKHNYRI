@@ -1,60 +1,50 @@
 "use client"
-
+import { useState, useEffect } from "react"
+import Link from "next/link.js"
 import ProductCard from "@/components/ProductCard.jsx"
+import { env } from "../../config/config.js"
 
-const products = [
-    {
-      name: "HAVIT HV-G92 Gamepad",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cOJaVKYVNPstyxx9h8vDV4tAtnpVRp.png",
-      price: 120,
-      originalPrice: 160,
-      discount: 40,
-      rating: 5,
-      reviews: 88,
-    },
-    {
-      name: "AK-900 Wired Keyboard",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cOJaVKYVNPstyxx9h8vDV4tAtnpVRp.png",
-      price: 960,
-      originalPrice: 1160,
-      discount: 35,
-      rating: 4,
-      reviews: 75,
-    },
-    {
-      name: "IPS LCD Gaming Monitor",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cOJaVKYVNPstyxx9h8vDV4tAtnpVRp.png",
-      price: 370,
-      originalPrice: 400,
-      discount: 30,
-      rating: 5,
-      reviews: 99,
-    },
-    {
-      name: "S-Series Comfort Chair",
-      image: "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-cOJaVKYVNPstyxx9h8vDV4tAtnpVRp.png",
-      price: 375,
-      originalPrice: 400,
-      discount: 25,
-      rating: 4.5,
-      reviews: 99,
-    },
-  ]
+const BestSellers = ({ numberOfProducts = 20 }) => {
+  const [products, setProducts] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
-const BestSellers = ({ numberOfProducts }) => {
-  const displayProducts = products.slice(0, numberOfProducts)
+  useEffect(() => {
+    const fetchBestSellers = async () => {
+      setIsLoading(true)
+      try {
+        const response = await fetch(`${env.API_URL}/api/v1/products/best-selling?limit=${numberOfProducts}`)
+        const data = await response.json()
+        setProducts(data)
+      } catch (error) {
+        console.error('Error fetching best sellers:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchBestSellers()
+  }, [numberOfProducts])
 
   return (
     <div className="w-full pt-5 pb-12">
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {displayProducts.map((product, index) => (
-          <div key={index}>
-            <ProductCard {...product} />
-          </div>
-        ))}
-      </div>
+      {isLoading ? (
+        <div className="flex justify-center items-center h-[400px]">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {products.map((product) => (
+            <Link 
+            href={`/products/${product.category}/${product._id}`}
+            key={product._id}
+            >
+              <ProductCard {...product} />
+            </Link>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
-export default BestSellers;
+export default BestSellers

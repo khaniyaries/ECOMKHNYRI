@@ -1,5 +1,8 @@
 import Link from "next/link";
 const SaleHeader = () => {
+
+    
+
     return(
         <div className="w-full h-full flex bg-black text-white items-center">
             <div className="mx-auto">
@@ -14,7 +17,7 @@ const SaleHeader = () => {
                 </h1>
             </div>
             <div className="pr-4">
-                <select className="appearance-none bg-transparent border-none outline-none cursor-pointer pr-6 text-sm font-poppins">
+                <select className="appearance-none bg-black border-none outline-none cursor-pointer pr-6 text-sm font-poppins">
                     <option value="english">English</option>
                     <option value="spanish">Spanish</option>
                     <option value="french">French</option>
