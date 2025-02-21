@@ -1,32 +1,9 @@
 "use client"
-import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { env } from '../../config/config.js'
 
-const CategoryCard = () => {
-  const [categories, setCategories] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch(`${env.API_URL}/api/v1/categories`)
-        const data = await response.json()
-        // Filter only subcategories
-        const subcategories = data.filter(category => category.isSubcategory)
-        setCategories(subcategories)
-      } catch (error) {
-        console.error('Error fetching categories:', error)
-      } finally {
-        setIsLoading(false)
-      }
-    }
-
-    fetchCategories()
-  }, [])
-
-  if (isLoading) {
+const CategoryCard = ({ subcategories }) => {
+  if (!subcategories?.length) {
     return <div className="w-full mx-auto px-4 py-12 flex justify-center">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
     </div>
@@ -36,7 +13,7 @@ const CategoryCard = () => {
     <div className="w-full mx-auto px-4 py-12">
       <div className='overflow-x-auto scrollbar-hide category-scroll-container'>
         <div className="flex flex-row gap-6 min-w-max pb-4">
-          {categories.map((category) => (
+          {subcategories.map((category) => (
             <Link
               href={`/category/${category._id}`}
               key={category._id}

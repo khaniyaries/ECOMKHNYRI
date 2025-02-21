@@ -11,18 +11,14 @@ import BestSellers from "@/components/BestSellers.jsx";
 import OurProducts from "@/components/OurProducts.jsx";
 import { FaApple } from "react-icons/fa";
 import { BsArrowRight } from "react-icons/bs";
+import { env } from "../../../config/config.js";
 
 export default function Home() {
 
-  const categories = [
-    "Women's Fashion",
-    "Men's Fashion",
-    "Home & Lifestyle",
-    "Sports & Outdoor",
-    "Baby's & Toys",
-    "Groceries & Pets",
-    "Health & Beauty",
-  ];
+  const [categories, setCategories] = useState([])
+  const [mainCategories, setMainCategories] = useState([])
+  const [subCategories, setSubCategories] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
 
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
@@ -39,6 +35,27 @@ const scrollFlashSales = (direction) => {
     window.scrollFlashSales(direction)
   }
 };
+
+useEffect(() => {
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(`${env.API_URL}/api/v1/categories`)
+      const data = await response.json()
+      setCategories(data)
+      
+      // Split categories and subcategories
+      setMainCategories(data.filter(cat => !cat.isSubcategory))
+      setSubCategories(data.filter(cat => cat.isSubcategory))
+    } catch (error) {
+      console.error('Error fetching categories:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  fetchCategories()
+}, [])
+
 
 const scrollCategories = (direction) => {
   const container = document.querySelector('.category-scroll-container');
@@ -64,13 +81,14 @@ const scrollCategories = (direction) => {
         }
     }
 };
-  
+
+const sidebarCategories = mainCategories.map(cat => cat.name);
 
   return (
     <div className="w-full h-full">
       <div className="flex md:px-10 lg:px-40 p-20 px-5 flex-col md:flex-row w-full justify-evenly">
         <div className="hidden md:flex md:w-[15%] md:flex-col">
-          {categories.map((category) => (
+          {sidebarCategories?.map((category) => (
               <div key={category} className="group">
                 <a
                   href="#"
@@ -192,7 +210,7 @@ const scrollCategories = (direction) => {
           </div>
         </div>
         <div className="w-full">
-          <CategoryCard />
+          <CategoryCard subcategories={subCategories}/>
         </div>
       </div>
       <div className="flex flex-col md:py-0 lg:px-40 md:px-20 px-5 py-5">
