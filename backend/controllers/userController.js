@@ -1,5 +1,4 @@
 import { User } from '../models/userModel.js'
-import bcrypt from 'bcrypt'
 
 // Fetch user profile(s)
 export const getUsers = async (req, res) => {
@@ -45,7 +44,7 @@ export const updateUser = async (req, res) => {
         // Handle password change for regular users
         if (currentPassword && newPassword && !role) {
             const user = await User.findById(id)
-            const isMatch = await user.comparePassword(currentPassword)
+            const isMatch = user.password === currentPassword;
             
             if (!isMatch) {
                 return res.json({ 
@@ -54,12 +53,9 @@ export const updateUser = async (req, res) => {
                 })
             }
             
-            const salt = await bcrypt.genSalt(10)
-            const hashedPassword = await bcrypt.hash(newPassword, salt)
-            
             const updatedUser = await User.findByIdAndUpdate(
                 id,
-                { ...updates, password: hashedPassword },
+                { ...updates, password: newPassword },
                 { new: true }
             ).select('name email phone address authProvider')
             
