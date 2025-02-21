@@ -35,7 +35,7 @@ const BestSellers = ({ numberOfProducts = 20 }) => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (
             <Link 
-            href={`/products/${product.category}/${product._id}`}
+            href={`/products/${product.category}/${product.subcategory}/${product._id}`}
             key={product._id}
             >
               <ProductCard {...product} />

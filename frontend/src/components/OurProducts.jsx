@@ -61,7 +61,7 @@ return (
                         {visibleProducts.map((product) => (
                             <Link 
                             key={product._id}
-                            href={`/products/${product.category}/${product._id}`}
+                            href={`/products/${product.category}/${product.subcategory}/${product._id}`}
                             >
                                 <ProductCard {...product} />
                             </Link>

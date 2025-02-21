@@ -64,7 +64,7 @@ const FlashSales = ({ numberOfProducts }) => {
             <div className="flex gap-6 min-w-max">
               {visibleProducts.map((product) => (
                 <Link 
-                href={`/products/${product.category}/${product._id}`}
+                href={`/products/${product.category}/${product.subcategory}/${product._id}`}
                 className="w-[300px]" key={product._id}>
                   <ProductCard {...product} />
                 </Link>
