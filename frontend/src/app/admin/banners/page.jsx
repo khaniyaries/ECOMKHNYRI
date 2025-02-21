@@ -9,7 +9,7 @@ export default function Banners() {
     const [isLoading, setIsLoading] = useState(false);
 
     const [banners, setBanners] = useState([]);
-  const [products, setProducts] = useState([""]);
+  const [products, setProducts] = useState([]);
   const [newBanner, setNewBanner] = useState({
     title: '',
     subtitle: '',
@@ -23,13 +23,18 @@ export default function Banners() {
   }, []);
 
   const fetchData = async () => {
-    const [bannersRes, productsRes] = await Promise.all([
-    //   axios.get('/api/admin/banner'),
-      fetchProducts()
-    ]);
-    setBanners(bannersRes.data);
-    setProducts(productsRes.data);
-  };
+    try {
+        // Destructure only what you're using
+        const [productsRes] = await Promise.all([
+            fetchProducts()
+        ]);
+        // setBanners(bannersRes.data); // Commented out since bannersRes isn't defined
+        setProducts(productsRes.data || []); // Add fallback empty array
+    } catch (error) {
+        console.error('Error fetching data:', error);
+        setProducts([]); // Set empty array on error
+    }
+};
 
   const handleNewBannerChange = (e) => {
     setNewBanner({
@@ -67,6 +72,10 @@ export default function Banners() {
     fetchData();
   };
 
+  if (isLoading) {
+    return <LoadingSpinner />;
+}
+
   return (
     <div className="space-y-8">
       {/* Existing Banners */}
@@ -92,21 +101,20 @@ export default function Banners() {
                   className="w-full p-2 border rounded"
                 />
               </div>
-
               <div>
                 <label className="block mb-2">Product</label>
                 <select
-                  value={banner.productId._id}
-                  onChange={(e) => handleBannerChange(banner._id, 'productId', e.target.value)}
-                  className="w-full p-2 border rounded"
+                    value={banner.productId._id}
+                    onChange={(e) => handleBannerChange(banner._id, 'productId', e.target.value)}
+                    className="w-full p-2 border rounded"
                 >
-                  {products.map((product) => (
-                    <option key={product._id} value={product._id}>
-                      {product.name}
-                    </option>
-                  ))}
+                    {products.map((product) => (
+                        <option key={product._id} value={product._id}>
+                            {product.name}
+                        </option>
+                    ))}
                 </select>
-              </div>
+            </div>
 
               <div>
                 <label className="block mb-2">Order</label>
@@ -173,19 +181,19 @@ export default function Banners() {
           </div>
 
           <div>
-            <label className="block mb-2">Product</label>
+          <label className="block mb-2">Product</label>
             <select
-              name="productId"
-              value={newBanner.productId}
-              onChange={handleNewBannerChange}
-              className="w-full p-2 border rounded"
+                name="productId"
+                value={newBanner.productId}
+                onChange={handleNewBannerChange}
+                className="w-full p-2 border rounded"
             >
-              <option value="">Select a product</option>
-              {products.map((product) => (
-                <option key={product._id} value={product._id}>
-                  {product.name}
-                </option>
-              ))}
+                <option value="">Select a product</option>
+                {products.map((product) => (
+                    <option key={product._id} value={product._id}>
+                        {product.name}
+                    </option>
+                ))}
             </select>
           </div>
 
