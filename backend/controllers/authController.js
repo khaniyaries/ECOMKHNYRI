@@ -85,6 +85,9 @@ export const loginUser = async (req, res) => {
       const query = isEmail ? { email: emailOrPhone } : { phone: emailOrPhone };
       
       const user = await User.findOne(query);
+
+      console.log('Incoming password:', password);
+      console.log('Stored hash:', user.password);
       
       if (!user) {
           return res.status(404).json({ message: 'User not found' });
@@ -95,12 +98,14 @@ export const loginUser = async (req, res) => {
       }
       
       // In your login controller
-console.log('Login attempt with:', password)
-console.log('Stored hash:', user.password)
-console.log('Password match result:', await user.comparePassword(password))
+      console.log('Login attempt with:', password)
+      console.log('Stored hash:', user.password)
+      console.log('Password match result:', await user.comparePassword(password))
 
 
-      const isValidPassword = await bcrypt.compare(password, user.password);
+    const isValidPassword = await Promise.resolve(bcrypt.compare(password, user.password));
+    console.log('Password match result:', isValidPassword);
+
       
       if (!isValidPassword) {
           return res.status(401).json({ message: 'Invalid password' });
