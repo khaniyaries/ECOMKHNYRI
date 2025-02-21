@@ -15,9 +15,10 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const [filters, setFilters] = useState({
     search: '',
-    category: 'All Categories',
+    categories: [],
     status: 'All Status',
     special: 'All Products' 
   });
@@ -55,7 +56,12 @@ const loadProducts = async () => {
   try {
       const searchParams = new URLSearchParams();
       if (filters.search) searchParams.append('search', filters.search);
-      if (filters.category !== 'All Categories') searchParams.append('category', filters.category);
+      
+      if (filters.categories?.length > 0) {
+        filters.categories.forEach(category => {
+            searchParams.append('categories[]', category);
+        });
+      }
       
       // Get base products
       const data = await fetchProducts(searchParams.toString());
@@ -194,16 +200,48 @@ const loadProducts = async () => {
           placeholder="Search products..."
           className="flex-1 px-4 py-2 border rounded-lg"
         />
-        <select
-          value={filters.category}
-          onChange={(e) => setFilters(prev => ({ ...prev, category: e.target.value }))}
-          className="px-4 py-2 border rounded-lg"
-        >
-          <option>All Categories</option>
-          <option>Electronics</option>
-          <option>Clothing</option>
-          <option>Books</option>
-        </select>
+        <div className="relative">
+    <button 
+        onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+        className="px-4 py-2 border rounded-lg w-48 text-left flex justify-between items-center"
+    >
+        <span>
+            {filters.categories?.length 
+                ? `${filters.categories.length} Selected` 
+                : "All Categories"}
+        </span>
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+    </button>
+
+    {isCategoryDropdownOpen && (
+        <div className="absolute z-50 mt-1 w-48 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            {categories.map((category) => (
+                <label 
+                    key={category._id} 
+                    className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer"
+                >
+                    <input
+                        type="checkbox"
+                        checked={filters.categories?.includes(category._id)}
+                        onChange={(e) => {
+                            setFilters(prev => ({
+                                ...prev,
+                                categories: e.target.checked
+                                    ? [...(prev.categories || []), category._id]
+                                    : (prev.categories || []).filter(id => id !== category._id)
+                            }));
+                        }}
+                        className="form-checkbox h-4 w-4 text-blue-600"
+                    />
+                    <span className="ml-2">{category.name}</span>
+                </label>
+            ))}
+        </div>
+    )}
+</div>
+
         <select
           value={filters.status}
           onChange={(e) => setFilters(prev => ({ ...prev, status: e.target.value }))}
