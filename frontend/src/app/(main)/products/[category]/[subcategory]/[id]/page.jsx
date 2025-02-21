@@ -5,7 +5,7 @@ import Image from "next/image"
 import { Heart, Truck, RotateCcw, Star } from "lucide-react"
 import { HiOutlineArrowSmLeft, HiOutlineArrowSmRight } from "react-icons/hi"
 import FlashSales from "@/components/FlashSale.jsx"
-import { env } from "../../../../../../config/config.js"
+import { env } from "../../../../../../../config/config.js"
 
 export default function ProductPage() {
   const { id } = useParams()

@@ -7,6 +7,7 @@ import userRoutes from './routes/userRoutes.js';
 import productRoutes from './routes/productRoutes.js'
 import categoryRoutes from './routes/categoryRoutes.js'
 import cartRoutes from './routes/cartRoutes.js'
+import saleHeaderRoutes from './routes/saleHeaderRoutes.js'
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
@@ -35,6 +36,8 @@ app.use('/api/v1/user', userRoutes);
 app.use('/api/v1', productRoutes);
 app.use('/api/v1', categoryRoutes);
 app.use('/api/v1/cart', cartRoutes);
+app.use('/api/v1/saleheader', saleHeaderRoutes);
+
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

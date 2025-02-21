@@ -2,21 +2,21 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import ProductCard from '@/components/ProductCard'
-import { env } from '../../../../../config/config.js'
+import { env } from '../../../../../../config/config.js'
 
-export default function ProductsByCategoryPage() {
-  const { category } = useParams()
+export default function ProductsBySubCategoryPage() {
+  const { subcategory } = useParams()
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
   const [hasMore, setHasMore] = useState(true)
   const observerTarget = useRef(null)
-  const [categoryName, setCategoryName] = useState('');
+  const [subCategoryName, setSubCategoryName] = useState('');
 
   const fetchProducts = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${env.API_URL}/api/v1/products/category/${category}/page=${page}&limit=12`)
+      const response = await fetch(`${env.API_URL}/api/v1/products/subcategory/${subcategory}/page=${page}&limit=12`)
       const data = await response.json()
       
       if (data.length === 0) {
@@ -35,11 +35,11 @@ export default function ProductsByCategoryPage() {
 
   useEffect(() => {
     const fetchCategory = async () => {
-      if (category) {  // Only fetch if categoryId exists
+      if (subcategory) {  // Only fetch if categoryId exists
         try {
-          const response = await fetch(`${env.API_URL}/api/v1/categories/get/${category}`);
+          const response = await fetch(`${env.API_URL}/api/v1/categories/get/${subcategory}`);
           const data = await response.json();
-          setCategoryName(data.name);
+          setSubCategoryName(data.name);
         } catch (error) {
           console.error('Error fetching category:', error)
         }
@@ -47,7 +47,7 @@ export default function ProductsByCategoryPage() {
     }
   
     fetchCategory()
-  }, [category])
+  }, [subcategory])
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -74,7 +74,7 @@ export default function ProductsByCategoryPage() {
             <div className="w-5 h-10 bg-red-500 rounded" />
             <span className="text-red-500 font-bold text-xs">Our Products</span>
           </div>
-          <h2 className="text-4xl font-bold">{categoryName}</h2>
+          <h2 className="text-4xl font-bold">{subCategoryName}</h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">

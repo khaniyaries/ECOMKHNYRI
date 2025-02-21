@@ -1,18 +1,39 @@
+"use client"
+import { useState, useEffect } from 'react';
 import Link from "next/link";
-const SaleHeader = () => {
+import { env } from '../../config/config.js';
 
-    
+const SaleHeader = () => {
+    const [headerData, setHeaderData] = useState({
+        headerText: '',
+        linkText: '',
+        linkUrl: ''
+    });
+
+    useEffect(() => {
+        const fetchHeaderData = async () => {
+            try {
+                const response = await fetch(`${env.API_URL}/api/v1/saleheader/current`);
+                const data = await response.json();
+                setHeaderData(data);
+            } catch (error) {
+                console.error('Error fetching sale header:', error);
+            }
+        };
+
+        fetchHeaderData();
+    }, []);
 
     return(
         <div className="w-full h-full flex bg-black text-white items-center">
             <div className="mx-auto">
                 <h1 className="text-sm font-poppins font-normal">
-                    Summer Sale For All Swim Suits And Free Express Delivery - OFF 50%!
+                    {headerData.headerText}
                     <Link 
-                    href="/products"
-                    className="ml-2 font-semibold underline"
+                        href={headerData.linkUrl}
+                        className="ml-2 font-semibold underline"
                     > 
-                        ShopNow
+                        {headerData.linkText}
                     </Link>
                 </h1>
             </div>

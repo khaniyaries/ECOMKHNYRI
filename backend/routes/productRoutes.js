@@ -7,6 +7,7 @@ import {
   getFlashSaleProducts,
   getBestSellingProducts,
   getProductsByCategory,
+  getProductsBySubcategory,
   getRandomProducts,
   getProductById,
   createProduct,
@@ -26,6 +27,7 @@ router.get('/products', getAllProducts);
 router.get('/products/flash-sale', getFlashSaleProducts);
 router.get('/products/best-selling', getBestSellingProducts);
 router.get('/products/category/:category', getProductsByCategory);
+router.get('/products/subcategory/:subcategory', getProductsBySubcategory);
 router.get('/products/random/:count', getRandomProducts);
 router.get('/products/:id', getProductById);
 router.post('/products/bulk', cartProducts);

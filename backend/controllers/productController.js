@@ -3,10 +3,20 @@ import { deleteImages } from '../utils/cloudinary.js';
 
 export const getAllProducts = async (req, res) => {
   try {
-    const products = await Product.find();
-    res.status(200).json(products);
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 12
+    const skip = (page - 1) * limit
+
+    const products = await Product
+      .find({})
+      .skip(skip)
+      .limit(limit)
+      .populate('reviews')
+      .sort({ createdAt: -1 })
+
+    res.status(200).json(products)
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message })
   }
 };
 
@@ -73,13 +83,45 @@ export const getBestSellingProducts = async (req, res) => {
 
 export const getProductsByCategory = async (req, res) => {
   try {
-    const { category } = req.params;
-    const products = await Product.find({ category });
-    res.status(200).json(products);
+    const { category } = req.params
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 12
+    const skip = (page - 1) * limit
+
+    const products = await Product
+      .find({ category })
+      .skip(skip)
+      .limit(limit)
+      .populate('reviews')
+      .sort({ createdAt: -1 })
+
+    res.status(200).json(products)
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({ message: error.message })
   }
-};
+}
+
+export const getProductsBySubcategory = async (req, res) => {
+  try {
+    const { subcategory } = req.params
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 12
+    const skip = (page - 1) * limit
+
+    const products = await Product
+      .find({ subcategory })
+      .skip(skip)
+      .limit(limit)
+      .populate('reviews')
+      .sort({ createdAt: -1 })
+
+    res.status(200).json(products)
+  } catch (error) {
+    res.status(500).json({ message: error.message })
+  }
+}
+
+
 
 export const getRandomProducts = async (req, res) => {
   try {
