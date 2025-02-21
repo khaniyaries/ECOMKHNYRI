@@ -1,5 +1,5 @@
 "use client"
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { env } from '../../../../config/config.js'
 
 const SaleHeaderEditor = () => {
@@ -60,7 +60,7 @@ const SaleHeaderEditor = () => {
                     <label className="block mb-2">Header Text</label>
                     <input
                         type="text"
-                        placeholder={headerData.headerText}
+                        placeholder={headerData?.headerText}
                         value={formData.headerText}
                         onChange={(e) => setFormData({...formData, headerText: e.target.value})}
                         className="w-full p-2 border rounded"
@@ -71,7 +71,7 @@ const SaleHeaderEditor = () => {
                     <label className="block mb-2">Link Text</label>
                     <input
                         type="text"
-                        placeholder={headerData.linkText}
+                        placeholder={headerData?.linkText}
                         value={formData.linkText}
                         onChange={(e) => setFormData({...formData, linkText: e.target.value})}
                         className="w-full p-2 border rounded"
@@ -82,7 +82,7 @@ const SaleHeaderEditor = () => {
                     <label className="block mb-2">Link URL</label>
                     <input
                         type="text"
-                        placeholder={headerData.linkUrl}
+                        placeholder={headerData?.linkUrl}
                         value={formData.linkUrl}
                         onChange={(e) => setFormData({...formData, linkUrl: e.target.value})}
                         className="w-full p-2 border rounded"
