@@ -100,7 +100,6 @@ export const loginUser = async (req, res) => {
       // In your login controller
       console.log('Login attempt with:', password)
       console.log('Stored hash:', user.password)
-      console.log('Password match result:', await user.comparePassword(password))
 
 
     const isValidPassword = await Promise.resolve(bcrypt.compare(password, user.password));
