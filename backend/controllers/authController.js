@@ -51,11 +51,10 @@ export const createUser = async (req, res) => {
             });
         }
         
-        const hashedPassword = await bcrypt.hash(password, 10);
         const newUser = await User.create({
             name,
             ...(isEmail ? { email: emailOrPhone } : { phone: emailOrPhone }),
-            password: hashedPassword,
+            password: password,
             authProvider: 'local'
         });
         
@@ -101,11 +100,8 @@ export const loginUser = async (req, res) => {
       console.log('Login attempt with:', password)
       console.log('Stored hash:', user.password)
 
-      const hashedPassword = await bcrypt.hash(password, 10);
 
-      const isValidPassword = await Promise.resolve(bcrypt.compare(hashedPassword, user.password));
-      console.log('Password match result:', isValidPassword);
-
+      const isValidPassword = user.password === password;
       
       if (!isValidPassword) {
           return res.status(401).json({ message: 'Invalid password' });
