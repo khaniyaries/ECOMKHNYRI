@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useAdminAuth } from '@/hooks/useAdminAuth'
 import Image from "next/image"
 import { TbLogout2 } from "react-icons/tb";
-import { MdCategory } from "react-icons/md";
+import { MdCategory, MdDiscount } from "react-icons/md";
 import { GiKnightBanner } from "react-icons/gi";
 
 const AdminNavbar = () => {
@@ -192,6 +192,14 @@ const AdminNavbar = () => {
           >
             <GiKnightBanner />
             Banners
+          </Link>
+          <Link 
+            href="/admin/saleheader" 
+            className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg"
+            onClick={() => isMobile && setIsSidebarOpen(false)}
+          >
+            <MdDiscount />
+            SaleHeader
           </Link>
           <button
             className="flex w-full items-center gap-2 p-2 hover:bg-gray-50 rounded-lg"
