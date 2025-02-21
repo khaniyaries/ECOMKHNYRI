@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import bcrypt from 'bcrypt'
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -12,7 +11,7 @@ const userSchema = new mongoose.Schema({
   },
   phone: {
     type: String,
-    sparse: true  // Allows null but maintains uniqueness
+    sparse: true
   },
   password: {
     type: String,
@@ -29,18 +28,5 @@ const userSchema = new mongoose.Schema({
     default: 'local'
   }
 }, { timestamps: true });
-
-// Add pre-save middleware to hash password
-userSchema.pre('save', async function(next) {
-    if (!this.isModified('password')) return next();
-    
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-});
-
-userSchema.methods.comparePassword = async function(candidatePassword) {
-    return await bcrypt.compare(candidatePassword, this.password)
-}
 
 export const User = mongoose.model('users', userSchema);
