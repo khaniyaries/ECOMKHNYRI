@@ -13,6 +13,8 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  addOrUpdateRating,
+  getProductRatings,
   deleteCloudinaryImages
 } from '../controllers/productController.js';
 
@@ -31,6 +33,10 @@ router.get('/products/subcategory/:subcategory', getProductsBySubcategory);
 router.get('/products/random/:count', getRandomProducts);
 router.get('/products/:id', getProductById);
 router.post('/products/bulk', cartProducts);
+
+router.post('/products/:productId/rating', addOrUpdateRating);
+router.get('/products/:productId/ratings', getProductRatings);
+
 
 // New routes with file upload handling
 router.post('/products', upload.array('images'), createProduct);

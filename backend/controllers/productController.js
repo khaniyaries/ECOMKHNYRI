@@ -218,3 +218,54 @@ export const deleteCloudinaryImages = async (req, res) => {
       res.status(500).json({ message: error.message });
   }
 };
+
+// productController.js
+export const addOrUpdateRating = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { rating } = req.body;
+    const userId = req.user._id;
+
+    const product = await Product.findById(productId);
+    
+    const existingRatingIndex = product.ratings.findIndex(
+      r => r.userId.toString() === userId.toString()
+    );
+
+    if (existingRatingIndex > -1) {
+      // Update existing rating
+      product.ratings[existingRatingIndex].rating = rating;
+    } else {
+      // Add new rating
+      product.ratings.push({ userId, rating });
+      product.totalRatings += 1;
+    }
+
+    // Update average rating
+    const totalRating = product.ratings.reduce((sum, r) => sum + r.rating, 0);
+    product.averageRating = totalRating / product.ratings.length;
+
+    await product.save();
+
+    res.status(200).json({
+      averageRating: product.averageRating,
+      totalRatings: product.totalRatings,
+      userRating: rating
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getProductRatings = async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const product = await Product.findById(productId)
+      .select('ratings averageRating totalRatings')
+      .populate('ratings.userId', 'name');
+    
+    res.status(200).json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
