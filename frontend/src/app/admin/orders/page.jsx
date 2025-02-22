@@ -253,7 +253,7 @@ export default function Orders() {
               </button>
 
               {/* Page Numbers */}
-              {[...Array(pagination.totalPages)].map((_, idx) => (
+              {[...Array(pagination.totalPages)]?.map((_, idx) => (
                 <button
                   key={idx + 1}
                   onClick={() => setPagination(prev => ({...prev, currentPage: idx + 1}))}

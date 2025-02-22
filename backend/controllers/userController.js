@@ -1,4 +1,5 @@
 import { User } from '../models/userModel.js'
+import mongoose from 'mongoose';
 
 // Fetch user profile(s)
 export const getUsers = async (req, res) => {
@@ -86,8 +87,6 @@ export const updateUser = async (req, res) => {
     }
 }
 
-
-// Add these methods to userController.js
 
 export const getCustomers = async (req, res) => {
     try {
@@ -180,17 +179,31 @@ export const getCustomers = async (req, res) => {
             from: 'sales',
             localField: '_id',
             foreignField: 'customer',
-            as: 'orders'
+            as: 'orders',
+            pipeline: [
+              { $sort: { createdAt: -1 } },
+              {
+                $project: {
+                  _id: 1,
+                  totalAmount: 1,
+                  orderStatus: 1,
+                  createdAt: 1
+                }
+              }
+            ]
           }
         },
         {
           $addFields: {
             totalOrders: { $size: '$orders' },
-            totalSpent: {
-              $sum: '$orders.totalAmount'
-            },
-            lastOrderDate: {
-              $max: '$orders.createdAt'
+            totalSpent: { $sum: '$orders.totalAmount' },
+            lastOrderDate: { $max: '$orders.createdAt' },
+            activeStatus: {
+              $cond: {
+                if: { $gt: [{ $size: '$orders' }, 0] },
+                then: 'Active',
+                else: 'Inactive'
+              }
             }
           }
         },
@@ -203,7 +216,8 @@ export const getCustomers = async (req, res) => {
             totalSpent: 1,
             lastOrderDate: 1,
             orders: 1,
-            createdAt: 1
+            createdAt: 1,
+            activeStatus: 1
           }
         }
       ]);
@@ -216,5 +230,5 @@ export const getCustomers = async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
-  };
+  };  
   

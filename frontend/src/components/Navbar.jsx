@@ -173,9 +173,9 @@ const Navbar = () => {
                 <CgCloseO className="right-4 top-4 absolute h-5 w-5" onClick={() => toggleMenu()}/>
                 <div className="flex flex-col p-4 space-y-4 font-poppins">
                     <Link href='/' onClick={handleLinkClick} className="">Home</Link>
-                    <Link href='/user/contact-us' onClick={handleLinkClick} className="">Contact</Link>
-                    <Link href='/user/about' onClick={handleLinkClick} className="">About</Link>
-                    <Link href='/user/signup' onClick={handleLinkClick} className="">Sign Up</Link>
+                    <Link href='/contact-us' onClick={handleLinkClick} className="">Contact</Link>
+                    <Link href='/about' onClick={handleLinkClick} className="">About</Link>
+                    <Link href='/signup' onClick={handleLinkClick} className="">Sign Up</Link>
                 </div>
             </div>
         </>
