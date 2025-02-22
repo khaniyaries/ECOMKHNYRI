@@ -1,11 +1,7 @@
 import express from 'express';
 import { cartController } from '../controllers/cartController.js';
-import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
-
-// Protected routes - require authentication
-router.use(authMiddleware);
 
 // Get user's cart
 router.get('/user', cartController.getUserCart);

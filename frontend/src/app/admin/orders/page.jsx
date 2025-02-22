@@ -3,6 +3,7 @@ import Link from "next/link"
 import { useAdminAuth } from '@/hooks/useAdminAuth.js'
 import { useState, useEffect } from 'react'
 import { formatCurrency, formatDate } from '@/utils/formatters'
+import { env } from "../../../../config/config.js"
 
 const ORDER_STATUSES = [
   'pending',
@@ -32,9 +33,9 @@ export default function Orders() {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch(`/api/orders?page=${pagination.currentPage}`)
+      const response = await fetch(`${env.API_URL}/api/v1/admin/sales?page=${pagination.currentPage}`)
       const data = await response.json()
-      setOrders(data.orders)
+      setOrders(data.sales)
       setPagination(data.pagination)
     } catch (error) {
       console.error('Error fetching orders:', error)
@@ -48,23 +49,21 @@ export default function Orders() {
 
   const handleStatusUpdate = async (orderId) => {
     try {
-      const response = await fetch(`/api/orders/${orderId}/status`, {
+      const response = await fetch(`${env.API_URL}/api/v1/admin/sales/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ status: selectedStatus })
       })
-
+  
       if (response.ok) {
-        // Update local state
-        setOrders(orders.map(order => 
+        setOrders(orders?.map(order => 
           order._id === orderId 
             ? { ...order, orderStatus: selectedStatus }
             : order
         ))
         setEditingStatus(null)
-        // sendStatusUpdateEmail(orderId, selectedStatus) // Future email implementation
       }
     } catch (error) {
       console.error('Error updating order status:', error)
@@ -88,7 +87,52 @@ export default function Orders() {
 
   return (
     <div className="space-y-8">
-      {/* Header and Filters sections remain the same */}
+      {/* Page Header */}
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-semibold">Orders</h1>
+          <p className="text-gray-600 mt-1">Manage and process customer orders</p>
+        </div>
+        <div>
+          <button className="inline-flex items-center px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
+            </svg>
+            <span>Export Orders</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="flex flex-wrap md:flex-nowrap gap-4 bg-white p-4 rounded-lg shadow-sm">
+        <input 
+          type="text" 
+          placeholder="Search orders..." 
+          className="flex-1 min-w-[200px] px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+        />
+        <select className="min-w-[150px] px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option>All Status</option>
+          <option>Pending</option>
+          <option>Processing</option>
+          <option>Shipped</option>
+          <option>Delivered</option>
+          <option>Cancelled</option>
+        </select>
+        <input 
+          type="date" 
+          className="min-w-[150px] px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+        />
+        <input 
+          type="date" 
+          className="min-w-[150px] px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+        />
+      </div>
+
 
       {/* Orders Table */}
       <div className="bg-white rounded-lg shadow-sm overflow-hidden">
@@ -97,7 +141,7 @@ export default function Orders() {
             {/* Table headers remain the same */}
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {orders.map((order) => (
+            {orders?.map((order) => (
               <tr key={order._id}>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-blue-600">
                   <Link href={`/admin/orders/${order._id}`}>#{order._id.slice(-6)}</Link>

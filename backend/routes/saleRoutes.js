@@ -1,5 +1,4 @@
 import express from 'express';
-import { authMiddleware } from '../middleware/authMiddleware.js';
 import {
   createSale,
   getAllSales,
@@ -13,15 +12,15 @@ import {
 
 const router = express.Router();
 
-router.post('/sales', authMiddleware, createSale);
-router.get('/sales', authMiddleware, getAllSales);
-router.patch('/sales/:id/status', authMiddleware, updateSaleStatus);
-router.get('/dashboard/stats', authMiddleware, getDashboardStats);
+router.post('/sales', createSale);
+router.get('/sales', getAllSales);
+router.patch('/sales/:id/status', updateSaleStatus);
+router.get('/dashboard/stats', getDashboardStats);
 router.get('/user/:userId/orders', getUserOrders);
 
-router.get('/sales/:id', authMiddleware, getSaleById)
-router.get('/invoice/:id/view', authMiddleware, viewInvoice)
-router.get('/invoice/:id/download', authMiddleware, downloadInvoice)
+router.get('/sales/:id', getSaleById)
+router.get('/invoice/:id/view', viewInvoice)
+router.get('/invoice/:id/download', downloadInvoice)
 
 
 

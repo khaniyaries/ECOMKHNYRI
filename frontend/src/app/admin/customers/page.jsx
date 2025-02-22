@@ -108,7 +108,7 @@ export default function Customers() {
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
-            {customers.map((customer) => (
+            {customers?.map((customer) => (
               <tr key={customer._id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
@@ -179,7 +179,7 @@ export default function Customers() {
           >
             Previous
           </button>
-          {[...Array(totalPages)].map((_, i) => (
+          {[...Array(totalPages)]?.map((_, i) => (
             <button
               key={i + 1}
               onClick={() => setCurrentPage(i + 1)}
