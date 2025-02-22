@@ -86,3 +86,135 @@ export const updateUser = async (req, res) => {
     }
 }
 
+
+// Add these methods to userController.js
+
+export const getCustomers = async (req, res) => {
+    try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const search = req.query.search || '';
+      const status = req.query.status;
+  
+      const query = {
+        authProvider: { $in: ['local', 'google'] }
+      };
+  
+      if (search) {
+        query.$or = [
+          { name: { $regex: search, $options: 'i' } },
+          { email: { $regex: search, $options: 'i' } }
+        ];
+      }
+  
+      const totalItems = await User.countDocuments(query);
+      const totalPages = Math.ceil(totalItems / limit);
+  
+      const customers = await User.aggregate([
+        { $match: query },
+        {
+          $lookup: {
+            from: 'sales',
+            localField: '_id',
+            foreignField: 'customer',
+            as: 'orders'
+          }
+        },
+        {
+          $addFields: {
+            totalOrders: { $size: '$orders' },
+            totalSpent: {
+              $sum: '$orders.totalAmount'
+            },
+            lastOrderDate: {
+              $max: '$orders.createdAt'
+            },
+            isActive: {
+              $cond: {
+                if: { $gt: [{ $size: '$orders' }, 0] },
+                then: true,
+                else: false
+              }
+            }
+          }
+        },
+        {
+          $project: {
+            name: 1,
+            email: 1,
+            phone: 1,
+            totalOrders: 1,
+            totalSpent: 1,
+            lastOrderDate: 1,
+            isActive: 1,
+            createdAt: 1
+          }
+        },
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+        { $sort: { createdAt: -1 } }
+      ]);
+  
+      res.status(200).json({
+        customers,
+        pagination: {
+          currentPage: page,
+          totalPages,
+          totalItems,
+          itemsPerPage: limit
+        }
+      });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
+  export const getCustomerDetails = async (req, res) => {
+    try {
+      const customerId = req.params.id;
+  
+      const customerDetails = await User.aggregate([
+        { $match: { _id: new mongoose.Types.ObjectId(customerId) } },
+        {
+          $lookup: {
+            from: 'sales',
+            localField: '_id',
+            foreignField: 'customer',
+            as: 'orders'
+          }
+        },
+        {
+          $addFields: {
+            totalOrders: { $size: '$orders' },
+            totalSpent: {
+              $sum: '$orders.totalAmount'
+            },
+            lastOrderDate: {
+              $max: '$orders.createdAt'
+            }
+          }
+        },
+        {
+          $project: {
+            name: 1,
+            email: 1,
+            phone: 1,
+            totalOrders: 1,
+            totalSpent: 1,
+            lastOrderDate: 1,
+            orders: 1,
+            createdAt: 1
+          }
+        }
+      ]);
+  
+      if (!customerDetails.length) {
+        return res.status(404).json({ message: 'Customer not found' });
+      }
+  
+      res.status(200).json(customerDetails[0]);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+  
