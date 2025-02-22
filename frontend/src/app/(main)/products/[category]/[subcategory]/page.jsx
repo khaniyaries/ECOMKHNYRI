@@ -17,7 +17,7 @@ export default function ProductsBySubCategoryPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true)
-      const response = await fetch(`${env.API_URL}/api/v1/products/subcategory/${subcategory}/page=${page}&limit=12`)
+      const response = await fetch(`${env.API_URL}/api/v1/products/subcategory/${subcategory}?page=${page}&limit=12`)
       const data = await response.json()
       
       if (data.length === 0) {
