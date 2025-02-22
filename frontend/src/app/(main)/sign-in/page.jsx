@@ -65,7 +65,7 @@ export default function SigninPage() {
         const provider = new GoogleAuthProvider()
         const result = await signInWithPopup(auth, provider)
         
-        const response = await fetch(`${env.API_URL}/api/v1/auth/google/signin`, {
+        const response = await fetch(`${env.API_URL}/api/v1/auth/google/signup`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
