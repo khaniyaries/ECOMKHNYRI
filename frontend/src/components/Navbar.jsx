@@ -12,12 +12,17 @@ import { FiShoppingBag } from "react-icons/fi";
 import { IoIosStarOutline } from "react-icons/io";
 import { TbLogout2, TbLogin2 } from "react-icons/tb";
 import { useAuth } from '@/hooks/userAuth.js'
+import { HiChevronRight, HiChevronDown } from 'react-icons/hi'
+import { env } from "../../config/config.js";
 
 
 const Navbar = () => {
     const { isAuthenticated, user, logout } = useAuth()
     const [isOpen, setIsOpen] = useState(false);
     const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [categories, setCategories] = useState([])
+    const [mainCategories, setMainCategories] = useState([])
+    const [isCategoryOpen, setIsCategoryOpen] = useState(false)
 
     const router = useRouter()
 
@@ -31,6 +36,19 @@ const Navbar = () => {
         router.push(path)
     }
 
+    useEffect(() => {
+        const fetchCategories = async () => {
+          try {
+            const response = await fetch(`${env.API_URL}/api/v1/categories`)
+            const data = await response.json()
+            setCategories(data)
+            setMainCategories(data.filter(cat => !cat.isSubcategory))
+          } catch (error) {
+            console.error('Error fetching categories:', error)
+          }
+        }
+        fetchCategories()
+      }, [])
 
     useEffect(() => {
         const handleClickOutside = (event) => {
@@ -87,7 +105,7 @@ const Navbar = () => {
                     ) : ""}
                     
                 </div>
-                <div className="w-[50%] lg:w-[45%] md:w-[50%] flex flex-row gap-1 mr-2 md:mr-4 lg:mr-0 justify-end lg:justify-center lg:gap-4 md:gap-2">
+                <div className="w-[50%] lg:w-[45%] md:w-[50%] flex flex-row gap-2 mr-2 md:mr-4 lg:mr-0 justify-end lg:justify-center lg:gap-4 md:gap-2">
                     <div className="md:flex md:flex-row items-center hidden md:visible relative">
                         <input 
                             type="search" 
@@ -169,13 +187,82 @@ const Navbar = () => {
             </div>
             <hr className=" mt-4 md:hidden"/>
             {/* Mobile Side Menu */}
-            <div className={`mobile-menu fixed top-0 left-0 h-full w-64 z-50 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden`}>
-                <CgCloseO className="right-4 top-4 absolute h-5 w-5" onClick={() => toggleMenu()}/>
-                <div className="flex flex-col p-4 space-y-4 font-poppins">
-                    <Link href='/' onClick={handleLinkClick} className="">Home</Link>
-                    <Link href='/contact-us' onClick={handleLinkClick} className="">Contact</Link>
-                    <Link href='/about' onClick={handleLinkClick} className="">About</Link>
-                    <Link href='/signup' onClick={handleLinkClick} className="">Sign Up</Link>
+            <div className={`mobile-menu fixed top-0 left-0 h-full w-screen z-50 bg-white text-black transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden`}>
+                <div className="flex justify-between items-center p-6">
+                    
+                    <Image 
+                        src="/images/logo.png" 
+                        alt="Yarees Logo" 
+                        width={60} 
+                        height={35} 
+                        className="object-contain"
+                    />
+                    <h2 className="text-xl font-bold">Menu</h2>
+                    <CgCloseO 
+                    className="h-6 w-6 -mt-5 cursor-pointer hover:text-gray-400" 
+                    onClick={() => toggleMenu()}
+                    />
+                </div>
+
+                <div className="flex flex-col font-poppins">
+                    <Link 
+                    href='/' 
+                    onClick={handleLinkClick} 
+                    className="px-6 py-3 border-gray-800 hover:bg-black/5 transition-colors flex justify-between items-center group"
+                    >
+                    <span>Home</span>
+                    <HiChevronRight className="h-5 w-5 transform transition-transform group-hover:translate-x-1" />
+                    </Link>
+                    <Link 
+                    href='/contact-us' 
+                    onClick={handleLinkClick} 
+                    className="px-6 py-3 border-gray-800 hover:bg-black/5 transition-colors flex justify-between items-center group"
+                    >
+                    <span>Contact</span>
+                    <HiChevronRight className="h-5 w-5 transform transition-transform group-hover:translate-x-1" />
+                    </Link>
+                    <Link 
+                    href='/about' 
+                    onClick={handleLinkClick} 
+                    className="px-6 py-3 border-gray-800 hover:bg-black/5 transition-colors flex justify-between items-center group"
+                    >
+                    <span>About</span>
+                    <HiChevronRight className="h-5 w-5 transform transition-transform group-hover:translate-x-1" />
+                    </Link>
+                    <Link 
+                    href='/signup' 
+                    onClick={handleLinkClick} 
+                    className="px-6 py-3 border-gray-800 hover:bg-black/5 transition-colors flex justify-between items-center group"
+                    >
+                    <span>Sign Up</span>
+                    <HiChevronRight className="h-5 w-5 transform transition-transform group-hover:translate-x-1" />
+                    </Link>
+                    {/* Categories Dropdown */}
+                    <div className="relative">
+                        <button 
+                        onClick={() => setIsCategoryOpen(!isCategoryOpen)}
+                        className="w-full px-6 py-3 border-gray-800 hover:bg-black/5 transition-colors flex justify-between items-center"
+                        >
+                        <span>Categories</span>
+                        <HiChevronDown className={`h-5 w-5 transition-transform ${isCategoryOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {isCategoryOpen && (
+                        <div className="bg-gray-50">
+                            {mainCategories.map((category) => (
+                            <Link
+                                key={category._id}
+                                href={`/products/${category._id}`}
+                                onClick={handleLinkClick}
+                                className="px-8 py-2 hover:bg-black/5 transition-colors flex justify-between items-center"
+                            >
+                                <span>{category.name}</span>
+                                <HiChevronRight className="h-5 w-5" />
+                            </Link>
+                            ))}
+                        </div>
+                        )}
+                    </div>
                 </div>
             </div>
         </>

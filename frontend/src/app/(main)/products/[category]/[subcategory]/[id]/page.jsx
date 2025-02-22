@@ -1,11 +1,15 @@
 "use client"
 import { useState, useEffect } from "react"
-import { useParams } from "next/navigation"
 import Image from "next/image"
 import { Heart, Truck, RotateCcw, Star } from "lucide-react"
 import { HiOutlineArrowSmLeft, HiOutlineArrowSmRight } from "react-icons/hi"
 import FlashSales from "@/components/FlashSale.jsx"
+import { useRouter, usePathname, useParams } from 'next/navigation'
+import { toast } from 'react-hot-toast'
 import { env } from "../../../../../../../config/config.js"
+import { useAuth } from '@/hooks/userAuth.js'
+import Link from "next/link.js"
+
 
 export default function ProductPage() {
   const { id } = useParams()
@@ -17,6 +21,11 @@ export default function ProductPage() {
   const [selectedSize, setSelectedSize] = useState('')
   const [categoryId, setCategoryId] = useState('');
   const [categoryName, setCategoryName] = useState('');
+  const [userRating, setUserRating] = useState(0)
+  const [hoverRating, setHoverRating] = useState(0)
+  const { user } = useAuth()
+  const router = useRouter()
+  const pathname = usePathname()
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -80,6 +89,56 @@ export default function ProductPage() {
     }
   }
 
+  useEffect(() => {
+    if (user && product?.ratings) {
+      const userExistingRating = product.ratings.find(
+        r => r.userId === user._id
+      )?.rating
+      setUserRating(userExistingRating || 0)
+    }
+  }, [user, product])
+  
+  const handleRatingClick = async (rating) => {
+    if (!user) {
+      localStorage.setItem('redirectAfterLogin', pathname)
+      toast.custom((t) => (
+        <div className="bg-white p-4 rounded-lg shadow-lg">
+          <p className="mb-2">Please login to rate this product</p>
+          <Link
+            href='/sign-in'
+            className="text-blue-500 underline"
+          >
+            Login here
+          </Link>
+        </div>
+      ))
+      return
+    }
+  
+    try {
+      const response = await fetch(`${env.API_URL}/api/v1/products/${id}/rating`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ rating })
+      })
+  
+      if (response.ok) {
+        const data = await response.json()
+        setUserRating(data.userRating)
+        setProduct(prev => ({
+          ...prev,
+          averageRating: data.averageRating,
+          totalRatings: data.totalRatings
+        }))
+        toast.success('Rating updated successfully!')
+      }
+    } catch (error) {
+      toast.error('Failed to update rating')
+    }
+  }
+
   if (isLoading) {
     return <div className="flex justify-center items-center h-screen">
       <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
@@ -139,14 +198,23 @@ export default function ProductPage() {
             <h1 className="text-2xl font-bold md:text-3xl">{product.name}</h1>
             <div className="flex items-center space-x-2">
               <div className="flex">
-                {[...Array(5)].map((_, i) => (
+                {[1, 2, 3, 4, 5].map((star) => (
                   <Star
-                    key={i}
-                    className={`h-5 w-5 ${i < product.rating ? "fill-primary text-primary" : "fill-muted text-muted-foreground"}`}
+                    key={star}
+                    className={`h-5 w-5 cursor-pointer transition-colors ${
+                      star <= (hoverRating || userRating || product.averageRating)
+                        ? "fill-primary text-primary"
+                        : "fill-muted text-muted-foreground"
+                    }`}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(0)}
+                    onClick={() => handleRatingClick(star)}
                   />
                 ))}
               </div>
-              <span className="text-sm text-muted-foreground">({product.reviews} Reviews)</span>
+              <span className="text-sm text-muted-foreground">
+                ({product.totalRatings || 0} Ratings)
+              </span>
             </div>
             <p className="text-lg font-semibold md:text-xl">${product.price}</p>
             <p className="text-sm text-muted-foreground">{product.description}</p>
