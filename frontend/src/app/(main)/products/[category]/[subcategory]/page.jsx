@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import ProductCard from '@/components/ProductCard'
 import { env } from '../../../../../../config/config.js'
+import { useParams } from 'next/navigation.js'
 
 export default function ProductsBySubCategoryPage() {
   const { subcategory } = useParams()

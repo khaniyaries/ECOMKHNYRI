@@ -82,20 +82,18 @@ const scrollCategories = (direction) => {
     }
 };
 
-const sidebarCategories = mainCategories.map(cat => cat.name);
-
   return (
     <div className="w-full h-full">
       <div className="flex md:px-10 lg:px-40 p-20 px-5 flex-col md:flex-row w-full justify-evenly">
         <div className="hidden md:flex md:w-[15%] md:flex-col">
-          {sidebarCategories?.map((category) => (
-              <div key={category} className="group">
+          {mainCategories?.map((category) => (
+              <div key={category._id} className="group">
                 <a
-                  href="#"
+                  href={`/products/${category._id}`}
                   className="py-2 text-black font-poppins text-sm lg:text-base font-normal relative w-full flex justify-between items-center"
                 >
-                  {category}
-                  {(category === "Women's Fashion" || category === "Men's Fashion") && (
+                  {category.name}
+                  {(category.name === "Women's Fashion" || category.name === "Men's Fashion") && (
                     <span className="text-black font-bold">›</span>
                   )}
                   <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 ease-in-out group-hover:w-full"></span>

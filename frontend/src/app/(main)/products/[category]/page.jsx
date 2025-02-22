@@ -1,8 +1,10 @@
 "use client"
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image.js'
 import ProductCard from '@/components/ProductCard'
 import { env } from '../../../../../config/config.js'
+import { useParams } from 'next/navigation.js'
 
 export default function ProductsByCategoryPage() {
   const { category } = useParams()
@@ -12,6 +14,10 @@ export default function ProductsByCategoryPage() {
   const [hasMore, setHasMore] = useState(true)
   const observerTarget = useRef(null)
   const [categoryName, setCategoryName] = useState('');
+  const [categories, setCategories] = useState([])
+  const [subcategories, setSubcategories] = useState([])
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null)
+
 
   const fetchProducts = async () => {
     try {
@@ -32,6 +38,22 @@ export default function ProductsByCategoryPage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      const response = await fetch(`${env.API_URL}/api/v1/categories`)
+      const data = await response.json()
+      
+      setCategories(data)
+    // Use 'data' directly for filtering, not 'categories' state
+    const subs = data.filter(cat => cat.parent === category)
+    console.log(subs)
+    setSubcategories(subs)
+    }
+
+    fetchCategories()
+  }, [category])
+
 
   useEffect(() => {
     const fetchCategory = async () => {
@@ -74,8 +96,32 @@ export default function ProductsByCategoryPage() {
             <div className="w-5 h-10 bg-red-500 rounded" />
             <span className="text-red-500 font-bold text-xs">Our Products</span>
           </div>
-          <h2 className="text-4xl font-bold">{categoryName}</h2>
+          <h2 className="text-4xl font-bold">{categoryName || ""}</h2>
         </div>
+
+        <div className="mb-8 overflow-x-auto">
+          <div className="flex gap-4 pb-4">
+            {subcategories?.map((subcat) => (
+              <Link
+                href={`/products/${category}/${subcat._id}`}
+                key={subcat?._id}
+                className="flex flex-col items-center justify-center w-[120px] h-[120px] bg-white rounded-full transition-all hover:bg-white/5 border shrink-0"
+              >
+                {subcat?.image && (
+                  <Image
+                    src={subcat.image?.url}
+                    alt={subcat?.name}
+                    width={50}
+                    height={50}
+                    className="rounded-full mb-2 object-cover"
+                  />
+                )}
+                <span className="text-sm font-medium text-center px-2 line-clamp-2">{subcat?.name}</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (
