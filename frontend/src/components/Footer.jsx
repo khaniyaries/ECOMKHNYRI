@@ -43,9 +43,9 @@ const Footer = () => {
                     <div>
                         <h3 className="text-lg md:text-xl font-poppins font-medium">Support</h3>
                         <address className="mt-2 text-xs md:text-sm not-italic">
-                            BARBARSHAH, SRINAGAR<br />
-                            support.yarees@gmail.com<br />
-                            +88015-88888-9999
+                            INDIA 🇮🇳<br />
+                            contact.yarees@gmail.com<br />
+                            +91 7051350219
                         </address>
                     </div>
 
