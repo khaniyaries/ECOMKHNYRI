@@ -24,10 +24,10 @@ const CategoryCard = ({ categories }) => {
                   <Image
                     src={category.image?.url||"/images/placeholder.svg"}
                     alt={category.name}
-                    height={56}
-                    width={56}
+                    height={86}
+                    width={86}
                     className="mx-auto"
-                    sizes="(max-width: 768px) 136px, 136px"
+                    sizes="(max-width: 768px) 96px, 96px"
                     loading="lazy"
                   />
                 </div>
