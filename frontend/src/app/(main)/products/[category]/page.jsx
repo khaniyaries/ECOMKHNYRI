@@ -111,9 +111,9 @@ export default function ProductsByCategoryPage() {
                   <Image
                     src={subcat.image?.url}
                     alt={subcat?.name}
-                    width={50}
-                    height={50}
-                    className="rounded-full mb-2 object-contain w-fit"
+                    width={70}
+                    height={70}
+                    className="rounded-full mb-2 object-cover "
                   />
                 )}
                 <span className="text-sm font-medium text-center px-2 line-clamp-2">{subcat?.name}</span>
