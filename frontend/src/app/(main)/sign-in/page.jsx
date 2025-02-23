@@ -89,7 +89,7 @@ export default function SigninPage() {
           }, 100)
         }
     } catch (error) {
-        console.log(error);
+      
         toast.error("Google signin failed")
     }
 }
