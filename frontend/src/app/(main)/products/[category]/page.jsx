@@ -111,8 +111,8 @@ export default function ProductsByCategoryPage() {
                   <Image
                     src={subcat.image?.url}
                     alt={subcat?.name}
-                    width={70}
-                    height={70}
+                    width={50}
+                    height={50}
                     className="rounded-full mb-2 object-cover "
                   />
                 )}
