@@ -77,7 +77,7 @@ export default function ShoppingCart() {
               </div>
               <div className="md:text-center">
                 <span className="md:hidden font-medium mr-2">Price: </span>
-                ${product.price}
+                ₹{product.price}
               </div>
               <div className="md:flex md:justify-center">
                 <span className="md:hidden font-medium mr-2">Quantity: </span>
@@ -88,7 +88,7 @@ export default function ShoppingCart() {
               </div>
               <div className="md:text-right">
                 <span className="md:hidden font-medium mr-2">Subtotal: </span>
-                ${product.price * quantities[product._id]}
+                ₹{product.price * quantities[product._id]}
               </div>
             </div>
           ))}

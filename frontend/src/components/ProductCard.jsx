@@ -40,9 +40,9 @@ const ProductCard = ({ _id, name, images, price, percentageOff, averageRating, r
         </div>
         <h3 className="font-medium text-lg mb-2">{name}</h3>
         <div className="flex items-center gap-2 mb-2">
-          <span className="text-red-500 font-bold">${discountedPrice.toFixed(2)}</span>
+          <span className="text-red-500 font-bold">₹{discountedPrice.toFixed(2)}</span>
           {percentageOff > 0 && (
-            <span className="text-gray-400 line-through">${price.toFixed(2)}</span>
+            <span className="text-gray-400 line-through">₹{price.toFixed(2)}</span>
           )}
         </div>
       </div>
@@ -79,9 +79,9 @@ const ProductCard = ({ _id, name, images, price, percentageOff, averageRating, r
       </div>
       <h3 className="font-medium text-lg mb-2">{name}</h3>
       <div className="flex items-center gap-2 mb-2">
-        <span className="text-red-500 font-bold">${discountedPrice.toFixed(2)}</span>
+        <span className="text-red-500 font-bold">₹{discountedPrice.toFixed(2)}</span>
         {percentageOff > 0 && (
-          <span className="text-gray-400 line-through">${price.toFixed(2)}</span>
+          <span className="text-gray-400 line-through">₹{price.toFixed(2)}</span>
         )}
       </div>
       <div className="flex items-center gap-2">

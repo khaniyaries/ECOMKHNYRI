@@ -216,7 +216,7 @@ export default function ProductPage() {
                 ({product.totalRatings || 0} Ratings)
               </span>
             </div>
-            <p className="text-lg font-semibold md:text-xl">${product.price}</p>
+            <p className="text-lg font-semibold md:text-xl">₹{product.price}</p>
             <p className="text-sm text-muted-foreground">{product.description}</p>
           </div>
 
@@ -266,9 +266,13 @@ export default function ProductPage() {
 
             <div className="flex items-center space-x-4">
               <div className="flex items-center border rounded-md">
-                <button className="px-4 py-2 hover:bg-muted">-</button>
-                <span className="px-4 py-2">2</span>
-                <button className="px-4 py-2 hover:bg-muted">+</button>
+                <button 
+                onClick={()=>{setQuantity((prev)=>(prev>1?prev-1:prev))}}
+                className="px-4 py-2 hover:bg-muted">-</button>
+                <span className="px-4 py-2">{quantity}</span>
+                <button
+                  onClick={()=>{setQuantity((prev)=>(prev+1))}}
+                className="px-4 py-2 hover:bg-muted">+</button>
               </div>
               <button className="bg-black text-white rounded-md py-2 px-3">Buy Now</button>
               <button size="lg" variant="outline">

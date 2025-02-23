@@ -20,7 +20,7 @@ export default function Products() {
     search: '',
     categories: [],
     status: 'All Status',
-    special: 'All Products' 
+    special: 'All Products'
   });
   const [editingProduct, setEditingProduct] = useState(null);
 
@@ -30,78 +30,78 @@ export default function Products() {
 
   const handleEditProduct = (product) => {
     setSelectedProduct({
-        ...product,
-        category: typeof product.category === 'object' ? product.category._id : product.category,
-        subcategory: typeof product.subcategory === 'object' ? product.subcategory._id : product.subcategory
+      ...product,
+      category: typeof product.category === 'object' ? product.category._id : product.category,
+      subcategory: typeof product.subcategory === 'object' ? product.subcategory._id : product.subcategory
     });
     setIsModalOpen(true);
-};
+  };
 
   useEffect(() => {
     const fetchCategories = async () => {
-        try {
-            const response = await fetch(`${env.API_URL}/api/v1/categories`);
-            const data = await response.json();
-            setCategories(data);
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-        }
+      try {
+        const response = await fetch(`${env.API_URL}/api/v1/categories`);
+        const data = await response.json();
+        setCategories(data);
+      } catch (error) {
+        console.error('Error fetching categories:', error);
+      }
     };
     fetchCategories();
   }, []);
 
   // In your loadProducts function, update the status filter handling
-const loadProducts = async () => {
-  setIsLoading(true);
-  try {
+  const loadProducts = async () => {
+    setIsLoading(true);
+    try {
       const searchParams = new URLSearchParams();
       if (filters.search) searchParams.append('search', filters.search);
-      
+
       if (filters.categories?.length > 0) {
         filters.categories.forEach(category => {
-            searchParams.append('categories[]', category);
+          searchParams.append('categories[]', category);
         });
       }
-      
+
       // Get base products
       const data = await fetchProducts(searchParams.toString());
-      
+
       // Apply status filtering on the client side
       let filteredProducts = data;
       if (filters.status !== 'All Status') {
-          filteredProducts = data.filter(product => {
-              switch (filters.status) {
-                  case 'In Stock':
-                      return product.stock > 10;
-                  case 'Low Stock':
-                      return product.stock > 0 && product.stock <= 10;
-                  case 'Out of Stock':
-                      return product.stock === 0;
-                  default:
-                      return true;
-              }
-          });
+        filteredProducts = data.filter(product => {
+          switch (filters.status) {
+            case 'In Stock':
+              return product.stock > 10;
+            case 'Low Stock':
+              return product.stock > 0 && product.stock <= 10;
+            case 'Out of Stock':
+              return product.stock === 0;
+            default:
+              return true;
+          }
+        });
       }
 
       if (filters.special !== 'All Products') {
         filteredProducts = filteredProducts.filter(product => {
-            switch (filters.special) {
-                case 'No Images': return !product.images?.length;
-                case 'Flash Sale': return product.isFlashSale;
-                case 'Best Selling': return product.averageRating >= 4;
-                default: return true;
-            }
+          switch (filters.special) {
+            case 'No Images': return !product.images?.length;
+            case 'Flash Sale': return product.isFlashSale;
+            case 'Best Selling': return product.averageRating >= 4;
+            default: return true;
+          }
         });
       }
-      
-      setProducts(filteredProducts);
-  } catch (error) {
-      console.error('Error loading products:', error);
-  } finally{
-    setIsLoading(false);
 
-  }
-};
+      setProducts(filteredProducts);
+    } catch (error) {
+      console.error('Error loading products:', error);
+    } finally {
+      setIsLoading(false);
+
+    }
+  };
 
 
   const handleBulkUpload = async (e) => {
@@ -122,27 +122,27 @@ const loadProducts = async () => {
   const handleProductSubmit = async (formData) => {
     setIsLoading(true);
     try {
-        let result;
-        if (selectedProduct) {
-            result = await updateProduct(selectedProduct._id, {
-                ...formData,
-                colors: formData.colors || [],
-                sizes: formData.sizes || [],
-                images: formData.images || []
-            });
-        } else {
-            result = await createProduct(formData);
-        }
-        
-        loadProducts();
-        setIsModalOpen(false);
-        setSelectedProduct(null);
+      let result;
+      if (selectedProduct) {
+        result = await updateProduct(selectedProduct._id, {
+          ...formData,
+          colors: formData.colors || [],
+          sizes: formData.sizes || [],
+          images: formData.images || []
+        });
+      } else {
+        result = await createProduct(formData);
+      }
+
+      loadProducts();
+      setIsModalOpen(false);
+      setSelectedProduct(null);
     } catch (error) {
-        console.error('Product submission error:', error);
-    }finally{
+      console.error('Product submission error:', error);
+    } finally {
       setIsLoading(false);
     }
-};
+  };
 
   const handleDelete = async (productId) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
@@ -175,7 +175,7 @@ const loadProducts = async () => {
               className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg flex items-center gap-2 cursor-pointer"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
               </svg>
               Bulk Upload
             </label>
@@ -201,46 +201,46 @@ const loadProducts = async () => {
           className="flex-1 px-4 py-2 border rounded-lg"
         />
         <div className="relative">
-    <button 
-        onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
-        className="px-4 py-2 border rounded-lg w-48 text-left flex justify-between items-center"
-    >
-        <span>
-            {filters.categories?.length 
-                ? `${filters.categories.length} Selected` 
+          <button
+            onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+            className="px-4 py-2 border rounded-lg w-48 text-left flex justify-between items-center"
+          >
+            <span>
+              {filters.categories?.length
+                ? `${filters.categories.length} Selected`
                 : "All Categories"}
-        </span>
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-        </svg>
-    </button>
+            </span>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
 
-    {isCategoryDropdownOpen && (
-        <div className="absolute z-50 mt-1 w-48 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-            {categories.map((category) => (
-                <label 
-                    key={category._id} 
-                    className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer"
+          {isCategoryDropdownOpen && (
+            <div className="absolute z-50 mt-1 w-48 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+              {categories.map((category) => (
+                <label
+                  key={category._id}
+                  className="flex items-center px-4 py-2 hover:bg-gray-50 cursor-pointer"
                 >
-                    <input
-                        type="checkbox"
-                        checked={filters.categories?.includes(category._id)}
-                        onChange={(e) => {
-                            setFilters(prev => ({
-                                ...prev,
-                                categories: e.target.checked
-                                    ? [...(prev.categories || []), category._id]
-                                    : (prev.categories || []).filter(id => id !== category._id)
-                            }));
-                        }}
-                        className="form-checkbox h-4 w-4 text-blue-600"
-                    />
-                    <span className="ml-2">{category.name}</span>
+                  <input
+                    type="checkbox"
+                    checked={filters.categories?.includes(category._id)}
+                    onChange={(e) => {
+                      setFilters(prev => ({
+                        ...prev,
+                        categories: e.target.checked
+                          ? [...(prev.categories || []), category._id]
+                          : (prev.categories || []).filter(id => id !== category._id)
+                      }));
+                    }}
+                    className="form-checkbox h-4 w-4 text-blue-600"
+                  />
+                  <span className="ml-2">{category.name}</span>
                 </label>
-            ))}
+              ))}
+            </div>
+          )}
         </div>
-    )}
-</div>
 
         <select
           value={filters.status}
@@ -253,14 +253,14 @@ const loadProducts = async () => {
           <option>Out of Stock</option>
         </select>
         <select
-            value={filters.special}
-            onChange={(e) => setFilters(prev => ({ ...prev, special: e.target.value }))}
-            className="px-4 py-2 border rounded-lg"
+          value={filters.special}
+          onChange={(e) => setFilters(prev => ({ ...prev, special: e.target.value }))}
+          className="px-4 py-2 border rounded-lg"
         >
-            <option>All Products</option>
-            <option>No Images</option>
-            <option>Flash Sale</option>
-            <option>Best Selling</option>
+          <option>All Products</option>
+          <option>No Images</option>
+          <option>Flash Sale</option>
+          <option>Best Selling</option>
         </select>
       </div>
 
@@ -313,24 +313,23 @@ const loadProducts = async () => {
                     {categories.find(cat => cat._id === product.category)?.name || product.category}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    ${product.price.toFixed(2)}
+                    ₹{product.price.toFixed(2)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {product.stock}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      product.stock > 10 
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${product.stock > 10
                         ? 'bg-green-100 text-green-800'
                         : product.stock > 0
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {product.stock > 10 
-                        ? 'In Stock' 
-                        : product.stock > 0 
-                        ? 'Low Stock' 
-                        : 'Out of Stock'}
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                      {product.stock > 10
+                        ? 'In Stock'
+                        : product.stock > 0
+                          ? 'Low Stock'
+                          : 'Out of Stock'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
