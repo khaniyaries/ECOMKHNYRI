@@ -216,7 +216,7 @@ export default function ProductPage() {
                 ({product.totalRatings || 0} Ratings)
               </span>
             </div>
-            <p className="text-lg font-semibold md:text-xl">${product.price}</p>
+            <p className="text-lg font-semibold md:text-xl">₹{product.price}</p>
             <p className="text-sm text-muted-foreground">{product.description}</p>
           </div>
 
