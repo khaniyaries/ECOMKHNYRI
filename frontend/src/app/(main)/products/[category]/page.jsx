@@ -113,7 +113,7 @@ export default function ProductsByCategoryPage() {
                     alt={subcat?.name}
                     width={50}
                     height={50}
-                    className="rounded-full mb-2 object-contain"
+                    className="rounded-full mb-2 object-contain w-fit"
                   />
                 )}
                 <span className="text-sm font-medium text-center px-2 line-clamp-2">{subcat?.name}</span>
