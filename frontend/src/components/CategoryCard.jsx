@@ -27,7 +27,7 @@ const CategoryCard = ({ categories }) => {
                     height={56}
                     width={56}
                     className="mx-auto"
-                    sizes="(max-width: 768px) 96px, 96px"
+                    sizes="(max-width: 768px) 136px, 136px"
                     loading="lazy"
                   />
                 </div>
