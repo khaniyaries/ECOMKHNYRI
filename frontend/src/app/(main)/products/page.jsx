@@ -50,7 +50,7 @@ export default function ProductsPage() {
 
   return (
     <div className="w-full min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 md:py-8 py-12">
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-5 h-10 bg-red-500 rounded" />

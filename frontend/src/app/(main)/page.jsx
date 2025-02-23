@@ -208,7 +208,7 @@ const scrollCategories = (direction) => {
           </div>
         </div>
         <div className="w-full">
-          <CategoryCard subcategories={subCategories}/>
+          <CategoryCard categories={mainCategories}/>
         </div>
       </div>
       <div className="flex flex-col md:py-0 lg:px-40 md:px-20 px-5 py-5">
@@ -228,7 +228,7 @@ const scrollCategories = (direction) => {
           <BestSellers numberOfProducts={4}/>
         </div>
       </div>
-      <div className="md:py-0 lg:px-40 md:px-14 h-full w-full px-5 py-20 flex flex-col md:flex-row">
+      {/* <div className="md:py-0 lg:px-40 md:px-14 h-full w-full px-5 py-20 flex flex-col md:flex-row">
         <div className="h-[70vh] md:h-full md:w-screen w-[100%] bg-black lg:py-20 lg:px-14 md:py-20 md:px-5 p-10 flex flex-col md:flex-row justify-center gap-5 md:gap-3 lg:gap-5">
           <div className="w-full h-[50%] md:w-[50%] md:h-full flex flex-col gap-5 md:gap-10 items-start">
             <h2 className="text-xs text-green-500 font-semibold font-poppins">
@@ -271,7 +271,7 @@ const scrollCategories = (direction) => {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       <div className="flex flex-col md:py-16 lg:px-40 md:px-20 px-5 py-5">
         {/* 🔄 First row for small screens */}
         <div className="flex justify-between items-start w-full">

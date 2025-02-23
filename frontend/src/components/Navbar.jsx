@@ -14,6 +14,7 @@ import { TbLogout2, TbLogin2 } from "react-icons/tb";
 import { useAuth } from '@/hooks/userAuth.js'
 import { HiChevronRight, HiChevronDown } from 'react-icons/hi'
 import { env } from "../../config/config.js";
+import { MdArrowOutward } from "react-icons/md";
 
 
 const Navbar = () => {
@@ -188,6 +189,18 @@ const Navbar = () => {
             <hr className=" mt-4 md:hidden"/>
             {/* Mobile Side Menu */}
             <div className={`mobile-menu fixed top-0 left-0 h-full w-screen z-50 bg-white text-black transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:hidden`}>
+                
+                <div className="h-12 w-full text-white bg-black items-center flex justify-between px-2">
+                    <h1>Checkout Exciting Products</h1>
+                    <Link
+                    onClick={handleLinkClick}
+                    className="flex gap-1"
+                    href='/products'
+                    >
+                        Explore 
+                        <MdArrowOutward className="h-5 w-5"/>
+                    </Link>
+                </div>
                 <div className="flex justify-between items-center p-6">
                     
                     <Image 
@@ -213,30 +226,7 @@ const Navbar = () => {
                     <span>Home</span>
                     <HiChevronRight className="h-5 w-5 transform transition-transform group-hover:translate-x-1" />
                     </Link>
-                    <Link 
-                    href='/contact-us' 
-                    onClick={handleLinkClick} 
-                    className="px-6 py-3 border-gray-800 hover:bg-black/5 transition-colors flex justify-between items-center group"
-                    >
-                    <span>Contact</span>
-                    <HiChevronRight className="h-5 w-5 transform transition-transform group-hover:translate-x-1" />
-                    </Link>
-                    <Link 
-                    href='/about' 
-                    onClick={handleLinkClick} 
-                    className="px-6 py-3 border-gray-800 hover:bg-black/5 transition-colors flex justify-between items-center group"
-                    >
-                    <span>About</span>
-                    <HiChevronRight className="h-5 w-5 transform transition-transform group-hover:translate-x-1" />
-                    </Link>
-                    <Link 
-                    href='/signup' 
-                    onClick={handleLinkClick} 
-                    className="px-6 py-3 border-gray-800 hover:bg-black/5 transition-colors flex justify-between items-center group"
-                    >
-                    <span>Sign Up</span>
-                    <HiChevronRight className="h-5 w-5 transform transition-transform group-hover:translate-x-1" />
-                    </Link>
+
                     {/* Categories Dropdown */}
                     <div className="relative">
                         <button 
@@ -263,6 +253,32 @@ const Navbar = () => {
                         </div>
                         )}
                     </div>
+
+                    <Link 
+                    href='/contact-us' 
+                    onClick={handleLinkClick} 
+                    className="px-6 py-3 border-gray-800 hover:bg-black/5 transition-colors flex justify-between items-center group"
+                    >
+                    <span>Contact</span>
+                    <HiChevronRight className="h-5 w-5 transform transition-transform group-hover:translate-x-1" />
+                    </Link>
+                    <Link 
+                    href='/about' 
+                    onClick={handleLinkClick} 
+                    className="px-6 py-3 border-gray-800 hover:bg-black/5 transition-colors flex justify-between items-center group"
+                    >
+                    <span>About</span>
+                    <HiChevronRight className="h-5 w-5 transform transition-transform group-hover:translate-x-1" />
+                    </Link>
+                    <Link 
+                    href='/signup' 
+                    onClick={handleLinkClick} 
+                    className="px-6 py-3 border-gray-800 hover:bg-black/5 transition-colors flex justify-between items-center group"
+                    >
+                    <span>Sign Up</span>
+                    <HiChevronRight className="h-5 w-5 transform transition-transform group-hover:translate-x-1" />
+                    </Link>
+                    
                 </div>
             </div>
         </>

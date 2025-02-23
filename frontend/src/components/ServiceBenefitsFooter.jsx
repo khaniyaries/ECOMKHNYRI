@@ -1,7 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
+import { MdArrowOutward } from "react-icons/md";
+
 const ServiceBenefitsFooter = () => {
     return(
-        <div className="w-full px-28 md:px-20 lg:px-40 py-10 md:py-20">
+        <div className="w-full px-24 md:px-20 lg:px-40 py-10 md:py-20">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10">
                 <div className="flex flex-col h-[230px] justify-center items-center gap-1 p-4 bg-white rounded-md">
                     <div className="rounded-full bg-gray-300 mb-2 h-max w-max p-2 z-10">
@@ -39,10 +42,10 @@ const ServiceBenefitsFooter = () => {
                         </div>
                     </div>
                     <h3 className="text-center text-xl font-poppins font-semibold text-black">
-                        24/7 CUSTOMER SERVICE
+                        CUSTOMER SERVICE
                     </h3>
                     <h4 className="text-center font-poppins font-normal text-base text-black">
-                        Friendly 24/7 customer support
+                        Friendly customer support
                     </h4>
                 </div>
                 <div className="flex flex-col h-[230px] justify-center items-center gap-1 p-4 bg-white rounded-md ">
@@ -60,11 +63,17 @@ const ServiceBenefitsFooter = () => {
                         </div>
                     </div>
                     <h3 className="text-center text-xl font-poppins font-semibold text-black">
-                        MONEY BACK GUARANTEE
+                        Easy Returns
                     </h3>
-                    <h4 className="text-center font-poppins font-normal text-base text-black">
-                        We reurn money within 30 days
-                    </h4>
+                    <Link 
+                    href='/return-policy'
+                    className="flex flex-row items-center gap-1">
+                        <h4 className="text-center font-poppins font-normal text-base text-black">
+                            Return Policy 
+                        </h4>
+                        <MdArrowOutward className="w-3 h-3"/>
+                    </Link>
+                    
                 </div>
             </div>
         </div>

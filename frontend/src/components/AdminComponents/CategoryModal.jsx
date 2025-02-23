@@ -41,20 +41,18 @@ export default function CategoryModal({ isOpen, onClose, onSubmit, initialData, 
         try {
             let imageData = formData.image;
             const isSubcategory = !!formData.parent;
-    
-            // Handle image upload for subcategories
-            if (isSubcategory) {
-                if (imageFile) {
-                    if (formData.image?.url) {
-                        await deleteFromCloudinary(formData.image.url);
-                    }
-                    const uploadedUrl = await uploadToCloudinary(imageFile);
-                    imageData = { url: uploadedUrl };
-                }
-            } else {
-                // For main categories
-                imageData = null;
+
+            if(!isSubcategory){
                 formData.parent = null; // Ensure no parent for main categories
+            }
+    
+            // Handle image upload for all categories
+            if (imageFile) {
+                if (formData.image?.url) {
+                    await deleteFromCloudinary(formData.image.url);
+                }
+                const uploadedUrl = await uploadToCloudinary(imageFile);
+                imageData = { url: uploadedUrl };
             }
     
             await onSubmit({
@@ -118,9 +116,12 @@ export default function CategoryModal({ isOpen, onClose, onSubmit, initialData, 
                                     ))}
                                 </select>
                             </div>
+                        </div>
+                    )}
+                        <div>
                             <div className='mb-4 mt-6'>
                                 <label className="block text-sm font-medium text-gray-700">
-                                    Subcategory Image
+                                {isSubcategory? "Sub Category Imgae":"Category Image"}
                                 </label>
                                 <div className="mt-1 flex items-center">
                                     <input
@@ -147,7 +148,7 @@ export default function CategoryModal({ isOpen, onClose, onSubmit, initialData, 
                                 )}
                             </div>
                         </div>
-                    )}
+                    
 
                     {/* Image upload section remains the same */}
                     

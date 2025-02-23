@@ -138,7 +138,7 @@ export default function Categories() {
         <div className="space-y-8">
             {isLoading && <LoadingSpinner />}
             
-            <div className="flex justify-between items-center">
+            <div className="flex md:flex-row flex-col gap-4 md:gap-0 justify-between items-center">
                 <div>
                     <h1 className="text-2xl font-semibold">Categories</h1>
                     <p className="text-gray-600">Manage product categories and subcategories</p>
@@ -169,6 +169,13 @@ export default function Categories() {
     {categories.map(category => (
         <div key={category._id} className="bg-white rounded-lg shadow-lg p-6">
             <div className="border-b pb-4 mb-4">
+                        <Image
+                            src={category.image?.url||"/images/placeholder.svg"}
+                            alt={category.name}
+                            width={150}
+                            height={150}
+                            className="rounded-lg object-fit"
+                        />
                 <h3 className="text-xl font-semibold">{category.name}</h3>
                 <div className="flex justify-end mt-2">
                     <button
