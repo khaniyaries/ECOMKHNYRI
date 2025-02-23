@@ -92,7 +92,7 @@ const Navbar = () => {
                     <Image 
                         src="/images/logo.png" 
                         alt="Yarees Logo" 
-                        width={80} 
+                        width={85} 
                         height={40} 
                         className="object-contain"
                     />
