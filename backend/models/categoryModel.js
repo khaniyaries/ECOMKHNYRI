@@ -11,9 +11,7 @@ const categorySchema = new mongoose.Schema({
     image: {
         url: {
             type: String,
-            required: function() {
-                return this.isSubcategory;
-            }
+            required: true,
         }
     },
     parent: {
