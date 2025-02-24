@@ -7,21 +7,25 @@ import {
   updateSaleStatus,
   getDashboardStats,
   viewInvoice,
-  downloadInvoice
+  downloadInvoice,
+  getReturns,
+  getCancellations
 } from '../controllers/saleController.js';
 
 const router = express.Router();
 
-router.post('/sales', createSale);
-router.get('/sales', getAllSales);
-router.patch('/sales/:id/status', updateSaleStatus);
+router.post('/', createSale);
+router.get('/', getAllSales);
+router.patch('/:id/status', updateSaleStatus);
 router.get('/dashboard/stats', getDashboardStats);
 router.get('/user/:userId/orders', getUserOrders);
 
-router.get('/sales/:id', getSaleById)
-router.get('/invoice/:id/view', viewInvoice)
-router.get('/invoice/:id/download', downloadInvoice)
+router.get('/:id', getSaleById);
+router.get('/invoice/:id/view', viewInvoice);
+router.get('/invoice/:id/download', downloadInvoice);
 
+router.get('/getreturns',getReturns);
+router.get('/getcancellations', getCancellations);
 
 
 export default router;

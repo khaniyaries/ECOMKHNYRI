@@ -375,5 +375,52 @@ export const getDashboardStats = async (req, res) => {
       res.status(500).json({ message: error.message })
     }
   }
+
+  export const getReturns = async (req, res) => {
+    try {
+      const returns = await Sale.find({
+        customer: req.query.userId,
+        orderStatus: 'returned'
+      }).populate('orderItems.product');
+
+      if (returns.length === 0) {
+        return res.status(200).json([]); 
+      }
+      
+      const formattedReturns = returns.map(returnItem => ({
+        id: returnItem._id,
+        item: returnItem.orderItems[0].product.name,
+        date: returnItem.returnDetails.date,
+        reason: returnItem.returnDetails.reason,
+        status: returnItem.returnDetails.status
+      }));
+      
+      res.status(200).json(formattedReturns);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching returns' });
+    }
+  };
+  
+  export const getCancellations = async (req, res) => {
+    try {
+      const cancellations = await Sale.find({
+        customer: req.query.userId,
+        orderStatus: 'cancelled'
+      }).populate('orderItems.product');
+      
+      const formattedCancellations = cancellations.map(cancel => ({
+        id: cancel._id,
+        item: cancel.orderItems[0].product.name,
+        date: cancel.cancellationDetails.date,
+        reason: cancel.cancellationDetails.reason,
+        refundStatus: cancel.cancellationDetails.refundStatus
+      }));
+      
+      res.status(200).json(formattedCancellations);
+    } catch (error) {
+      res.status(500).json({ message: 'Error fetching cancellations' });
+    }
+  };
+  
   
   

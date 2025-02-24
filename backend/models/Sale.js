@@ -40,8 +40,31 @@ const saleSchema = new mongoose.Schema({
   },
   orderStatus: {
     type: String,
-    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled'],
+    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled','returned'],
     default: 'pending'
+  },
+  cancellationDetails: {
+    reason: String,
+    date: Date,
+    refundStatus: {
+      type: String,
+      enum: ['pending', 'processed', 'completed'],
+      default: 'pending'
+    }
+  },
+  returnDetails: {
+    reason: String,
+    date: Date,
+    status: {
+      type: String,
+      enum: ['requested', 'approved', 'received', 'refunded'],
+      default: 'requested'
+    },
+    refundStatus: {
+      type: String,
+      enum: ['pending', 'processed', 'completed'],
+      default: 'pending'
+    }
   },
   paymentMode: {
     type: String,
