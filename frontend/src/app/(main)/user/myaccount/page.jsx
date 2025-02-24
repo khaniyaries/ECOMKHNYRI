@@ -32,7 +32,7 @@ export default function AccountPage() {
   const fetchAddresses = async () => {
     const userID = localStorage.getItem('userId');
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/user/address?userId=${userID}`, {
+      const response = await fetch(`${env.API_URL}/api/v1/user/address?userId=${userID}`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
