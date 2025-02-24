@@ -24,6 +24,7 @@ export default function CheckoutPage() {
   const [price,setprice]=useState();
   const[quantity,setquantity]=useState(null);
   const[invalid,setinvalid]=useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   
   const {id,q}=useParams();
@@ -59,6 +60,15 @@ export default function CheckoutPage() {
 
       }
 
+    }
+
+
+
+
+    if (isLoading) {
+      return <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-red-500"></div>
+      </div>
     }
   return (
 
