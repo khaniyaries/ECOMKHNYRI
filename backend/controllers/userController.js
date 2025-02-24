@@ -46,70 +46,110 @@ export const getUsers = async (req, res) => {
 
 // Update user profile
 export const updateUser = async (req, res) => {
-    try {
-        const { role, userId } = req.query
-        const { targetUserId } = req.params
-        const { currentPassword, newPassword, ...updates } = req.body
+  console.log("request came");
+  try {
+    const { role, userId } = req.query
+    const { targetUserId } = req.params
+    const { currentPassword, newPassword, ...updates } = req.body
 
-        // Handle password change for regular users
-        if (currentPassword && newPassword && !role) {
-          const user = await User.findById(userId)
-          
-          if (!user) {
-              return res.status(404).json({
-                  success: false,
-                  message: 'User not found'
-              })
-          }
-  
-          // Check if user has a password field
-          if (!user.password) {
-              return res.status(400).json({
-                  success: false,
-                  message: 'Cannot update password for this account type'
-              })
-          }
-  
-          const isMatch = user.password === currentPassword
-          
-          if (!isMatch) {
-              return res.status(400).json({ 
-                  success: false, 
-                  message: 'Current password is incorrect' 
-              })
-          }
-          
-          const updatedUser = await User.findByIdAndUpdate(
-              userId,
-              { ...updates, password: newPassword },
-              { new: true }
-          ).select('name email phone address authProvider')
-          
-          return res.json({ success: true, user: updatedUser })
-      }  
+    console.log('Update data:', {
+        role,
+        userId,
+        targetUserId,
+        updates
+    })
 
-        // Admin can update any user
-        if (role === 'admin' && targetUserId) {
-            const user = await User.findByIdAndUpdate(
-                targetUserId, 
-                updates, 
-                { new: true }
-            ).select('name email phone address authProvider')
-            return res.json({ success: true, user })
+    // Handle password change for regular users
+    if (currentPassword && newPassword && !role) {
+        const user = await User.findById(userId)
+        
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            })
         }
 
-        // Regular users can only update themselves
-        const user = await User.findByIdAndUpdate(
-          userId, 
-            updates, 
+        if (!user.password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Cannot update password for this account type'
+            })
+        }
+
+        const isMatch = user.password === currentPassword
+        
+        if (!isMatch) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Current password is incorrect' 
+            })
+        }
+        
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { ...updates, password: newPassword },
             { new: true }
         ).select('name email phone address authProvider')
-        return res.json({ success: true, user })
-
-    } catch (error) {
-        console.log('Profile update error:', error)
-        res.status(500).json({ success: false, message: 'Error updating profile' })
+        
+        return res.json({ 
+            success: true, 
+            message: 'Profile updated successfully with new password',
+            user: updatedUser 
+        })
     }
+
+    // Admin can update any user
+    if (role === 'admin' && targetUserId) {
+        const updatedUser = await User.findByIdAndUpdate(
+            targetUserId,
+            updates,
+            { new: true }
+        ).select('name email phone address authProvider')
+
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'Target user not found'
+            })
+        }
+
+        return res.json({ 
+            success: true, 
+            message: 'User updated by admin successfully',
+            user: updatedUser 
+        })
+    }
+
+    // Regular users can only update themselves
+    const updatedUser = await User.findByIdAndUpdate(
+        userId,
+        updates,
+        { new: true }
+    ).select('name email phone address authProvider')
+
+    if (!updatedUser) {
+        return res.status(404).json({
+            success: false,
+            message: 'User not found'
+        })
+    }
+
+    return res.json({ 
+        success: true, 
+        message: 'Profile updated successfully',
+        user: updatedUser 
+    })
+
+} catch (error) {
+    console.log('Profile update error:', error)
+    res.status(500).json({ 
+        success: false, 
+        message: 'Error updating profile',
+        error: error.message 
+    })
+}
+
 }
 
 
