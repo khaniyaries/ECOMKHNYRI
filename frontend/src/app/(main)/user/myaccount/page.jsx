@@ -32,7 +32,7 @@ export default function AccountPage() {
       try {
         const token = localStorage.getItem('token')
         const userId = localStorage.getItem('userId')
-        const response = await fetch(`${env.API_URL}/api/v1/user/profile?userId=${userId}`, {
+        const response = await fetch(`http://localhost:8080/api/v1/user/profile?userId=${userId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -62,7 +62,7 @@ export default function AccountPage() {
     e.preventDefault()
     try {
       const token = localStorage.getItem('token')
-
+      const userId = localStorage.getItem('userId')
       const updateData = {
         name: `${userData.firstName} ${userData.lastName}`,
         email: userData.email,
@@ -79,13 +79,15 @@ export default function AccountPage() {
           updateData.newPassword = passwords.newPassword
       }
 
-      const response = await fetch(`${env.API_URL}/api/v1/user/profile/update?userId=${userId}`, {
+      const response = await fetch(`http://localhost:8080/api/v1/user/profile/update?userId=${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(updateData)
+
+
       })
 
       if (response.ok) {
@@ -96,8 +98,11 @@ export default function AccountPage() {
           confirmPassword: ''
         })
       }
+      else {
+        toast.error(data.message || 'Failed to update profile')
+      }
     } catch (error) {
-      toast.error(data.message || 'Failed to update profile')
+      toast.error('Failed to update profile')
     }
   }
 
