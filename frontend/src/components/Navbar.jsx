@@ -92,8 +92,8 @@ const Navbar = () => {
                     <Image 
                         src="/images/logo.png" 
                         alt="Yarees Logo" 
-                        width={60} 
-                        height={35} 
+                        width={85} 
+                        height={40} 
                         className="object-contain"
                     />
                 </Link>
