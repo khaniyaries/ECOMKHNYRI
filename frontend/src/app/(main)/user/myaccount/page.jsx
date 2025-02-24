@@ -97,7 +97,7 @@ export default function AccountPage() {
         })
       }
     } catch (error) {
-      toast.error('Failed to update profile')
+      toast.error(data.message || 'Failed to update profile')
     }
   }
 
