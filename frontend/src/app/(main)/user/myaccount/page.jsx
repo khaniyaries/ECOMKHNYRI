@@ -32,7 +32,7 @@ export default function AccountPage() {
       try {
         const token = localStorage.getItem('token')
         const userId = localStorage.getItem('userId')
-        const response = await fetch(`http://localhost:8080/api/v1/user/profile?userId=${userId}`, {
+        const response = await fetch(`${env.API_URL}/api/v1/user/profile?userId=${userId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -79,7 +79,7 @@ export default function AccountPage() {
           updateData.newPassword = passwords.newPassword
       }
 
-      const response = await fetch(`http://localhost:8080/api/v1/user/profile/update?userId=${userId}`, {
+      const response = await fetch(`${env.API_URL}/api/v1/user/profile/update?userId=${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
