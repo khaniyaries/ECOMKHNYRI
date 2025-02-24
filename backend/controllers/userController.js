@@ -53,24 +53,40 @@ export const updateUser = async (req, res) => {
 
         // Handle password change for regular users
         if (currentPassword && newPassword && !role) {
-            const user = await User.findById(userId)
-            const isMatch = user.password === currentPassword;
-            
-            if (!isMatch) {
-                return res.json({ 
-                    success: false, 
-                    message: 'Current password is incorrect' 
-                })
-            }
-            
-            const updatedUser = await User.findByIdAndUpdate(
+          const user = await User.findById(userId)
+          
+          if (!user) {
+              return res.status(404).json({
+                  success: false,
+                  message: 'User not found'
+              })
+          }
+  
+          // Check if user has a password field
+          if (!user.password) {
+              return res.status(400).json({
+                  success: false,
+                  message: 'Cannot update password for this account type'
+              })
+          }
+  
+          const isMatch = user.password === currentPassword
+          
+          if (!isMatch) {
+              return res.status(400).json({ 
+                  success: false, 
+                  message: 'Current password is incorrect' 
+              })
+          }
+          
+          const updatedUser = await User.findByIdAndUpdate(
               userId,
-                { ...updates, password: newPassword },
-                { new: true }
-            ).select('name email phone address authProvider')
-            
-            return res.json({ success: true, user: updatedUser })
-        }
+              { ...updates, password: newPassword },
+              { new: true }
+          ).select('name email phone address authProvider')
+          
+          return res.json({ success: true, user: updatedUser })
+      }  
 
         // Admin can update any user
         if (role === 'admin' && targetUserId) {
