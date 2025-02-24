@@ -12,6 +12,7 @@ import { env } from "../../../../../config/config.js"
 
 export default function AccountPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [primaryAddress, setPrimaryAddress] = useState(null);
 
   const [passwords, setPasswords] = useState({
     currentPassword: '',
@@ -27,9 +28,36 @@ export default function AccountPage() {
     authProvider: 'local' // default value
   })
 
+  
+  const fetchAddresses = async () => {
+    const userID = localStorage.getItem('userId');
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/user/address?userId=${userID}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      const data = await response.json();
+      console.log('Fetched addresses:', data);
+      
+      const defaultAddress = data.find(addr => addr.isDefault);
+      console.log('Default address:', defaultAddress);
+      
+      if (defaultAddress) {
+        const formattedAddress = `${defaultAddress.fullName}, ${defaultAddress.address}, ${defaultAddress.locality}, ${defaultAddress.city}, ${defaultAddress.state} - ${defaultAddress.pinCode}`;
+        setPrimaryAddress(formattedAddress);
+        console.log('Formatted address:', formattedAddress);
+      }
+    } catch (error) {
+      console.log('Error fetching addresses:', error);
+      toast.error('Failed to fetch addresses');
+    }
+  };
+  
+
   useEffect(() => {
     const fetchUserData = async () => {
-      try {
+      try { 
         const token = localStorage.getItem('token')
         const userId = localStorage.getItem('userId')
         const response = await fetch(`${env.API_URL}/api/v1/user/profile?userId=${userId}`, {
@@ -56,6 +84,7 @@ export default function AccountPage() {
     }
 
     fetchUserData()
+    fetchAddresses() 
   }, [])
 
   const handleSubmit = async (e) => {
@@ -193,11 +222,17 @@ export default function AccountPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm md:text-base font-poppins font-normal block mb-1">Address</label>
-                  <input 
-                    value={userData.address}
-                    onChange={(e) => setUserData({...userData, address: e.target.value})}
-                    className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
+                  <label className="text-sm md:text-base font-poppins font-normal block mb-1">
+                    Primary Address
+                    <Link href="/user/myaccount/manage-address" className="text-sm text-blue-600 ml-2">
+                      Edit in Address Book
+                    </Link>
+                  </label>
+                  <textarea 
+                    value={primaryAddress || 'No primary address set'}
+                    readOnly
+                    className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md cursor-not-allowed"
+                    rows="3"
                   />
                 </div>
               </div>

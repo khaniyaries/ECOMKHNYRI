@@ -2,24 +2,36 @@
 import React, { useState, useEffect } from 'react';
 import SidebarContent from "@/components/SidebarContent.jsx"
 import { CgCloseO } from "react-icons/cg";
+import toast from 'react-hot-toast';
+import {env} from '../../../../../../config/config.js'
 
 const Cancellations = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-    const [cancellations] = useState([
-        {
-          id: 1,
-          item: "Wireless Headphones",
-          date: "2025-01-15",
-          reason: "Changed my mind",
-        },
-        {
-          id: 2,
-          item: "Gaming Mouse",
-          date: "2025-02-01",
-          reason: "Found a better deal",
-        },
-      ]);
+    const [cancellations, setCancellations] = useState([]);
+
+    const fetchCancellations = async () => {
+        try {
+          const userId = localStorage.getItem('userId');
+          const response = await fetch(`${env.API_URL}/api/v1/sales/getcancellations?userId=${userId}`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+          const data = await response.json();
+          // Ensure data is an array
+          setCancellations(Array.isArray(data) ? data : []);
+        } catch (error) {
+          setCancellations([]);
+          toast.error('Failed to fetch cancellations');
+        }
+      };
+
+    useEffect(() => {
+    fetchCancellations();
+    }, []);
+
+
     
     useEffect(() => {
     const handleClickOutside = (event) => {
@@ -65,18 +77,21 @@ const Cancellations = () => {
                 </div>
                 <div className="w-full md:w-[70%] md:shadow-[0px_1px_13px_0px_rgba(0,0,0,0.05)] mx-auto p-2 md:p-10">
                     <h2 className="text-2xl font-bold mb-4">My Cancellations</h2>
-                    {cancellations.length===0?
-                    <h2>No returns found</h2>:
-                    <div className="space-y-4">
-                        {cancellations.map((cancel) => (
-                        <div key={cancel.id} className="border p-4 rounded-lg shadow-md">
-                            <p className="text-lg font-semibold">{cancel.item}</p>
-                            <p className="text-gray-700">Date: {cancel.date}</p>
-                            <p className="text-gray-500">Reason: {cancel.reason}</p>
+                    {cancellations.length === 0 ? (
+                        <div className="text-center py-8">
+                            <h2 className="text-gray-600">No Cancellations found</h2>
                         </div>
-                        ))}
-                    </div>
-                    }
+                        ) : (
+                        <div className="space-y-4">
+                            {cancellations.map((cancel) => (
+                            <div key={cancel.id} className="border p-4 rounded-lg shadow-md">
+                                <p className="text-lg font-semibold">{cancel.item}</p>
+                                <p className="text-gray-700">Date: {cancel.date}</p>
+                                <p className="text-gray-500">Reason: {cancel.reason}</p>
+                            </div>
+                            ))}
+                        </div>
+                        )}
                 </div>
             </div>
         </div>        

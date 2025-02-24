@@ -2,24 +2,33 @@
 import React, { useState, useEffect } from 'react';
 import SidebarContent from "@/components/SidebarContent.jsx"
 import { CgCloseO } from "react-icons/cg";
+import toast from 'react-hot-toast';
+import { env } from '../../../../../../config/config.js';
 
 const ItemsReturned = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-    const [returns] = useState([
-        {
-          id: 1,
-          item: "Smartphone Case",
-          date: "2025-01-20",
-          reason: "Wrong size",
-        },
-        {
-          id: 2,
-          item: "Laptop Stand",
-          date: "2025-01-25",
-          reason: "Defective item",
-        },
-      ]);
+    const [returns, setReturns] = useState([]);
+
+    const fetchReturns = async () => {
+        try {
+          const userId = localStorage.getItem('userId');
+          const response = await fetch(`${env.API_URL}/api/v1/sales/getreturns?userId=${userId}`, {
+            headers: {
+              'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+          });
+          const data = await response.json();
+          setReturns(Array.isArray(data) ? data : []);
+        } catch (error) {
+          setReturns([]);
+          toast.error('Failed to fetch returns');
+        }
+      };
+
+    useEffect(() => {
+    fetchReturns();
+    }, []);
     
     useEffect(() => {
     const handleClickOutside = (event) => {
@@ -64,19 +73,22 @@ const ItemsReturned = () => {
                     <SidebarContent />
                 </div>
                 <div className="w-full md:w-[70%] md:shadow-[0px_1px_13px_0px_rgba(0,0,0,0.05)] mx-auto p-2 md:p-10">
-                    <h2 className="text-2xl font-bold mb-4">My Returns</h2>
-                    {returns.length===0?
-                    <h2>No returns found</h2>:
-                    <div className="space-y-4">
+                <h2 className="text-2xl font-bold mb-4">My Returns</h2>
+                    {returns.length === 0 ? (
+                        <div className="text-center py-8">
+                        <h2 className="text-gray-600">No returns found</h2>
+                        </div>
+                    ) : (
+                        <div className="space-y-4">
                         {returns.map((returnItem) => (
-                        <div key={returnItem.id} className="border p-4 rounded-lg shadow-md">
+                            <div key={returnItem.id} className="border p-4 rounded-lg shadow-md">
                             <p className="text-lg font-semibold">{returnItem.item}</p>
                             <p className="text-gray-700">Date: {returnItem.date}</p>
                             <p className="text-gray-500">Reason: {returnItem.reason}</p>
-                        </div>
+                            </div>
                         ))}
-                    </div>
-                    }
+                        </div>
+                    )}
                 </div>
             </div>
         </div>        

@@ -10,6 +10,8 @@ import cartRoutes from './routes/cartRoutes.js'
 import saleHeaderRoutes from './routes/saleHeaderRoutes.js'
 import saleRoutes from './routes/saleRoutes.js'
 import analyticsRoutes from './routes/analyticsRoutes.js'
+import addressRoutes from './routes/addressRoutes.js'
+import paymentMethodRoutes from './routes/paymentMethodRoutes.js'
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
@@ -41,6 +43,8 @@ app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/saleheader', saleHeaderRoutes);
 app.use('/api/v1/sales', saleRoutes);
 app.use('/api/v1', analyticsRoutes);
+app.use('/api/v1/user/address',addressRoutes);
+app.use('/api/v1/user', paymentMethodRoutes);
 
 
 app.listen(port, () => {
