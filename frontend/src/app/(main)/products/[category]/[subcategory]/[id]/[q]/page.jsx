@@ -32,7 +32,7 @@ export default function CheckoutPage() {
   useEffect(() => {
       const fetchProduct = async () => {
         try {
-          const response = await fetch(`${ 'http://localhost:8080'}/api/v1/products/${id}`)
+          const response = await fetch(`${env.API_URL}/api/v1/products/${id}`)
           const product = await response.json()
           setproduct(product);
           setimage(product.images[0].url)
