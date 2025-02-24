@@ -79,7 +79,7 @@ export default function AccountPage() {
           updateData.newPassword = passwords.newPassword
       }
 
-      const response = await fetch(`${env.API_URL}/api/v1/user/profile/update`, {
+      const response = await fetch(`${env.API_URL}/api/v1/user/profile/update?userId=${userId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

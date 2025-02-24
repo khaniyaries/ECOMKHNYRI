@@ -47,13 +47,13 @@ export const getUsers = async (req, res) => {
 // Update user profile
 export const updateUser = async (req, res) => {
     try {
-        const { role, id } = req.user
+        const { role, userId } = req.query
         const { targetUserId } = req.params
         const { currentPassword, newPassword, ...updates } = req.body
 
         // Handle password change for regular users
         if (currentPassword && newPassword && !role) {
-            const user = await User.findById(id)
+            const user = await User.findById(userId)
             const isMatch = user.password === currentPassword;
             
             if (!isMatch) {
@@ -64,7 +64,7 @@ export const updateUser = async (req, res) => {
             }
             
             const updatedUser = await User.findByIdAndUpdate(
-                id,
+              userId,
                 { ...updates, password: newPassword },
                 { new: true }
             ).select('name email phone address authProvider')
@@ -84,7 +84,7 @@ export const updateUser = async (req, res) => {
 
         // Regular users can only update themselves
         const user = await User.findByIdAndUpdate(
-            id, 
+          userId, 
             updates, 
             { new: true }
         ).select('name email phone address authProvider')
