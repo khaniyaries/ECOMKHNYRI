@@ -33,9 +33,9 @@ export default function Orders() {
 
   const fetchOrders = async () => {
     try {
-      const response = await fetch(`${env.API_URL}/api/v1/admin/sales?page=${pagination.currentPage}`)
+      const response = await fetch(`${env.API_URL}/api/v1/sales?page=${pagination.currentPage}`)
       const data = await response.json()
-      setOrders(data.sales)
+      setOrders(data.orders)
       setPagination(data.pagination)
     } catch (error) {
       console.error('Error fetching orders:', error)
@@ -49,7 +49,7 @@ export default function Orders() {
 
   const handleStatusUpdate = async (orderId) => {
     try {
-      const response = await fetch(`${env.API_URL}/api/v1/admin/sales/${orderId}/status`, {
+      const response = await fetch(`${env.API_URL}/api/v1/sales/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

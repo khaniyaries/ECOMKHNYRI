@@ -32,12 +32,12 @@ export default function OrderDetails() {
   }
 
   const handleViewInvoice = () => {
-    window.open(`${env.API_URL}/api/v1/invoice/${orderId}/view`, '_blank')
+    window.open(`${env.API_URL}/api/v1/sales/invoice/${orderId}/view`, '_blank')
   }
 
   const handleDownloadInvoice = async () => {
     try {
-      const response = await fetch(`${env.API_URL}/api/invoice/${orderId}/download`)
+      const response = await fetch(`${env.API_URL}/api/v1/sales/invoice/${orderId}/download`)
       const blob = await response.blob()
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
@@ -58,6 +58,60 @@ export default function OrderDetails() {
   if (!order) {
     return <div>Order not found</div>
   }
+
+  const getStatusColor = (status) => {
+    const colors = {
+      pending: 'bg-yellow-100 text-yellow-800',
+      processing: 'bg-blue-100 text-blue-800',
+      shipped: 'bg-purple-100 text-purple-800',
+      delivered: 'bg-green-100 text-green-800',
+      cancelled: 'bg-red-100 text-red-800'
+    }
+    return colors[status] || 'bg-gray-100 text-gray-800'
+  }
+
+  const getStatusIcon = (status) => {
+    const icons = {
+      pending: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      processing: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+        </svg>
+      ),
+      shipped: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+        </svg>
+      ),
+      delivered: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+        </svg>
+      ),
+      cancelled: (
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      )
+    }
+    return icons[status] || icons.pending
+  }
+  
+  const getStatusMessage = (status) => {
+    const messages = {
+      pending: 'Order is awaiting processing',
+      processing: 'Order is being processed',
+      shipped: 'Order has been shipped',
+      delivered: 'Order has been delivered',
+      cancelled: 'Order has been cancelled'
+    }
+    return messages[status] || 'Status unknown'
+  }
+  
 
   return (
     <div className="space-y-8">

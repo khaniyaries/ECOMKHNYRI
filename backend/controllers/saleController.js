@@ -1,9 +1,17 @@
+import fetch from 'node-fetch'
 import Sale from '../models/Sale.js';
+import productModel from '../models/productModel.js';
 import PDFDocument from 'pdfkit'
 
-const calculatePercentageChange = (previous, current) => {
+  const calculatePercentageChange = (previous, current) => {
     if (previous === 0) return current > 0 ? 100 : 0;
     return ((current - previous) / previous) * 100;
+  };
+
+  const fetchImageBuffer = async (imageUrl) => {
+    const response = await fetch(imageUrl);
+    const arrayBuffer = await response.arrayBuffer();
+    return Buffer.from(arrayBuffer);
   };
   
 
@@ -150,12 +158,12 @@ export const getDashboardStats = async (req, res) => {
       });
   
       // Current month stock
-      const currentStock = await Product.countDocuments({ 
+      const currentStock = await productModel.countDocuments({ 
         createdAt: { $gte: lastMonth }
       });
   
       // Previous month stock
-      const previousStock = await Product.countDocuments({
+      const previousStock = await productModel.countDocuments({
         createdAt: { $gte: previousMonth, $lt: lastMonth }
       });
   
@@ -202,8 +210,8 @@ export const getDashboardStats = async (req, res) => {
       ]);
   
       const totalOrders = await Sale.countDocuments();
-      const totalCustomers = await Sale.distinct('customer').length;
-      const productsInStock = await Product.countDocuments({ stock: { $gt: 0 } });
+      const totalCustomers = (await Sale.distinct('customer')).length;
+      const productsInStock = await productModel.countDocuments({ stock: { $gt: 0 } });
   
       // Get recent orders
       const recentOrders = await Sale.find()
@@ -238,11 +246,13 @@ export const getDashboardStats = async (req, res) => {
       const doc = new PDFDocument()
       
       // Company Branding
-      doc.image('public/logo.png', 50, 45, { width: 80 })
-      doc.fontSize(24).text('ECOMMERCE', 140, 57, { font: 'Helvetica-Bold' })
-      doc.fontSize(12).text('www.ecommerce.com', 140, 85)
-      doc.text('support@ecommerce.com', 140, 100)
-      doc.text('+1 234 567 8900', 140, 115)
+      const imageUrl = 'https://res.cloudinary.com/daqh8noyb/image/upload/v1740427427/ecommerce/logo/dqfbmgopyjn4e6thkq9f.png'
+      const imageBuffer = await fetchImageBuffer(imageUrl)
+      doc.image(imageBuffer, 50, 45, { width: 80 })
+      doc.fontSize(24).text('Yarees', 50, 45, { align: 'right' , font: 'Helvetica-Bold' })
+      doc.fontSize(12).text('www.yarees.in', 50, 75, { align: 'right'})
+      doc.text('contact.yarees@gmail.com', 50, 90, { align: 'right'})
+      doc.text('+91 7051350219', 50, 105, { align: 'right'})
       
       // Invoice Header
       doc.fontSize(20).text('INVOICE', 50, 160, { font: 'Helvetica-Bold' })
@@ -262,22 +272,38 @@ export const getDashboardStats = async (req, res) => {
       doc.strokeColor('#000000')
       doc.lineWidth(1)
       doc.moveTo(50, y).lineTo(550, y).stroke()
+
+      const columns = {
+        product: { x: 50, width: 180 }, // Increased width for product names
+        quantity: { x: 250, width: 80 },
+        price: { x: 350, width: 80 },
+        total: { x: 450, width: 80 }
+      }
       
       y += 20
       doc.fontSize(12)
-        .text('Product', 50, y, { font: 'Helvetica-Bold' })
-        .text('Quantity', 250, y, { font: 'Helvetica-Bold' })
-        .text('Price', 350, y, { font: 'Helvetica-Bold' })
-        .text('Total', 450, y, { font: 'Helvetica-Bold' })
+        .text('Products', columns.product.x, y, { font: 'Helvetica-Bold' , width: columns.product.width})
+        .text('Quantity', columns.quantity.x, y, { font: 'Helvetica-Bold' , width: columns.quantity.width})
+        .text('Price', columns.price.x, y, { font: 'Helvetica-Bold' , width: columns.price.width})
+        .text('Total', columns.total.x, y, { font: 'Helvetica-Bold' , width: columns.total.width})
       
       // Items Table Content
       y += 20
       sale.orderItems.forEach(item => {
-        doc.text(item.product.name, 50, y)
-        doc.text(item.quantity.toString(), 250, y)
-        doc.text(`$${item.price.toFixed(2)}`, 350, y)
-        doc.text(`$${(item.price * item.quantity).toFixed(2)}`, 450, y)
-        y += 25
+        const heightOffset = doc.heightOfString(item.product.name, {
+          width: columns.product.width,
+          align: 'left'
+        })
+        
+        doc.text(item.product.name, columns.product.x, y, {
+          width: columns.product.width,
+          align: 'left'
+        })
+        doc.text(item.quantity.toString(), columns.quantity.x, y)
+        doc.text(`$${item.price.toFixed(2)}`, columns.price.x, y)
+        doc.text(`$${(item.price * item.quantity).toFixed(2)}`, columns.total.x, y)
+        
+        y += Math.max(heightOffset, 25) // Adjust row height based on content
       })
       
       // Total Section
@@ -287,9 +313,30 @@ export const getDashboardStats = async (req, res) => {
         .text('Total Amount:', 350, y, { font: 'Helvetica-Bold' })
         .text(`$${sale.totalAmount.toFixed(2)}`, 450, y)
       
-      // Footer
+      // Footer section with decorative elements
+      const startX = 50
+      const endX = 550
+      const y_position = y + 60
+      const dashLength = 5
+      const gapLength = 5
+
+      for (let x = startX; x <= endX; x += (dashLength + gapLength)) {
+        doc.moveTo(x, y_position)
+          .lineTo(Math.min(x + dashLength, endX), y_position)
+          .stroke()
+      }
+
       doc.fontSize(10)
-        .text('Thank you for your business!', 50, y + 50, { align: 'center' })
+        .text('Thank you for your business!', 50, y + 70, { align: 'center' })
+        .text('Shop with confidence at YAREES', 50, y + 80, { align: 'center' })
+
+      // Add decorative bottom border
+      doc.moveTo(50, y + 100).lineTo(550, y + 100).stroke()
+
+      // Add contact details at the very bottom
+      doc.fontSize(8)
+        .text('For support: contact@yarees.com | Website: www.yarees.com', 50, y + 110, { align: 'center' })
+
       
       res.setHeader('Content-Type', 'application/pdf')
       doc.pipe(res)
@@ -311,11 +358,13 @@ export const getDashboardStats = async (req, res) => {
       const doc = new PDFDocument()
       
       // Company Branding
-      doc.image('public/logo.png', 50, 45, { width: 80 })
-      doc.fontSize(24).text('ECOMMERCE', 140, 57, { font: 'Helvetica-Bold' })
-      doc.fontSize(12).text('www.ecommerce.com', 140, 85)
-      doc.text('support@ecommerce.com', 140, 100)
-      doc.text('+1 234 567 8900', 140, 115)
+      const imageUrl = 'https://res.cloudinary.com/daqh8noyb/image/upload/v1740427427/ecommerce/logo/dqfbmgopyjn4e6thkq9f.png'
+      const imageBuffer = await fetchImageBuffer(imageUrl)
+      doc.image(imageBuffer, 50, 45, { width: 80 })
+      doc.fontSize(24).text('Yarees', 50, 45, { align: 'right' , font: 'Helvetica-Bold' })
+      doc.fontSize(12).text('www.yarees.in', 50, 75, { align: 'right'})
+      doc.text('contact.yarees@gmail.com', 50, 90, { align: 'right'})
+      doc.text('+91 7051350219', 50, 105, { align: 'right'})
       
       // Invoice Header
       doc.fontSize(20).text('INVOICE', 50, 160, { font: 'Helvetica-Bold' })
@@ -335,22 +384,38 @@ export const getDashboardStats = async (req, res) => {
       doc.strokeColor('#000000')
       doc.lineWidth(1)
       doc.moveTo(50, y).lineTo(550, y).stroke()
+
+      const columns = {
+        product: { x: 50, width: 180 }, // Increased width for product names
+        quantity: { x: 250, width: 80 },
+        price: { x: 350, width: 80 },
+        total: { x: 450, width: 80 }
+      }
       
       y += 20
       doc.fontSize(12)
-        .text('Product', 50, y, { font: 'Helvetica-Bold' })
-        .text('Quantity', 250, y, { font: 'Helvetica-Bold' })
-        .text('Price', 350, y, { font: 'Helvetica-Bold' })
-        .text('Total', 450, y, { font: 'Helvetica-Bold' })
+        .text('Products', columns.product.x, y, { font: 'Helvetica-Bold' , width: columns.product.width})
+        .text('Quantity', columns.quantity.x, y, { font: 'Helvetica-Bold' , width: columns.quantity.width})
+        .text('Price', columns.price.x, y, { font: 'Helvetica-Bold' , width: columns.price.width})
+        .text('Total', columns.total.x, y, { font: 'Helvetica-Bold' , width: columns.total.width})
       
       // Items Table Content
       y += 20
       sale.orderItems.forEach(item => {
-        doc.text(item.product.name, 50, y)
-        doc.text(item.quantity.toString(), 250, y)
-        doc.text(`$${item.price.toFixed(2)}`, 350, y)
-        doc.text(`$${(item.price * item.quantity).toFixed(2)}`, 450, y)
-        y += 25
+        const heightOffset = doc.heightOfString(item.product.name, {
+          width: columns.product.width,
+          align: 'left'
+        })
+        
+        doc.text(item.product.name, columns.product.x, y, {
+          width: columns.product.width,
+          align: 'left'
+        })
+        doc.text(item.quantity.toString(), columns.quantity.x, y)
+        doc.text(`$${item.price.toFixed(2)}`, columns.price.x, y)
+        doc.text(`$${(item.price * item.quantity).toFixed(2)}`, columns.total.x, y)
+        
+        y += Math.max(heightOffset, 25) // Adjust row height based on content
       })
       
       // Total Section
@@ -360,9 +425,29 @@ export const getDashboardStats = async (req, res) => {
         .text('Total Amount:', 350, y, { font: 'Helvetica-Bold' })
         .text(`$${sale.totalAmount.toFixed(2)}`, 450, y)
       
-      // Footer
+      // Footer section with decorative elements
+      const startX = 50
+      const endX = 550
+      const y_position = y + 60
+      const dashLength = 5
+      const gapLength = 5
+
+      for (let x = startX; x <= endX; x += (dashLength + gapLength)) {
+        doc.moveTo(x, y_position)
+          .lineTo(Math.min(x + dashLength, endX), y_position)
+          .stroke()
+      }
+
       doc.fontSize(10)
-        .text('Thank you for your business!', 50, y + 50, { align: 'center' })
+        .text('Thank you for your business!', 50, y + 70, { align: 'center' })
+        .text('Shop with confidence at YAREES', 50, y + 80, { align: 'center' })
+
+      // Add decorative bottom border
+      doc.moveTo(50, y + 100).lineTo(550, y + 100).stroke()
+
+      // Add contact details at the very bottom
+      doc.fontSize(8)
+        .text('For support: contact@yarees.com | Website: www.yarees.com', 50, y + 110, { align: 'center' })
       
       // Set download headers
       res.setHeader('Content-Type', 'application/pdf')
