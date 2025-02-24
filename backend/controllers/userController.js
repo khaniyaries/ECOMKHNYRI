@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 // Fetch user profile(s)
 export const getUsers = async (req, res) => {
     try {
-        const { role, id } = req.user // From auth middleware
+        const { role, userId } = req.query // From auth middleware
         
         if (!role) {
           const user = await User.findById(userId).select('name email phone address authProvider')
