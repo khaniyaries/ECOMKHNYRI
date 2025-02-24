@@ -14,15 +14,16 @@ export default function CheckoutPage() {
   const [product,setproduct]=useState(null);
   const[firstname,setfirstname]=useState(null);
   const[compannyname,setcompanyname]=useState('');
-  const[streetaddress,setstreetaddress]=useState("");
+  const[streetaddress,setstreetaddress]=useState(null);
   const[apartmentdetails,setapartmentdetails]=useState("");
-  const[city,setcity]=useState();
-  const[phonenumerb,setphonenumeber]=useState();
+  const[city,setcity]=useState(null);
+  const[phonenumber,setphonenumeber]=useState(null);
   const[checked,setsave]=useState(false);
   const [image,setimage]=useState();
   const[name,setname]=useState();
   const [price,setprice]=useState();
   const[quantity,setquantity]=useState(null);
+  const[invalid,setinvalid]=useState(false);
 
   
   const {id,q}=useParams();
@@ -47,6 +48,18 @@ export default function CheckoutPage() {
   
       fetchProduct();
     }, [id])
+
+
+    const handleorder=(e)=>{
+      e.preventDefault();
+      
+      if(firstname==null||streetaddress==null||city==null||phonenumber==null){
+        setinvalid(true);
+
+
+      }
+
+    }
   return (
 
     <div className="container mx-auto w-full h-full px-4 md:px-10 lg:px-40 py-20">
@@ -100,6 +113,11 @@ export default function CheckoutPage() {
               type="checkbox" id="saveInfo" className="rounded border-gray-300 h-4 accent-red-500 w-4" />
               <label htmlFor="saveInfo" className="text-black text-sm md:text-base">Save this information for faster check-out next time</label>
             </div>
+            {invalid&&(
+              <div>
+                <span className="text-red-500 text-sm ">Please Fill Out Necessary Fields</span>
+              </div>
+            )}
           </form>
         </div>
 
@@ -121,7 +139,7 @@ export default function CheckoutPage() {
                 </div>
                 <span>₹{price}</span>
                  </div>
-                 <div className="flex justify-end">                
+                 <div style={{margin:0}} className="flex justify-end font-thin text-gray-500">                
                 <span>×{quantity}</span>
                 </div>
               
@@ -185,7 +203,9 @@ export default function CheckoutPage() {
             </div>
 
             {/* Place Order */}
-            <button className="w-max mt-6 px-8 py-3 bg-red-500 text-white rounded-md hover:bg-red-600">
+            <button 
+            onClick={handleorder}
+            className="w-max mt-6 px-8 py-3 bg-red-500 text-white rounded-md hover:bg-red-600">
               Place Order
             </button>
           </div>
