@@ -6,33 +6,42 @@ export const getUsers = async (req, res) => {
     try {
         const { role, id } = req.user // From auth middleware
         
-        // For admin - fetch all or specific user
-        if (role === 'admin') {
-            const { targetUserId } = req.query
-            if (targetUserId) {
-                const user = await User.findById(targetUserId).select('name email phone address authProvider')
-                return res.json({ success: true, user })
-            }
-            const users = await User.find().select('name email phone address authProvider')
-            return res.json({ success: true, users })
-        }
-        
-        // For regular user - fetch own profile only
-        const user = await User.findById(id).select('name email phone address authProvider')
-        return res.json({ 
-            success: true, 
-            user: {
-                name: user.name,
-                email: user.email,
-                phone: user.phone,
-                address: user.address,
-                authProvider: user.authProvider
-            }
-        })
-    } catch (error) {
-        console.log('Profile fetch error:', error)
-        res.status(500).json({ success: false, message: 'Error fetching profile data' })
-    }
+        if (!role) {
+          const user = await User.findById(userId).select('name email phone address authProvider')
+          
+          if (!user) {
+              return res.status(404).json({ success: false, message: 'User not found' })
+          }
+          
+          return res.json({ 
+              success: true, 
+              user: {
+                  name: user.name,
+                  email: user.email,
+                  phone: user.phone,
+                  address: user.address,
+                  authProvider: user.authProvider
+              }
+          })
+      }
+      
+      // Admin flow 
+      if (role === 'admin') {
+          const { targetUserId } = req.query
+          
+          if (targetUserId) {
+              const user = await User.findById(targetUserId).select('name email phone address authProvider')
+              return res.json({ success: true, user })
+          }
+          
+          const users = await User.find().select('name email phone address authProvider')
+          return res.json({ success: true, users })
+      }
+      
+  } catch (error) {
+      console.log('Profile fetch error:', error)
+      res.status(500).json({ success: false, message: 'Error fetching profile data' })
+  }
 }
 
 // Update user profile

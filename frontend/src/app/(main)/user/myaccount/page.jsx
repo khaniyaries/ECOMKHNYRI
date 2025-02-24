@@ -31,7 +31,8 @@ export default function AccountPage() {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token')
-        const response = await fetch(`${env.API_URL}/api/v1/user/profile`, {
+        const userId = localStorage.getItem('userId')
+        const response = await fetch(`${env.API_URL}/api/v1/user/profile?userId=${userId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
