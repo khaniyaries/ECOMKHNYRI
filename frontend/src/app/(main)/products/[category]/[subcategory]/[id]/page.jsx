@@ -12,7 +12,7 @@ import Link from "next/link.js"
 
 
 export default function ProductPage() {
-  const { id } = useParams()
+  const { id, category, subcategory } = useParams();
   const [product, setProduct] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [quantity, setQuantity] = useState(1)
@@ -28,6 +28,7 @@ export default function ProductPage() {
   const pathname = usePathname()
 
   useEffect(() => {
+
     const fetchCategory = async () => {
       if (categoryId) {  // Only fetch if categoryId exists
         try {
@@ -39,11 +40,11 @@ export default function ProductPage() {
         }
       }
     }
-  
+
     fetchCategory()
   }, [categoryId])
-  
-  
+
+
 
   useEffect(() => {
     if (product) {
@@ -80,7 +81,7 @@ export default function ProductPage() {
   const scrollContainer = (direction, containerClass) => {
     const container = document.querySelector(containerClass)
     const scrollAmount = 340
-    
+
     if (container) {
       container.scrollBy({
         left: direction === 'left' ? -scrollAmount : scrollAmount,
@@ -97,7 +98,9 @@ export default function ProductPage() {
       setUserRating(userExistingRating || 0)
     }
   }, [user, product])
-  
+
+
+
   const handleRatingClick = async (rating) => {
     if (!user) {
       localStorage.setItem('redirectAfterLogin', pathname)
@@ -114,7 +117,7 @@ export default function ProductPage() {
       ))
       return
     }
-  
+
     try {
       const response = await fetch(`${env.API_URL}/api/v1/products/${id}/rating`, {
         method: 'POST',
@@ -123,7 +126,7 @@ export default function ProductPage() {
         },
         body: JSON.stringify({ rating })
       })
-  
+
       if (response.ok) {
         const data = await response.json()
         setUserRating(data.userRating)
@@ -163,34 +166,33 @@ export default function ProductPage() {
 
       <section className="grid gap-8 md:grid-cols-2">
         <article className="grid gap-4 lg:grid-cols-[100px,1fr] lg:gap-8">
-        <div className="relative order-1 aspect-square overflow-hidden rounded-lg border bg-muted lg:order-2">
-          <Image
-            src={selectedImage || "/images/placeholder.svg"}
-            alt={product.name}
-            fill
-            className="object-contain"
-            priority
-          />
-        </div>
+          <div className="relative order-1 aspect-square overflow-hidden rounded-lg border bg-muted lg:order-2">
+            <Image
+              src={selectedImage || "/images/placeholder.svg"}
+              alt={product.name}
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
 
-        <div className="order-2 grid grid-cols-4 gap-4 lg:order-1 lg:grid-cols-1">
-          {product.images.map((image) => (
-            <button
-              key={image._id}
-              onClick={() => setSelectedImage(image.url)}
-              className={`relative aspect-square w-full overflow-hidden rounded-lg border hover:border-primary lg:h-[100px] ${
-                selectedImage === image.url ? 'border-2 border-primary' : 'border-muted'
-              }`}
-            >
-              <Image
-                src={image.url}
-                alt={`${product.name} view`}
-                fill
-                className="object-contain"
-              />
-            </button>
-          ))}
-        </div>
+          <div className="order-2 grid grid-cols-4 gap-4 lg:order-1 lg:grid-cols-1">
+            {product.images.map((image) => (
+              <button
+                key={image._id}
+                onClick={() => setSelectedImage(image.url)}
+                className={`relative aspect-square w-full overflow-hidden rounded-lg border hover:border-primary lg:h-[100px] ${selectedImage === image.url ? 'border-2 border-primary' : 'border-muted'
+                  }`}
+              >
+                <Image
+                  src={image.url}
+                  alt={`${product.name} view`}
+                  fill
+                  className="object-contain"
+                />
+              </button>
+            ))}
+          </div>
         </article>
 
         <article className="space-y-8">
@@ -201,11 +203,10 @@ export default function ProductPage() {
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Star
                     key={star}
-                    className={`h-5 w-5 cursor-pointer transition-colors ${
-                      star <= (hoverRating || userRating || product.averageRating)
+                    className={`h-5 w-5 cursor-pointer transition-colors ${star <= (hoverRating || userRating || product.averageRating)
                         ? "fill-primary text-primary"
                         : "fill-muted text-muted-foreground"
-                    }`}
+                      }`}
                     onMouseEnter={() => setHoverRating(star)}
                     onMouseLeave={() => setHoverRating(0)}
                     onClick={() => handleRatingClick(star)}
@@ -221,60 +222,66 @@ export default function ProductPage() {
           </div>
 
           <div className="space-y-4">
-          {product && product.colors.length > 0 && (
-            <div className="space-y-2">
-              <h2 className="font-medium">Colors:</h2>
-              <div className="flex items-center space-x-3">
-                {product.colors.map((color) => (
-                  <div key={color} className="flex items-center space-x-2">
-                    <input 
-                      type="radio" 
-                      name="color" 
-                      id={color} 
-                      value={color}
-                      checked={selectedColor === color}
-                      onChange={() => setSelectedColor(color)}
-                      className="w-4 h-4 border-2"
-                    />
-                    <label htmlFor={color}>{color}</label>
-                  </div>
-                ))}
+            {product && product.colors.length > 0 && (
+              <div className="space-y-2">
+                <h2 className="font-medium">Colors:</h2>
+                <div className="flex items-center space-x-3">
+                  {product.colors.map((color) => (
+                    <div key={color} className="flex items-center space-x-2">
+                      <input
+                        type="radio"
+                        name="color"
+                        id={color}
+                        value={color}
+                        checked={selectedColor === color}
+                        onChange={() => setSelectedColor(color)}
+                        className="w-4 h-4 border-2"
+                      />
+                      <label htmlFor={color}>{color}</label>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          {product && product.sizes.length > 0 &&(
-          <div className="space-y-2">
-            <h2 className="font-medium">Size:</h2>
-            <div className="flex space-x-2">
-              {product.sizes.map((size) => (
-                <button
-                  key={size}
-                  onClick={() => setSelectedSize(size)}
-                  className={`rounded-md border px-4 py-2 text-sm transition-colors
-                    ${selectedSize === size 
-                      ? 'border-primary bg-primary/10' 
-                      : 'hover:border-primary hover:bg-primary/10'
-                    }`}
-                >
-                  {size}
-                </button>
-              ))}
-            </div>
-          </div>
-          )}
+            {product && product.sizes.length > 0 && (
+              <div className="space-y-2">
+                <h2 className="font-medium">Size:</h2>
+                <div className="flex space-x-2">
+                  {product.sizes.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`rounded-md border px-4 py-2 text-sm transition-colors
+                    ${selectedSize === size
+                          ? 'border-primary bg-primary/10'
+                          : 'hover:border-primary hover:bg-primary/10'
+                        }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center space-x-4">
               <div className="flex items-center border rounded-md">
-                <button 
-                onClick={()=>{setQuantity((prev)=>(prev>1?prev-1:prev))}}
-                className="px-4 py-2 hover:bg-muted">-</button>
+                <button
+                  onClick={() => { setQuantity((prev) => (prev > 1 ? prev - 1 : prev)) }}
+                  className="px-4 py-2 hover:bg-muted">-</button>
                 <span className="px-4 py-2">{quantity}</span>
                 <button
-                  onClick={()=>{setQuantity((prev)=>(prev+1))}}
-                className="px-4 py-2 hover:bg-muted">+</button>
+                  onClick={() => { setQuantity((prev) => (prev + 1)) }}
+                  className="px-4 py-2 hover:bg-muted">+</button>
               </div>
-              <button className="bg-black text-white rounded-md py-2 px-3">Buy Now</button>
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.location.href = `/products/${category}/${subcategory}/${id}/wjev${quantity}skhevg`
+                }}
+
+                className="bg-black text-white rounded-md py-2 px-3">Buy Now</button>
               <button size="lg" variant="outline">
                 <Heart className="h-5 w-5" />
               </button>
@@ -301,12 +308,12 @@ export default function ProductPage() {
       </section>
       <div className="flex flex-col md:py-16 px-5 md:px-10 lg:px-20 mt-20 pb-10">
         <div className="flex justify-between items-start w-full">
-          
+
           <div className="flex items-center gap-2 mb-4">
             <div className="w-5 h-10 bg-red-500 rounded" />
             <span className="text-red-500 font-bold text-xs">Related Items</span>
           </div>
-            
+
           <div className="flex justify-end gap-2 ml-auto w-auto">
             <button onClick={() => scrollContainer('left', '.flash-scroll-container')} className="p-2 border bg-gray-100 rounded-full hover:bg-gray-200">
               <HiOutlineArrowSmLeft className="w-6 h-6 " />
