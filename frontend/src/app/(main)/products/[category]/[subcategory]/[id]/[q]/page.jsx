@@ -277,7 +277,7 @@ export default function CheckoutPage() {
         <span className="text-black">Checkout</span>
       </nav> */}
 
-      <div className="grid grid-cols-2  gap-8">
+      <div className="grid md:grid-cols-2  gap-8">
         {/* Billing Details */}
         <div className={`${newaddress ? "hidden size-0" : ""}`}>
           <h2 className={`lg:text-4xl ${newaddress ? "hidden size-0" : ""} text-2xl font-inter font-medium mb-6`}>Billing Details</h2>
