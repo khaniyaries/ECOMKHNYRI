@@ -17,7 +17,7 @@ export default function CheckoutPage() {
 
   const [product, setproduct] = useState(null);
   const [firstname, setfirstname] = useState(null);
-  const [companyname, setcompanyname] = useState('');
+  const [Lastname, setLastname] = useState('');
   const [streetaddress, setstreetaddress] = useState(null);
   const [apartmentdetails, setapartmentdetails] = useState(null);
   const [city, setcity] = useState(null);
@@ -146,7 +146,7 @@ export default function CheckoutPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId: userid, name: firstname, fullName: companyname, phone: phonenumber, address: streetaddress, locality: apartmentdetails, city: city, state: selectedstate, pinCode: pincode })
+        body: JSON.stringify({ userId: userid, name: firstname, fullName: Lastname, phone: phonenumber, address: streetaddress, locality: apartmentdetails, city: city, state: selectedstate, pinCode: pincode })
       })
       fetchaddress();
       setnewaddress(false)
@@ -325,8 +325,8 @@ export default function CheckoutPage() {
               <input onChange={(e) => setfirstname(e.target.value)} id="firstName" required className="w-[90%] md:w-full bg-black/5 px-3 py-2 border rounded-md" />
             </div>
             <div>
-              <label htmlFor="companyName" className="block mb-2">Company Name</label>
-              <input onChange={(e) => setcompanyname(e.target.value)} id="companyName" className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
+              <label htmlFor="LastName" className="block mb-2">List Name</label>
+              <input onChange={(e) => setLastname(e.target.value)} id="LastName" className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
             </div>
             <div>
               <label htmlFor="streetAddress" className="block mb-2">Street Address<span className="text-red-500">*</span></label>
