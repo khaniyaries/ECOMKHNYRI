@@ -137,7 +137,7 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     try {
-      if (firstname === null  || streetaddress === null || city === null || phonenumber === null || selectedstate === null || pincode === null) {
+      if (firstname === null || streetaddress === null || city === null || phonenumber === null || selectedstate === null || pincode === null) {
         return setinvalid(true)
       }
       setIsLoading(true)
@@ -252,10 +252,10 @@ export default function CheckoutPage() {
         <span className="text-black">Checkout</span>
       </nav> */}
 
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid  gap-8">
         {/* Billing Details */}
         <div>
-          <h2 className="lg:text-4xl text-2xl font-inter font-medium mb-6">Billing Details</h2>
+          <h2 className={`lg:text-4xl ${newaddress?"hidden":""} text-2xl font-inter font-medium mb-6`}>Billing Details</h2>
 
           {(!newaddress) && <div> {shippingaddress.map((address, index) => (
 
@@ -389,7 +389,7 @@ export default function CheckoutPage() {
         </div>
 
         {/* Order Summary */}
-        <div>
+        {!newaddress && <div>
           <div className="bg-gray-50 p-6 rounded-lg">
             {/* Products */}
             <div className="space-y-4 mb-6">
@@ -483,7 +483,7 @@ export default function CheckoutPage() {
               Place Order
             </button>
           </div>
-        </div>
+        </div>}
       </div>
     </div >
   )
