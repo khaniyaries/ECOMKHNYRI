@@ -228,7 +228,7 @@ export default function CheckoutPage() {
             Thank you for shopping with us!!!
           </div>
         </div>
-        <div className="  flex flex-col gap-3 justify-center items-center px-8  ">
+        <div className="  flex flex-col gap-3  justify-center items-center px-4  ">
           <div className="">
             <Image
               width={136}
