@@ -252,10 +252,10 @@ export default function CheckoutPage() {
         <span className="text-black">Checkout</span>
       </nav> */}
 
-      <div className="grid  gap-8">
+      <div className="grid grid-cols-2  gap-8">
         {/* Billing Details */}
-        <div>
-          <h2 className={`lg:text-4xl ${newaddress?"hidden":""} text-2xl font-inter font-medium mb-6`}>Billing Details</h2>
+        <div className={`${newaddress ? "hidden size-0" : ""}`}>
+          <h2 className={`lg:text-4xl ${newaddress ? "hidden size-0" : ""} text-2xl font-inter font-medium mb-6`}>Billing Details</h2>
 
           {(!newaddress) && <div> {shippingaddress.map((address, index) => (
 
@@ -319,74 +319,9 @@ export default function CheckoutPage() {
 
 
 
-          {newaddress && <form className="space-y-4 text-black/50" >
-            <div>
-              <label htmlFor="firstName" className="block mb-2">First Name <span className="text-red-500">*</span></label>
-              <input onChange={(e) => setfirstname(e.target.value)} id="firstName" required className="w-[90%] md:w-full bg-black/5 px-3 py-2 border rounded-md" />
-            </div>
-            <div>
-              <label htmlFor="LastName" className="block mb-2">List Name</label>
-              <input onChange={(e) => setLastname(e.target.value)} id="LastName" className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
-            </div>
-            <div>
-              <label htmlFor="streetAddress" className="block mb-2">Street Address<span className="text-red-500">*</span></label>
-              <input id="streetAddress" onChange={(e) => setstreetaddress(e.target.value)} required className="w-[90%] md:w-full bg-black/5 px-3 py-2 border rounded-md" />
-            </div>
-            <div>
-              <label htmlFor="apartment" className="block mb-2">Apartment, floor, etc. (optional)</label>
-              <input id="apartment" onChange={(e) => setapartmentdetails(e.target.value)} className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
-            </div>
-            <div>
-              <label htmlFor="townCity" className="block mb-2">Town/City<span className="text-red-500">*</span></label>
-              <input id="townCity" onChange={(e) => setcity(e.target.value)} required className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
-            </div>
-            <div>
-              <label htmlFor="phone" className="block mb-2">Phone Number<span className="text-red-500">*</span></label>
-              <input minLength={6} required id="phone" onChange={(e) => setphonenumeber(e.target.value)} maxLength={10} type="tel" className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
-            </div>
-            <div>
 
-              <label>Select a State:</label>
-              <select value={selectedstate} onChange={(e) => setselectedstate(e.target.value)}>
-                <option value="">-- Choose a State --</option>
-                {indianStates.map((state, index) => (
-                  <option key={index} value={state}>
-                    {state}
-                  </option>
-                ))}
-              </select>
-              <span className="text-red-500">*</span>
-            </div>
-            <div>
-              <label htmlFor="pincode" className="block mb-2">pincode<span className="text-red-500">*</span></label>
-              <input
-                onChange={(e) => setpincode(e.target.value)}
-                minLength={6}
-                id="pincode" placeholder="Enter 6-Digit Pincode" type="text" maxLength={6} required className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
-            </div>
-            <div className="flex items-center space-x-2">
-              <input
-                checked={checked}
-                onChange={(e) => { setsave(e.target.checked); }}
-
-                type="checkbox" id="saveInfo" className="rounded border-gray-300 h-4 accent-red-500 w-4" />
-              <label htmlFor="saveInfo" className="text-black text-sm md:text-base">Save this information for faster check-out next time</label>
-            </div>
-            <div className="mt-3 flex justify-end gap-7">
-              <button
-                onClick={() => setnewaddress(false)}
-                className="px-3 py-1 mt-4 bg-transparent text-gray-800 rounded-md border  border-gray-300 hover:bg-gray-400">Cancel</button>
-              <button
-                onClick={handlenewaddress}
-                className="px-3 py-1 mt-4 bg-red-500 text-white rounded-md hover:bg-red-600">submit</button>
-            </div>
-            {invalid && (
-              <div>
-                <span className="text-red-500 text-sm ">Please Fill Out Necessary Fields</span>
-              </div>
-            )}
-          </form>}
         </div>
+        
 
         {/* Order Summary */}
         {!newaddress && <div>
@@ -485,6 +420,75 @@ export default function CheckoutPage() {
           </div>
         </div>}
       </div>
+      <div className="flex justify-center items-center">
+          {newaddress && <form className="space-y-4 text-black/50" >
+            <div>
+              <label htmlFor="firstName" className="block mb-2">First Name <span className="text-red-500">*</span></label>
+              <input onChange={(e) => setfirstname(e.target.value)} id="firstName" required className="w-[90%] md:w-full bg-black/5 px-3 py-2 border rounded-md" />
+            </div>
+            <div>
+              <label htmlFor="LastName" className="block mb-2">List Name</label>
+              <input onChange={(e) => setLastname(e.target.value)} id="LastName" className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
+            </div>
+            <div>
+              <label htmlFor="streetAddress" className="block mb-2">Street Address<span className="text-red-500">*</span></label>
+              <input id="streetAddress" onChange={(e) => setstreetaddress(e.target.value)} required className="w-[90%] md:w-full bg-black/5 px-3 py-2 border rounded-md" />
+            </div>
+            <div>
+              <label htmlFor="apartment" className="block mb-2">Apartment, floor, etc. (optional)</label>
+              <input id="apartment" onChange={(e) => setapartmentdetails(e.target.value)} className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
+            </div>
+            <div>
+              <label htmlFor="townCity" className="block mb-2">Town/City<span className="text-red-500">*</span></label>
+              <input id="townCity" onChange={(e) => setcity(e.target.value)} required className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
+            </div>
+            <div>
+              <label htmlFor="phone" className="block mb-2">Phone Number<span className="text-red-500">*</span></label>
+              <input minLength={6} required id="phone" onChange={(e) => setphonenumeber(e.target.value)} maxLength={10} type="tel" className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
+            </div>
+            <div>
+
+              <label>Select a State:</label>
+              <select value={selectedstate} onChange={(e) => setselectedstate(e.target.value)}>
+                <option value="">-- Choose a State --</option>
+                {indianStates.map((state, index) => (
+                  <option key={index} value={state}>
+                    {state}
+                  </option>
+                ))}
+              </select>
+              <span className="text-red-500">*</span>
+            </div>
+            <div>
+              <label htmlFor="pincode" className="block mb-2">pincode<span className="text-red-500">*</span></label>
+              <input
+                onChange={(e) => setpincode(e.target.value)}
+                minLength={6}
+                id="pincode" placeholder="Enter 6-Digit Pincode" type="text" maxLength={6} required className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
+            </div>
+            <div className="flex items-center space-x-2">
+              <input
+                checked={checked}
+                onChange={(e) => { setsave(e.target.checked); }}
+
+                type="checkbox" id="saveInfo" className="rounded border-gray-300 h-4 accent-red-500 w-4" />
+              <label htmlFor="saveInfo" className="text-black text-sm md:text-base">Save this information for faster check-out next time</label>
+            </div>
+            <div className="mt-3 flex justify-end gap-7">
+              <button
+                onClick={() => setnewaddress(false)}
+                className="px-3 py-1 mt-4 bg-transparent text-gray-800 rounded-md border  border-gray-300 hover:bg-gray-400">Cancel</button>
+              <button
+                onClick={handlenewaddress}
+                className="px-3 py-1 mt-4 bg-red-500 text-white rounded-md hover:bg-red-600">submit</button>
+            </div>
+            {invalid && (
+              <div>
+                <span className="text-red-500 text-sm ">Please Fill Out Necessary Fields</span>
+              </div>
+            )}
+          </form>}
+        </div>
     </div >
   )
 }
