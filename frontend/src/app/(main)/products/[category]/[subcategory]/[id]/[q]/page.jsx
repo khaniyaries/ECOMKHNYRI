@@ -414,7 +414,7 @@ export default function CheckoutPage() {
             {/* Place Order */}
             <button
               onClick={handleorder}
-              className={` ${newaddress ? 'bg-red-300' : ' bg-red-500'}w-max mt-6 px-8 py-3 text-white  bg-red-500 rounded-md hover:bg-red-600`}>
+              className={`  w-max mt-6 px-8 py-3 text-white  bg-red-500 rounded-md hover:bg-red-600`}>
               Place Order
             </button>
           </div>
