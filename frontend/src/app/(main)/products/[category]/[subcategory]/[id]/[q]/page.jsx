@@ -224,8 +224,8 @@ export default function CheckoutPage() {
 
   if (orderdone) {
     return (
-      <div className="flex items-center  mx-auto">
-        <div>
+      <div className=" mt-20 flex justify-center items-center  mx-auto">
+        <div className="">
           Your Order was placed successfully
         </div>
         <div>
