@@ -155,9 +155,9 @@ export default function CheckoutPage() {
     } catch (error) {
       console.log(error)
 
-    } 
-     
-  
+    }
+
+
 
 
 
@@ -165,6 +165,7 @@ export default function CheckoutPage() {
   const handleorder = async (e) => {
     e.preventDefault();
     try {
+      if (newaddress) return;
       setIsLoading(true)
       const response = await fetch(`${env.API_URL}/api/v1/sales/`, {
         method: 'POST',
@@ -190,6 +191,8 @@ export default function CheckoutPage() {
       const data = await response.json();
       if (response.ok) {
         setorderid(data._id)
+        setIsLoading(false)
+        setorderdone(true)
       }
 
 
@@ -206,12 +209,6 @@ export default function CheckoutPage() {
 
     } catch (error) {
       console.log(error.message)
-
-    } finally {
-      setIsLoading(false)
-      setorderdone(true)
-      set
-
 
     }
   }
