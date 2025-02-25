@@ -101,6 +101,28 @@ export default function ProductPage() {
 
 
 
+  const handlebuynow=(e)=> {
+    e.preventDefault();
+    if (!user) {
+      localStorage.setItem('redirectAfterLogin', pathname)
+      toast.custom((t) => (
+        <div className="bg-white p-4 rounded-lg shadow-lg">
+          <p className="mb-2">Please login to Continue..</p>
+          <Link
+            href='/sign-in'
+            className="text-blue-500 underline"
+          >
+            Login here
+          </Link>
+        </div>
+      ))
+      return
+    }
+    window.location.href = `/products/${category}/${subcategory}/${id}/${quantity},${selectedSize},${selectedColor}`
+  }
+
+
+
   const handleRatingClick = async (rating) => {
     if (!user) {
       localStorage.setItem('redirectAfterLogin', pathname)
@@ -254,8 +276,8 @@ export default function ProductPage() {
                       onClick={() => setSelectedSize(size)}
                       className={`rounded-md border px-4 py-2 text-sm transition-colors
                     ${selectedSize === size
-                          ? 'border-primary bg-primary/10'
-                          : 'hover:border-primary hover:bg-primary/10'
+                          ? "border-primary bg-primary/10 bg-slate-500 "
+                          : "hover:border-primary hover:bg-primary/10"
                         }`}
                     >
                       {size}
@@ -276,11 +298,7 @@ export default function ProductPage() {
                   className="px-4 py-2 hover:bg-muted">+</button>
               </div>
               <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.location.href = `/products/${category}/${subcategory}/${id}/wjev${quantity}skhevg`
-                }}
-
+                onClick={handlebuynow}
                 className="bg-black text-white rounded-md py-2 px-3">Buy Now</button>
               <button size="lg" variant="outline">
                 <Heart className="h-5 w-5" />
