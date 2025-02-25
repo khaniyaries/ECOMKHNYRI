@@ -427,7 +427,7 @@ export default function CheckoutPage() {
               <input onChange={(e) => setfirstname(e.target.value)} id="firstName" required className="w-[90%] md:w-full bg-black/5 px-3 py-2 border rounded-md" />
             </div>
             <div>
-              <label htmlFor="LastName" className="block mb-2">List Name</label>
+              <label htmlFor="LastName" className="block mb-2">Last Name</label>
               <input onChange={(e) => setLastname(e.target.value)} id="LastName" className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
             </div>
             <div>
