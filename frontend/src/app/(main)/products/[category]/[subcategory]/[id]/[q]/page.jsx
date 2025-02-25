@@ -321,7 +321,7 @@ export default function CheckoutPage() {
 
 
 
-          {newaddress && <form className="space-y-4 text-black/50" onSubmit={handlenewaddress}>
+          {newaddress && <form className="space-y-4 text-black/50" >
             <div>
               <label htmlFor="firstName" className="block mb-2">First Name <span className="text-red-500">*</span></label>
               <input onChange={(e) => setfirstname(e.target.value)} id="firstName" required className="w-[90%] md:w-full bg-black/5 px-3 py-2 border rounded-md" />
@@ -379,7 +379,7 @@ export default function CheckoutPage() {
                 onClick={() => setnewaddress(false)}
                 className="px-3 py-1 mt-4 bg-transparent text-gray-800 rounded-md border  border-gray-300 hover:bg-gray-400">Cancel</button>
               <button
-                type="submit"
+                onClick={handlenewaddress}
                 className="px-3 py-1 mt-4 bg-red-500 text-white rounded-md hover:bg-red-600">submit</button>
             </div>
             {invalid && (
