@@ -135,12 +135,12 @@ export default function CheckoutPage() {
 
   const handlenewaddress = async (e) => {
     e.preventDefault();
-    setIsLoading(true)
 
     try {
-      if (firstname == null || companyname == null || streetaddress == null || apartmentdetails == null || city == null || phonenumber == null || selectedstate == null || pincode == null) {
-        setinvalid(true)
+      if (firstname === null || companyname === null || streetaddress === null || apartmentdetails === null || city === null || phonenumber === null || selectedstate === null || pincode === null) {
+        return setinvalid(true)
       }
+      setIsLoading(true)
       const response = await fetch(`${env.API_URL}/api/v1/user/address/`, {
         method: 'POST',
         headers: {
@@ -149,14 +149,15 @@ export default function CheckoutPage() {
         body: JSON.stringify({ userId: userid, name: firstname, fullName: companyname, phone: phonenumber, address: streetaddress, locality: apartmentdetails, city: city, state: selectedstate, pinCode: pincode })
       })
       fetchaddress();
-    } catch (error) {
-      console.log(error)
-
-    } finally {
       setnewaddress(false)
       setIsLoading(false)
 
-    }
+    } catch (error) {
+      console.log(error)
+
+    } 
+     
+  
 
 
 
