@@ -137,7 +137,7 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     try {
-      if (firstname === null || companyname === null || streetaddress === null || apartmentdetails === null || city === null || phonenumber === null || selectedstate === null || pincode === null) {
+      if (firstname === null || Lastname === null || streetaddress === null || apartmentdetails === null || city === null || phonenumber === null || selectedstate === null || pincode === null) {
         return setinvalid(true)
       }
       setIsLoading(true)
@@ -479,7 +479,7 @@ export default function CheckoutPage() {
             {/* Place Order */}
             <button
               onClick={handleorder}
-              className="w-max mt-6 px-8 py-3 bg-red-500 text-white rounded-md hover:bg-red-600">
+              className={` ${newaddress ? 'bg-red-300' : ' bg-red-500'}w-max mt-6 px-8 py-3 text-white  bg-red-500 rounded-md hover:bg-red-600`}>
               Place Order
             </button>
           </div>
