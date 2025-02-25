@@ -18,7 +18,7 @@ export default function CheckoutPage() {
   const [product, setproduct] = useState(null);
   const [firstname, setfirstname] = useState(null);
   const [Lastname, setLastname] = useState('');
-  const [streetaddress, setstreetaddress] = useState(null);
+  const [streetaddress, setstreetaddress] = useState('');
   const [apartmentdetails, setapartmentdetails] = useState(null);
   const [city, setcity] = useState(null);
   const [phonenumber, setphonenumeber] = useState(null);
@@ -137,7 +137,7 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     try {
-      if (firstname === null || Lastname === null || streetaddress === null || apartmentdetails === null || city === null || phonenumber === null || selectedstate === null || pincode === null) {
+      if (firstname === null  || streetaddress === null || city === null || phonenumber === null || selectedstate === null || pincode === null) {
         return setinvalid(true)
       }
       setIsLoading(true)
