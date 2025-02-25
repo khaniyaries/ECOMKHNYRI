@@ -94,7 +94,14 @@ const saleSchema = new mongoose.Schema({
   saleDate: {
     type: Date,
     default: Date.now
-  }
+  },
+  orderId: {
+    type: String,
+    unique: true,
+    default: function () {
+        return "YRS-" + Math.floor(10000000 + Math.random() * 90000000);
+    }
+},
 }, {
   timestamps: true
 });

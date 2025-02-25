@@ -7,14 +7,14 @@ import { useState, useEffect } from "react";
 import { env } from '../../../../../../../../config/config.js'
 import { randomInt } from "crypto";
 import toast from "react-hot-toast";
-import { useRouter } from "next/router.js";
+import { useRouter } from "next/navigation";
 
 
 
 
 
 export default function CheckoutPage() {
-
+  const router = useRouter()
   const [product, setproduct] = useState(null);
   const [firstname, setfirstname] = useState(null);
   const [Lastname, setLastname] = useState('');
@@ -190,7 +190,7 @@ export default function CheckoutPage() {
       })
       const data = await response.json();
       if (response.ok) {
-        setorderid(data._id)
+        setorderid(data.orderId)
         setIsLoading(false)
         setorderdone(true)
       }
@@ -222,12 +222,37 @@ export default function CheckoutPage() {
 
   if (orderdone) {
     return (
-      <div className=" mt-20 flex justify-center items-center  mx-auto">
-        <div className="">
-          Your Order was placed successfully
+      <div className=" mt-10 w-full min-h-[50%] flex px-8 flex-col gap-6 py-6  justify-center items-center border border-rose-500 mx-auto">
+        <div className="broder border-rose-300">
+          <div className="text-3xl font-bold font-sans">
+            Thank you for shopping with us!!!
+          </div>
         </div>
-        <div>
-          your order id is {orderid}
+        <div className="  flex flex-col gap-3 justify-center items-center px-8  ">
+          <div className="">
+            <Image
+              width={136}
+              alt="Order Done"
+              height={136}
+              className="object-contain"
+              src="/images/orderdone.svg"
+
+            />
+          </div>
+          <div className="text-blue-800 font-semibold font-inter">
+            Your Order Has Been Placed Successfully
+          </div>
+          <div className="text-xl  font-poppins font-semibold">
+            Order No    &emsp; #{orderid}
+          </div>
+        </div>
+        <div className="mt-4">
+        <button
+              onClick={()=>{router.push("https://yarees.in/products")}}
+              className={`  w-max mt-6 px-8 py-3 text-white  bg-red-500 rounded-md hover:bg-red-600`}>
+              Continue Shopping On Yarees.....
+            </button>
+          
         </div>
 
       </div>
@@ -321,7 +346,7 @@ export default function CheckoutPage() {
 
 
         </div>
-        
+
 
         {/* Order Summary */}
         {!newaddress && <div>
@@ -421,74 +446,74 @@ export default function CheckoutPage() {
         </div>}
       </div>
       <div className="flex justify-center items-center">
-          {newaddress && <form className="space-y-4 text-black/50" >
-            <div>
-              <label htmlFor="firstName" className="block mb-2">First Name <span className="text-red-500">*</span></label>
-              <input onChange={(e) => setfirstname(e.target.value)} id="firstName" required className="w-[90%] md:w-full bg-black/5 px-3 py-2 border rounded-md" />
-            </div>
-            <div>
-              <label htmlFor="LastName" className="block mb-2">Last Name</label>
-              <input onChange={(e) => setLastname(e.target.value)} id="LastName" className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
-            </div>
-            <div>
-              <label htmlFor="streetAddress" className="block mb-2">Street Address<span className="text-red-500">*</span></label>
-              <input id="streetAddress" onChange={(e) => setstreetaddress(e.target.value)} required className="w-[90%] md:w-full bg-black/5 px-3 py-2 border rounded-md" />
-            </div>
-            <div>
-              <label htmlFor="apartment" className="block mb-2">Apartment, floor, etc. (optional)</label>
-              <input id="apartment" onChange={(e) => setapartmentdetails(e.target.value)} className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
-            </div>
-            <div>
-              <label htmlFor="townCity" className="block mb-2">Town/City<span className="text-red-500">*</span></label>
-              <input id="townCity" onChange={(e) => setcity(e.target.value)} required className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
-            </div>
-            <div>
-              <label htmlFor="phone" className="block mb-2">Phone Number<span className="text-red-500">*</span></label>
-              <input minLength={6} required id="phone" onChange={(e) => setphonenumeber(e.target.value)} maxLength={10} type="tel" className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
-            </div>
-            <div>
+        {newaddress && <form className="space-y-4 text-black/50" >
+          <div>
+            <label htmlFor="firstName" className="block mb-2">First Name <span className="text-red-500">*</span></label>
+            <input onChange={(e) => setfirstname(e.target.value)} id="firstName" required className="w-[90%] md:w-full bg-black/5 px-3 py-2 border rounded-md" />
+          </div>
+          <div>
+            <label htmlFor="LastName" className="block mb-2">Last Name</label>
+            <input onChange={(e) => setLastname(e.target.value)} id="LastName" className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
+          </div>
+          <div>
+            <label htmlFor="streetAddress" className="block mb-2">Street Address<span className="text-red-500">*</span></label>
+            <input id="streetAddress" onChange={(e) => setstreetaddress(e.target.value)} required className="w-[90%] md:w-full bg-black/5 px-3 py-2 border rounded-md" />
+          </div>
+          <div>
+            <label htmlFor="apartment" className="block mb-2">Apartment, floor, etc. (optional)</label>
+            <input id="apartment" onChange={(e) => setapartmentdetails(e.target.value)} className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
+          </div>
+          <div>
+            <label htmlFor="townCity" className="block mb-2">Town/City<span className="text-red-500">*</span></label>
+            <input id="townCity" onChange={(e) => setcity(e.target.value)} required className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
+          </div>
+          <div>
+            <label htmlFor="phone" className="block mb-2">Phone Number<span className="text-red-500">*</span></label>
+            <input minLength={6} required id="phone" onChange={(e) => setphonenumeber(e.target.value)} maxLength={10} type="tel" className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
+          </div>
+          <div>
 
-              <label>Select a State:</label>
-              <select value={selectedstate} onChange={(e) => setselectedstate(e.target.value)}>
-                <option value="">-- Choose a State --</option>
-                {indianStates.map((state, index) => (
-                  <option key={index} value={state}>
-                    {state}
-                  </option>
-                ))}
-              </select>
-              <span className="text-red-500">*</span>
-            </div>
-            <div>
-              <label htmlFor="pincode" className="block mb-2">pincode<span className="text-red-500">*</span></label>
-              <input
-                onChange={(e) => setpincode(e.target.value)}
-                minLength={6}
-                id="pincode" placeholder="Enter 6-Digit Pincode" type="text" maxLength={6} required className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
-            </div>
-            <div className="flex items-center space-x-2">
-              <input
-                checked={checked}
-                onChange={(e) => { setsave(e.target.checked); }}
+            <label>Select a State:</label>
+            <select value={selectedstate} onChange={(e) => setselectedstate(e.target.value)}>
+              <option value="">-- Choose a State --</option>
+              {indianStates.map((state, index) => (
+                <option key={index} value={state}>
+                  {state}
+                </option>
+              ))}
+            </select>
+            <span className="text-red-500">*</span>
+          </div>
+          <div>
+            <label htmlFor="pincode" className="block mb-2">pincode<span className="text-red-500">*</span></label>
+            <input
+              onChange={(e) => setpincode(e.target.value)}
+              minLength={6}
+              id="pincode" placeholder="Enter 6-Digit Pincode" type="text" maxLength={6} required className="w-[90%] md:w-full px-3 py-2 bg-black/5 border rounded-md" />
+          </div>
+          <div className="flex items-center space-x-2">
+            <input
+              checked={checked}
+              onChange={(e) => { setsave(e.target.checked); }}
 
-                type="checkbox" id="saveInfo" className="rounded border-gray-300 h-4 accent-red-500 w-4" />
-              <label htmlFor="saveInfo" className="text-black text-sm md:text-base">Save this information for faster check-out next time</label>
+              type="checkbox" id="saveInfo" className="rounded border-gray-300 h-4 accent-red-500 w-4" />
+            <label htmlFor="saveInfo" className="text-black text-sm md:text-base">Save this information for faster check-out next time</label>
+          </div>
+          <div className="mt-3 flex justify-end gap-7">
+            <button
+              onClick={() => setnewaddress(false)}
+              className="px-3 py-1 mt-4 bg-transparent text-gray-800 rounded-md border  border-gray-300 hover:bg-gray-400">Cancel</button>
+            <button
+              onClick={handlenewaddress}
+              className="px-3 py-1 mt-4 bg-red-500 text-white rounded-md hover:bg-red-600">submit</button>
+          </div>
+          {invalid && (
+            <div>
+              <span className="text-red-500 text-sm ">Please Fill Out Necessary Fields</span>
             </div>
-            <div className="mt-3 flex justify-end gap-7">
-              <button
-                onClick={() => setnewaddress(false)}
-                className="px-3 py-1 mt-4 bg-transparent text-gray-800 rounded-md border  border-gray-300 hover:bg-gray-400">Cancel</button>
-              <button
-                onClick={handlenewaddress}
-                className="px-3 py-1 mt-4 bg-red-500 text-white rounded-md hover:bg-red-600">submit</button>
-            </div>
-            {invalid && (
-              <div>
-                <span className="text-red-500 text-sm ">Please Fill Out Necessary Fields</span>
-              </div>
-            )}
-          </form>}
-        </div>
+          )}
+        </form>}
+      </div>
     </div >
   )
 }
