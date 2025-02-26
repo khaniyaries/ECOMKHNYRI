@@ -3,6 +3,8 @@ import Sale from '../models/Sale.js';
 import productModel from '../models/productModel.js';
 import PDFDocument from 'pdfkit'
 
+const Product=productModel;
+
   const calculatePercentageChange = (previous, current) => {
     if (previous === 0) return current > 0 ? 100 : 0;
     return ((current - previous) / previous) * 100;
