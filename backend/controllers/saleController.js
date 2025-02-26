@@ -254,7 +254,7 @@ export const viewInvoice = async (req, res) => {
     const doc = new PDFDocument()
 
     // Company Branding
-    doc.image('/public/logo.png', 50, 45, { width: 80 })
+    doc.image('/logo.png', 50, 45, { width: 80 })
     doc.fontSize(24).text('ECOMMERCE', 140, 57, { font: 'Helvetica-Bold' })
     doc.fontSize(12).text('www.ecommerce.com', 140, 85)
     doc.text('support@ecommerce.com', 140, 100)
