@@ -250,6 +250,7 @@ export const getDashboardStats = async (req, res) => {
 
 export const viewInvoice = async (req, res) => {
   const imagePath = path.join(process.cwd(), 'public', 'logo.png');
+  const imagePath1 = path.join(process.cwd(), 'logo.png');
   console.log(process.cwd())
   // Check if the image exists
   try {
@@ -257,6 +258,13 @@ export const viewInvoice = async (req, res) => {
   } catch (error) {
     console.log(error)
     res.status(404).send('Image not found');
+    return;
+  }
+  try {
+    await fs.access(imagePath1);
+  } catch (error) {
+    console.log(error)
+    res.status(404).send('Image1 not found');
     return;
   }
   try {
