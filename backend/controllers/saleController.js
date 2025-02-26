@@ -2,7 +2,6 @@ import fetch from 'node-fetch'
 import Sale from '../models/Sale.js';
 import productModel from '../models/productModel.js';
 import PDFDocument from 'pdfkit'
-
 const Product=productModel;
 
   const calculatePercentageChange = (previous, current) => {
@@ -290,19 +289,26 @@ export const viewInvoice = async (req, res) => {
     // Items Table Content
     y += 20
     sale.orderItems.forEach(item => {
-      doc.text(item.product.name, 50, y)
+     
+      doc.text(item.product.name, 50, y,{width:190,lineGap:1})
       doc.text(item.quantity.toString(), 250, y)
-      doc.text(`$${item.price.toFixed(2)}`, 350, y)
-      doc.text(`$${(item.price * item.quantity).toFixed(2)}`, 450, y)
+      doc.font("fonts/font.ttf").text("₹",343,y)
+      doc.font("Helvetica"); 
+      doc.text(`${item.price.toFixed(2)}`, 350, y)
+      doc.font("fonts/font.ttf").text("₹",443,y)
+      doc.font("Helvetica"); 
+      doc.text(`${(item.price * item.quantity).toFixed(2)}`, 450, y)
       y += 25
     })
 
     // Total Section
     doc.moveTo(50, y).lineTo(550, y).stroke()
     y += 20
+    doc.font("fonts/font.ttf").text("₹",443,y)
+    doc.font("Helvetica"); 
     doc.fontSize(14)
       .text('Total Amount:', 350, y, { font: 'Helvetica-Bold' })
-      .text(`$${sale.totalAmount.toFixed(2)}`, 450, y)
+      .text(`${sale.totalAmount.toFixed(2)}`, 450, y)
 
     // Footer
     doc.fontSize(10)
@@ -363,19 +369,25 @@ export const downloadInvoice = async (req, res) => {
     // Items Table Content
     y += 20
     sale.orderItems.forEach(item => {
-      doc.text(item.product.name, 50, y)
+      doc.text(item.product.name, 50, y,{width:190,lineGap:1})
       doc.text(item.quantity.toString(), 250, y)
-      doc.text(`$${item.price.toFixed(2)}`, 350, y)
-      doc.text(`$${(item.price * item.quantity).toFixed(2)}`, 450, y)
+      doc.font("fonts/font.ttf").text("₹",343,y)
+      doc.font("Helvetica"); 
+      doc.text(`${item.price.toFixed(2)}`, 350, y)
+      doc.font("fonts/font.ttf").text("₹",443,y)
+      doc.font("Helvetica"); 
+      doc.text(`${(item.price * item.quantity).toFixed(2)}`, 450, y)
       y += 25
     })
 
     // Total Section
     doc.moveTo(50, y).lineTo(550, y).stroke()
     y += 20
+    doc.font("fonts/font.ttf").text("₹",443,y)
+    doc.font("Helvetica"); 
     doc.fontSize(14)
       .text('Total Amount:', 350, y, { font: 'Helvetica-Bold' })
-      .text(`$${sale.totalAmount.toFixed(2)}`, 450, y)
+      .text(`${sale.totalAmount.toFixed(2)}`, 450, y)
 
     // Footer
     doc.fontSize(10)
