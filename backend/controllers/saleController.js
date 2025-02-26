@@ -2,19 +2,22 @@ import fetch from 'node-fetch'
 import Sale from '../models/Sale.js';
 import productModel from '../models/productModel.js';
 import PDFDocument from 'pdfkit'
-const Product=productModel;
+import path from 'path';
+import { promises as fs } from 'fs';
+const Product = productModel;
 
-  const calculatePercentageChange = (previous, current) => {
-    if (previous === 0) return current > 0 ? 100 : 0;
-    return ((current - previous) / previous) * 100;
-  };
 
-  const fetchImageBuffer = async (imageUrl) => {
-    const response = await fetch(imageUrl);
-    const arrayBuffer = await response.arrayBuffer();
-    return Buffer.from(arrayBuffer);
-  };
-  
+const calculatePercentageChange = (previous, current) => {
+  if (previous === 0) return current > 0 ? 100 : 0;
+  return ((current - previous) / previous) * 100;
+};
+
+const fetchImageBuffer = async (imageUrl) => {
+  const response = await fetch(imageUrl);
+  const arrayBuffer = await response.arrayBuffer();
+  return Buffer.from(arrayBuffer);
+};
+
 
 export const createSale = async (req, res) => {
   try {
@@ -246,6 +249,16 @@ export const getDashboardStats = async (req, res) => {
 };
 
 export const viewInvoice = async (req, res) => {
+  const imagePath = path.join(process.cwd(), 'public', 'logo.png');
+  console.log(process.cwd())
+  // Check if the image exists
+  try {
+    await fs.access(imagePath);
+  } catch (error) {
+    console.log(error)
+    res.status(404).send('Image not found');
+    return;
+  }
   try {
     const sale = await Sale.findById(req.params.id)
       .populate('customer')
@@ -254,7 +267,7 @@ export const viewInvoice = async (req, res) => {
     const doc = new PDFDocument()
 
     // Company Branding
-    doc.image('/logo.png', 50, 45, { width: 80 })
+    doc.image(imagePath, 50, 45, { width: 80 })
     doc.fontSize(24).text('ECOMMERCE', 140, 57, { font: 'Helvetica-Bold' })
     doc.fontSize(12).text('www.ecommerce.com', 140, 85)
     doc.text('support@ecommerce.com', 140, 100)
@@ -289,14 +302,14 @@ export const viewInvoice = async (req, res) => {
     // Items Table Content
     y += 20
     sale.orderItems.forEach(item => {
-     
-      doc.text(item.product.name, 50, y,{width:190,lineGap:1})
+
+      doc.text(item.product.name, 50, y, { width: 190, lineGap: 1 })
       doc.text(item.quantity.toString(), 250, y)
-      doc.font("fonts/font.ttf").text("₹",343,y)
-      doc.font("Helvetica"); 
+      doc.font("fonts/font.ttf").text("₹", 343, y)
+      doc.font("Helvetica");
       doc.text(`${item.price.toFixed(2)}`, 350, y)
-      doc.font("fonts/font.ttf").text("₹",443,y)
-      doc.font("Helvetica"); 
+      doc.font("fonts/font.ttf").text("₹", 443, y)
+      doc.font("Helvetica");
       doc.text(`${(item.price * item.quantity).toFixed(2)}`, 450, y)
       y += 25
     })
@@ -304,8 +317,8 @@ export const viewInvoice = async (req, res) => {
     // Total Section
     doc.moveTo(50, y).lineTo(550, y).stroke()
     y += 20
-    doc.font("fonts/font.ttf").text("₹",443,y)
-    doc.font("Helvetica"); 
+    doc.font("fonts/font.ttf").text("₹", 443, y)
+    doc.font("Helvetica");
     doc.fontSize(14)
       .text('Total Amount:', 350, y, { font: 'Helvetica-Bold' })
       .text(`${sale.totalAmount.toFixed(2)}`, 450, y)
@@ -369,13 +382,13 @@ export const downloadInvoice = async (req, res) => {
     // Items Table Content
     y += 20
     sale.orderItems.forEach(item => {
-      doc.text(item.product.name, 50, y,{width:190,lineGap:1})
+      doc.text(item.product.name, 50, y, { width: 190, lineGap: 1 })
       doc.text(item.quantity.toString(), 250, y)
-      doc.font("fonts/font.ttf").text("₹",343,y)
-      doc.font("Helvetica"); 
+      doc.font("fonts/font.ttf").text("₹", 343, y)
+      doc.font("Helvetica");
       doc.text(`${item.price.toFixed(2)}`, 350, y)
-      doc.font("fonts/font.ttf").text("₹",443,y)
-      doc.font("Helvetica"); 
+      doc.font("fonts/font.ttf").text("₹", 443, y)
+      doc.font("Helvetica");
       doc.text(`${(item.price * item.quantity).toFixed(2)}`, 450, y)
       y += 25
     })
@@ -383,8 +396,8 @@ export const downloadInvoice = async (req, res) => {
     // Total Section
     doc.moveTo(50, y).lineTo(550, y).stroke()
     y += 20
-    doc.font("fonts/font.ttf").text("₹",443,y)
-    doc.font("Helvetica"); 
+    doc.font("fonts/font.ttf").text("₹", 443, y)
+    doc.font("Helvetica");
     doc.fontSize(14)
       .text('Total Amount:', 350, y, { font: 'Helvetica-Bold' })
       .text(`${sale.totalAmount.toFixed(2)}`, 450, y)
