@@ -32,9 +32,6 @@ export const createSale = async (req, res) => {
     const sale = new Sale(saleData)
     await sale.save();
     res.status(201).json(sale);
-    const sales = await Sale.findById(sale._id).populate('address');
-    sale.shippingaddress = sales.address.toObject();
-    await sale.save();
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

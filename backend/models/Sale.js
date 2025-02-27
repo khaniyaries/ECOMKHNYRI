@@ -83,13 +83,10 @@ const saleSchema = new mongoose.Schema({
     type: String,
     sparse: true
   },
-  address: {
+  shippingaddress: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "addresses",
     required: true,
-  },
-  shippingaddress: {
-    type: Object,
   },
   saleDate: {
     type: Date,

@@ -185,7 +185,7 @@ export default function CheckoutPage() {
           customer: userid,
           totalAmount: totalamount,
           paymentMode: paymentmode,
-          address: selectedaddress
+          shippingaddress: selectedaddress
         })
       })
       const data = await response.json();
@@ -222,7 +222,7 @@ export default function CheckoutPage() {
 
   if (orderdone) {
     return (
-      <div className=" mt-10 w-full min-h-[50%] flex px-8 flex-col gap-6 py-6  justify-center items-center mx-auto">
+      <div className=" mt-10 w-full min-h-[50%] flex px-2 flex-col gap-6 py-6  justify-center items-center mx-auto">
         <div className="broder border-rose-300">
           <div className="text-3xl font-bold font-sans">
             Thank you for shopping with us!!!
