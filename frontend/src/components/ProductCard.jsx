@@ -2,6 +2,7 @@ import { Heart, Eye } from "lucide-react";
 import { IoTrashOutline } from "react-icons/io5";
 import { IoCartOutline } from "react-icons/io5";
 import { useCart } from '@/hooks/useCart.js';
+import toast from "react-hot-toast";
 import Image from "next/image";
 
 const ProductCard = ({ _id, name, images, price, percentageOff, averageRating, reviews, isWishlist }) => {
@@ -13,7 +14,13 @@ const ProductCard = ({ _id, name, images, price, percentageOff, averageRating, r
   const handleAddToCart = (e) => {
     e.preventDefault() // Prevents the link navigation
     e.stopPropagation() 
+    try{
     addToCart(_id, 1);
+    toast.success("Product Added to Cart successfully")
+    }catch(error){
+      console.log(error)
+    }
+    
   };
 
   if (isWishlist) {
