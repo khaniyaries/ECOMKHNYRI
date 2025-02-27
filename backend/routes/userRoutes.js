@@ -1,5 +1,5 @@
 import express from 'express'
-import { getUsers, updateUser, getCustomers, getCustomerDetails } from '../controllers/userController.js'
+import { getUsers, updateUser, getCustomers, getCustomerDetails,deletecustomers } from '../controllers/userController.js'
 
 const router = express.Router()
 
@@ -9,6 +9,8 @@ router.put('/profile/update/:targetUserId?', updateUser)
 
 router.get('/customers', getCustomers);
 router.get('/customers/:id', getCustomerDetails);
+router.delete('/customers/:id',deletecustomers);
+
 
 
 export default router

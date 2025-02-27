@@ -5,6 +5,7 @@ import Image from "next/image"
 import { useParams } from "next/navigation"
 import { useAdminAuth } from '@/hooks/useAdminAuth.js'
 import { env } from "../../../../../config/config.js"
+import toast from "react-hot-toast";
 
 
 export default function CustomerDetails() {
@@ -48,6 +49,34 @@ export default function CustomerDetails() {
         {/* Customer Info */}
         <div className="lg:col-span-3">
           <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="flex justify-end">
+              <button
+                onClick={async () => {
+                  try {
+                   
+                    const response = await fetch(`${env.API_URL}/api/v1/user/customers/${customer._id}`, {
+                      method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                      
+                      toast.success('user deleted successfully');
+                      window.location.href = '/admin/customers'
+
+                    } else {
+                      throw new Error('Failed to delete user');
+                    }
+                  } catch (error) {
+                    toast.error('Failed to delete user');
+                  }
+
+                }}
+
+                className="bg-red-500 text-white px-3 py-2 rounded-md"
+              >
+                Delete
+              </button>
+            </div>
             <div className="flex items-center space-x-4 mb-6">
               <Image
                 src={`https://ui-avatars.com/api/?name=${customer.name}&size=80`}
@@ -117,11 +146,10 @@ export default function CustomerDetails() {
                       ${order.totalAmount?.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        order.orderStatus === "delivered" ? "bg-green-100 text-green-800" : 
-                        order.orderStatus === "cancelled" ? "bg-red-100 text-red-800" : 
-                        "bg-yellow-100 text-yellow-800"
-                      }`}>
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.orderStatus === "delivered" ? "bg-green-100 text-green-800" :
+                        order.orderStatus === "cancelled" ? "bg-red-100 text-red-800" :
+                          "bg-yellow-100 text-yellow-800"
+                        }`}>
                         {order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}
                       </span>
                     </td>
