@@ -2,8 +2,6 @@ import fetch from 'node-fetch'
 import Sale from '../models/Sale.js';
 import productModel from '../models/productModel.js';
 import PDFDocument from 'pdfkit'
-import path from 'path';
-import { promises as fs } from 'fs';
 const Product = productModel;
 
 
@@ -249,26 +247,24 @@ export const getDashboardStats = async (req, res) => {
 };
 
 export const viewInvoice = async (req, res) => {
-  const imagePath1 = path.join(process.cwd(), 'logo.png');
-  console.log(process.cwd())
-  // Check if the image exists
-  
-  try {
-    await fs.access(imagePath1);
-  } catch (error) {
-    console.log(error)
-    res.status(404).send('Image1 not found');
-    return;
-  }
   try {
     const sale = await Sale.findById(req.params.id)
       .populate('customer')
       .populate('orderItems.product')
 
     const doc = new PDFDocument()
+    const imageUrl = 'https://yarees.in/images/logo.png';
+    const imageBuffer = await fetchImageBuffer(imageUrl);
+
+
+    const fonturl = 'https://yarees.in/fonts/font.ttf'
+    const fontbuffer = await fetchImageBuffer(fonturl)
+
+
+
 
     // Company Branding
-    doc.image(imagePath1, 50, 45, { width: 80 })
+    doc.image(imageBuffer, 50, 45, { width: 80 })
     doc.fontSize(24).text('ECOMMERCE', 140, 57, { font: 'Helvetica-Bold' })
     doc.fontSize(12).text('www.ecommerce.com', 140, 85)
     doc.text('support@ecommerce.com', 140, 100)
@@ -306,10 +302,10 @@ export const viewInvoice = async (req, res) => {
 
       doc.text(item.product.name, 50, y, { width: 190, lineGap: 1 })
       doc.text(item.quantity.toString(), 250, y)
-      doc.font("fonts/font.ttf").text("₹", 343, y)
+      doc.font(fontbuffer).text("₹", 343, y)
       doc.font("Helvetica");
       doc.text(`${item.price.toFixed(2)}`, 350, y)
-      doc.font("fonts/font.ttf").text("₹", 443, y)
+      doc.font(fontbuffer).text("₹", 443, y)
       doc.font("Helvetica");
       doc.text(`${(item.price * item.quantity).toFixed(2)}`, 450, y)
       y += 25
@@ -318,7 +314,7 @@ export const viewInvoice = async (req, res) => {
     // Total Section
     doc.moveTo(50, y).lineTo(550, y).stroke()
     y += 20
-    doc.font("fonts/font.ttf").text("₹", 443, y)
+    doc.font(fontbuffer).text("₹", 443, y)
     doc.font("Helvetica");
     doc.fontSize(14)
       .text('Total Amount:', 350, y, { font: 'Helvetica-Bold' })
