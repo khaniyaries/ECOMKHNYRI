@@ -5,7 +5,7 @@ import { cartApi } from '@/utils/cartapi.js';
 import { env } from "../../config/config.js"
 
 export const useCart = () => {
-    const userId = localStorage.getItem('userId');
+  
     const { user } = useAuth();
     const [cartProducts, setCartProducts] = useState([]);
     const [quantities, setQuantities] = useState({});
@@ -19,6 +19,7 @@ export const useCart = () => {
         setIsLoading(true);
         
         try {
+            const userId = localStorage.getItem('userId');
             let products = [];  // Initialize with empty array
             if (user) {
                 const response = await fetch(`${env.API_URL}/api/v1/cart/${userId}`);
@@ -47,6 +48,7 @@ export const useCart = () => {
     };
     const addToCart = async (productId, quantity) => {
         if (user) {
+            const userId = localStorage.getItem('userId');
             const response = await fetch(`${env.API_URL}/api/v1/cart/add`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
