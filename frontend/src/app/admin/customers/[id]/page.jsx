@@ -13,6 +13,7 @@ export default function CustomerDetails() {
   const [customer, setCustomer] = useState(null)
   const [loading, setLoading] = useState(true)
   const params = useParams()
+  const [usernotfound, setusernotfound] = useState(false)
   const customerId = params.id
 
   useEffect(() => {
@@ -25,8 +26,12 @@ export default function CustomerDetails() {
     try {
       const response = await fetch(`${env.API_URL}/api/v1/user/customers/${customerId}`)
       const data = await response.json()
+      if (!response.ok) {
+        setusernotfound(true)
+      }
       setCustomer(data)
       setLoading(false)
+
     } catch (error) {
       console.error('Error fetching customer details:', error)
       setLoading(false)
@@ -35,6 +40,19 @@ export default function CustomerDetails() {
 
   if (!isAuthenticated || loading) {
     return null
+  }
+
+  if (usernotfound) {
+    return (
+      <div className="space-x-5">
+        <div className="text-3xl">
+          Customer not found...
+
+
+        </div>
+
+      </div>
+    )
   }
 
   return (
@@ -53,13 +71,11 @@ export default function CustomerDetails() {
               <button
                 onClick={async () => {
                   try {
-                   
                     const response = await fetch(`${env.API_URL}/api/v1/user/customers/${customer._id}`, {
                       method: 'DELETE',
                     });
 
                     if (response.ok) {
-                      
                       toast.success('user deleted successfully');
                       window.location.href = '/admin/customers'
 
