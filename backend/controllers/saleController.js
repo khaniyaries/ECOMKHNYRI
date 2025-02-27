@@ -5,6 +5,9 @@ import PDFDocument from 'pdfkit'
 const Product = productModel;
 
 
+
+
+
 const calculatePercentageChange = (previous, current) => {
   if (previous === 0) return current > 0 ? 100 : 0;
   return ((current - previous) / previous) * 100;
@@ -15,6 +18,12 @@ const fetchImageBuffer = async (imageUrl) => {
   const arrayBuffer = await response.arrayBuffer();
   return Buffer.from(arrayBuffer);
 };
+
+const imageUrl = 'https://yarees.in/images/logo.png';
+const imageBuffer = await fetchImageBuffer(imageUrl);
+const fonturl = 'https://yarees.in/fonts/font.ttf'
+const fontbuffer = await fetchImageBuffer(fonturl)
+
 
 
 export const createSale = async (req, res) => {
@@ -253,12 +262,6 @@ export const viewInvoice = async (req, res) => {
       .populate('orderItems.product')
 
     const doc = new PDFDocument()
-    const imageUrl = 'https://yarees.in/images/logo.png';
-    const imageBuffer = await fetchImageBuffer(imageUrl);
-
-
-    const fonturl = 'https://yarees.in/fonts/font.ttf'
-    const fontbuffer = await fetchImageBuffer(fonturl)
 
 
 
@@ -344,7 +347,7 @@ export const downloadInvoice = async (req, res) => {
     const doc = new PDFDocument()
 
     // Company Branding
-    doc.image('public/logo.png', 50, 45, { width: 80 })
+    doc.image(imageBuffer, 50, 45, { width: 80 })
     doc.fontSize(24).text('ECOMMERCE', 140, 57, { font: 'Helvetica-Bold' })
     doc.fontSize(12).text('www.ecommerce.com', 140, 85)
     doc.text('support@ecommerce.com', 140, 100)
@@ -381,10 +384,10 @@ export const downloadInvoice = async (req, res) => {
     sale.orderItems.forEach(item => {
       doc.text(item.product.name, 50, y, { width: 190, lineGap: 1 })
       doc.text(item.quantity.toString(), 250, y)
-      doc.font("fonts/font.ttf").text("₹", 343, y)
+      doc.font(fontbuffer).text("₹", 343, y)
       doc.font("Helvetica");
       doc.text(`${item.price.toFixed(2)}`, 350, y)
-      doc.font("fonts/font.ttf").text("₹", 443, y)
+      doc.font(fontbuffer).text("₹", 443, y)
       doc.font("Helvetica");
       doc.text(`${(item.price * item.quantity).toFixed(2)}`, 450, y)
       y += 25
@@ -393,7 +396,7 @@ export const downloadInvoice = async (req, res) => {
     // Total Section
     doc.moveTo(50, y).lineTo(550, y).stroke()
     y += 20
-    doc.font("fonts/font.ttf").text("₹", 443, y)
+    doc.font(fontbuffer).text("₹", 443, y)
     doc.font("Helvetica");
     doc.fontSize(14)
       .text('Total Amount:', 350, y, { font: 'Helvetica-Bold' })
