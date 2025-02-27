@@ -24,40 +24,48 @@ export default function SigninPage() {
     }
 
     const handleSubmit = async (e) => {
-      e.preventDefault()
-      try {
-          const response = await fetch(`${env.API_URL}/api/v1/auth/login`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                  emailOrPhone: formData.emailOrPhone,
-                  password: formData.password
-              })
+        e.preventDefault()
+        try {
+          const response = await fetch(`http://localhost:8080/api/v1/auth/login`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
           })
           
           const data = await response.json()
+          console.log('Response status:', response.status)
+          console.log('Response data:', data)
+      
+          // Check for verification requirement first
+          if (response.status === 403 && data.requiresVerification) {
+            localStorage.setItem('pendingUserId', data.userId)
+            toast('Please verify your email to continue', {
+                icon: '🔔',
+                duration: 4000
+            })
+            router.push('signup/verify-otp')
+            return
+          }
           
+          // Handle other error cases
           if (!response.ok) {
-              toast.error(data.message)
-              return
+            toast.error(data.message)
+            return
           }
           
+          // Handle successful login
           if (data.token) {
-              // Use login function from useAuth
-              login(data.token, data.user)
-
-              const redirectPath = localStorage.getItem('redirectAfterLogin')
-              localStorage.removeItem('redirectAfterLogin')
-
-              toast.success("Logged in successfully!")
-              setTimeout(() => {
-                router.push(redirectPath || "/user/myaccount")
-              } , 100)
+            login(data.token, data.user)
+            const redirectPath = localStorage.getItem('redirectAfterLogin')
+            localStorage.removeItem('redirectAfterLogin')
+            toast.success("Logged in successfully!")
+            router.push(redirectPath || "/user/myaccount")
           }
-      } catch (error) {
-          toast.error("Login failed")
+        } catch (error) {
+          console.error('Login error:', error)
+          toast.error("Something went wrong. Please try again.")
+        }
       }
-  }
   
 
   const handleGoogleSignin = async () => {
@@ -147,7 +155,7 @@ export default function SigninPage() {
                                 Log In
                             </button>
                             <Link 
-                                href="/user/forgot-password"
+                                href="/sign-in/forgot-password"
                                 className="text-red-500 text-sm md:text-base font-poppins"
                             >
                                 Forgot Password?

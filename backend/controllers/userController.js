@@ -296,4 +296,39 @@ export const getCustomers = async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   };  
+
+  export const deleteCustomer = async (req, res) => {
+    try {
+      const { role } = req.query
+      const { id } = req.params
+  
+      if (role !== 'admin') {
+        return res.status(403).json({ 
+          success: false, 
+          message: 'Only admins can delete customers' 
+        })
+      }
+  
+      const deletedUser = await User.findByIdAndDelete(id)
+  
+      if (!deletedUser) {
+        return res.status(404).json({ 
+          success: false, 
+          message: 'Customer not found' 
+        })
+      }
+  
+      res.json({ 
+        success: true, 
+        message: 'Customer deleted successfully' 
+      })
+    } catch (error) {
+      res.status(500).json({ 
+        success: false, 
+        message: 'Error deleting customer',
+        error: error.message 
+      })
+    }
+  }
+  
   

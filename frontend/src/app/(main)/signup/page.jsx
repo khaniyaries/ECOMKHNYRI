@@ -30,14 +30,12 @@ export default function SignupPage() {
           })
           const data = await response.json()
           
-          if (response.ok) {  // Check HTTP status code
-              localStorage.setItem("token", data.token)
-              localStorage.setItem("userId", data.user._id)
-              localStorage.setItem("userName", data.user.name)
-              toast.success("Account created successfully!")
-              router.push("/user/myaccount")
+          if (response.ok) {
+            localStorage.setItem("pendingUserId", data.user._id)
+            toast.success("Account created! Please verify your email.")
+            router.push("/signup/verify-otp")
           } else {
-              toast.error(data.message || "Signup failed")
+            toast.error(data.message || "Signup failed")
           }
       } catch (error) {
           toast.error("Network error occurred")

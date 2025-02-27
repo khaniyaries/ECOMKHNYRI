@@ -152,13 +152,13 @@ export default function OrderDetails() {
             <h2 className="text-lg font-semibold mb-4">Order Status</h2>
             <div className="flex items-center">
               <div className="relative">
-                <div className={`h-16 w-16 rounded-full ${getStatusColor(order.orderStatus)} flex items-center justify-center`}>
-                  {getStatusIcon(order.orderStatus)}
+                <div className={`h-16 w-16 rounded-full ${getStatusColor(order?.orderStatus)} flex items-center justify-center`}>
+                  {getStatusIcon(order?.orderStatus)}
                 </div>
               </div>
               <div className="ml-4">
-                <h3 className="text-lg font-semibold">{order.orderStatus}</h3>
-                <p className="text-gray-600">{getStatusMessage(order.orderStatus)}</p>
+                <h3 className="text-lg font-semibold">{order?.orderStatus}</h3>
+                <p className="text-gray-600">{getStatusMessage(order?.orderStatus)}</p>
               </div>
             </div>
           </div>
@@ -176,13 +176,13 @@ export default function OrderDetails() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {order.orderItems.map((item) => (
+                {order?.orderItems.map((item) => (
                   <tr key={item._id}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="h-10 w-10 flex-shrink-0">
                           <Image
-                            src={item.product.image || "/placeholder.svg"}
+                            src={item.product.image?.url || "/placeholder.svg"}
                             alt={item.product.name}
                             width={40}
                             height={40}
@@ -216,9 +216,9 @@ export default function OrderDetails() {
           <div className="bg-white p-6 rounded-lg shadow-sm">
             <h2 className="text-lg font-semibold mb-4">Customer Information</h2>
             <div className="space-y-2">
-              <p><strong>Name:</strong> {order.customer.name}</p>
-              <p><strong>Email:</strong> {order.customer.email}</p>
-              <p><strong>Phone:</strong> {order.customer.phone}</p>
+              <p><strong>Name:</strong> {order.customer?.name}</p>
+              <p><strong>Email:</strong> {order.customer?.email}</p>
+              <p><strong>Phone:</strong> {order.customer?.phone}</p>
             </div>
           </div>
 

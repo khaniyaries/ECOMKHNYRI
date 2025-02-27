@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const reviewSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'users', 
     required: true
   },
   rating: {
@@ -12,12 +12,34 @@ const reviewSchema = new mongoose.Schema({
     min: 1,
     max: 5
   },
-  comment: String,
+  title: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  comment: {
+    type: String,
+    required: true,
+    trim: true
+  },
+  images: [{
+    url: String,
+    public_id: String
+  }],
+  adminResponse: {
+    comment: String,
+    respondedAt: Date
+  },
+  verified: {
+    type: Boolean,
+    default: false
+  },
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
+
 
 const productSchema = new mongoose.Schema({
   name: {

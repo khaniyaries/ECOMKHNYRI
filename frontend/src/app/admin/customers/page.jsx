@@ -4,6 +4,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { useAdminAuth } from '@/hooks/useAdminAuth.js'
 import { env } from "../../../../config/config.js"
+import toast from 'react-hot-toast'
+import DeleteConfirmationModal from "@/components/AdminComponents/DeleteConfirmationModal.jsx"
 
 export default function Customers() {
   const { isAuthenticated } = useAdminAuth()
@@ -14,6 +16,8 @@ export default function Customers() {
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
   const [totalCustomers, setTotalCustomers] = useState(0)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [customerToDelete, setCustomerToDelete] = useState(null)
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -47,6 +51,26 @@ export default function Customers() {
     setCurrentPage(1)
   }
 
+  const handleDeleteCustomer = async () => {
+    try {
+      const response = await fetch(
+        `${env.API_URL}/api/v1/user/customers/delete/${customerToDelete._id}?role=admin`,
+        {
+          method: 'DELETE'
+        }
+      )
+
+      if (response.ok) {
+        toast.success('Customer deleted successfully')
+        setIsDeleteModalOpen(false)
+        fetchCustomers() // Refresh the list
+      }
+    } catch (error) {
+      toast.error('Error deleting customer')
+      console.error('Error:', error)
+    }
+  }
+
   if (!isAuthenticated) {
     return null
   }
@@ -54,10 +78,10 @@ export default function Customers() {
   return (
     <div className="space-y-8">
       {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-semibold">Customers</h1>
-        <p className="text-gray-600">View and manage customer information</p>
-      </div>
+        <div>
+          <h1 className="text-2xl font-semibold">Customers</h1>
+          <p className="text-gray-600">View and manage customer information</p>
+        </div>
 
       {/* Filters */}
       <div className="flex gap-4 bg-white p-4 rounded-lg shadow-sm">
@@ -146,13 +170,22 @@ export default function Customers() {
                     {customer.isActive ? "Active" : "Inactive"}
                   </span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                <td className="px-3  py-4 flex flex-row gap-2 whitespace-nowrap text-center content-center text-sm font-medium">
                   <Link 
                     href={`/admin/customers/${customer._id}`} 
                     className="text-blue-600 hover:text-blue-900"
                   >
-                    View Details
+                    View
                   </Link>
+                  <button 
+                    onClick={() => {
+                      setCustomerToDelete(customer)
+                      setIsDeleteModalOpen(true)
+                    }}
+                    className="text-red-600 hover:text-red-900 mr-4"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -199,6 +232,12 @@ export default function Customers() {
           </button>
         </nav>
       </div>
+      <DeleteConfirmationModal 
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        onConfirm={handleDeleteCustomer}
+        customerName={customerToDelete?.name}
+      />
     </div>
   )
 }

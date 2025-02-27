@@ -29,6 +29,7 @@ export function useAuth() {
         localStorage.setItem('userId', userData._id)
         localStorage.setItem('userName', userData.name)
         setIsAuthenticated(true)
+        window.dispatchEvent(new Event('authStateChanged'))
         setUser(userData.name)
 
         const guestCartItems = cartStorage.getCartItems()
@@ -43,6 +44,7 @@ export function useAuth() {
         localStorage.removeItem('userId')
         localStorage.removeItem('userName')
         setIsAuthenticated(false)
+        window.dispatchEvent(new Event('authStateChanged'))
         setUser(null)
         toast.success('Logged out successfully')
         router.push('/')

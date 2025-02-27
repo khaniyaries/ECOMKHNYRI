@@ -49,26 +49,32 @@ export default function Orders() {
 
   const handleStatusUpdate = async (orderId) => {
     try {
+      console.log('Sending status update:', { orderId, status: selectedStatus })
+  
       const response = await fetch(`${env.API_URL}/api/v1/sales/${orderId}/status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json'
         },
+        credentials: 'include',
         body: JSON.stringify({ status: selectedStatus })
       })
   
+      const data = await response.json()
+      console.log('Status update response:', data)
+  
       if (response.ok) {
-        setOrders(orders?.map(order => 
-          order._id === orderId 
-            ? { ...order, orderStatus: selectedStatus }
-            : order
-        ))
+        // Refresh the orders list to show updated data
+        await fetchOrders()
         setEditingStatus(null)
       }
     } catch (error) {
       console.error('Error updating order status:', error)
     }
   }
+  
+  
 
   const getStatusColor = (status) => {
     const colors = {
@@ -147,7 +153,7 @@ export default function Orders() {
                   <Link href={`/admin/orders/${order._id}`}>#{order._id.slice(-6)}</Link>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {order.customer.name}
+                  {order.customer?.name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {formatDate(order.createdAt)}

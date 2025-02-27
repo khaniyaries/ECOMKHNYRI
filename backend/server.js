@@ -12,6 +12,7 @@ import saleRoutes from './routes/saleRoutes.js'
 import analyticsRoutes from './routes/analyticsRoutes.js'
 import addressRoutes from './routes/addressRoutes.js'
 import paymentMethodRoutes from './routes/paymentMethodRoutes.js'
+import reviewRoutes from './routes/reviewRoutes.js'
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
@@ -20,7 +21,7 @@ const app = express();
 
 app.use(cors({
     origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
@@ -45,7 +46,7 @@ app.use('/api/v1/sales', saleRoutes);
 app.use('/api/v1', analyticsRoutes);
 app.use('/api/v1/user/address',addressRoutes);
 app.use('/api/v1/user', paymentMethodRoutes);
-
+app.use('/api/v1', reviewRoutes);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

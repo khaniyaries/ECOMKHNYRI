@@ -27,15 +27,43 @@ const Navbar = () => {
 
     const router = useRouter()
 
+    const [authStatus, setAuthStatus] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return !!localStorage.getItem('token')
+        }
+        return false
+    })
+
+    useEffect(() => {
+        const checkAuth = () => {
+            const token = localStorage.getItem('token')
+            setAuthStatus(!!token)
+        }
+
+        // Check immediately
+        checkAuth()
+
+        // Set up interval to check auth status
+        const interval = setInterval(checkAuth, 1000)
+
+        // Clean up interval
+        return () => clearInterval(interval)
+    }, [])
+
     const handleProfileAction = (path) => {
-        if (!isAuthenticated) {
-            // Store the intended destination
+        if (!authStatus) {
             localStorage.setItem('redirectAfterLogin', path)
             router.push('/sign-in')
             return
         }
+
+        setIsProfileOpen(false)
         router.push(path)
     }
+
+    useEffect(() => {
+        setAuthStatus(isAuthenticated)
+    }, [isAuthenticated])
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -101,9 +129,9 @@ const Navbar = () => {
                     <Link href='/' className="md:text-sm lg:text-base">Home</Link>
                     <Link href='/contact-us' className="md:text-sm lg:text-base">Contact</Link>
                     <Link href='/about' className="md:text-sm lg:text-base">About</Link>
-                    {!isAuthenticated ? (
+                    {!authStatus ? (
                         <Link href='/signup' className="md:text-sm lg:text-base">Sign Up</Link>
-                    ) : ""}
+                    ) : null}
                     
                 </div>
                 <div className="w-[50%] lg:w-[45%] md:w-[50%] flex flex-row gap-2 mr-2 md:mr-4 lg:mr-0 justify-end lg:justify-center lg:gap-4 md:gap-2">
@@ -144,7 +172,7 @@ const Navbar = () => {
                                 <   FiShoppingBag /> My Order
                                 </button>
                                 <button 
-                                    onClick={() => handleProfileAction('/user/cancellations')} 
+                                    onClick={() => handleProfileAction('/user/myaccount/cancellations')} 
                                     className="w-full flex items-center gap-2 py-2 px-3 hover:bg-black/30  rounded"
                                 >
                                     <CgCloseO/> My Cancellations
@@ -155,7 +183,7 @@ const Navbar = () => {
                                 >
                                     <IoIosStarOutline /> My Reviews
                                 </button>
-                                {isAuthenticated ? (
+                                {authStatus? (
                                     <button 
                                         onClick={logout} 
                                         className="w-full flex items-center gap-2 py-2 px-3 hover:bg-black/30 rounded"

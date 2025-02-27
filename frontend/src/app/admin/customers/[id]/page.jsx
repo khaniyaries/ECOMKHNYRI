@@ -5,9 +5,11 @@ import Image from "next/image"
 import { useParams } from "next/navigation"
 import { useAdminAuth } from '@/hooks/useAdminAuth.js'
 import { env } from "../../../../../config/config.js"
-
+import EditCustomerModal from "@/components/AdminComponents/EditCustomerModal.jsx"
+import toast from "react-hot-toast"
 
 export default function CustomerDetails() {
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const { isAuthenticated } = useAdminAuth()
   const [customer, setCustomer] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -32,6 +34,26 @@ export default function CustomerDetails() {
     }
   }
 
+  const handleSaveCustomer = async (formData) => {
+    try {
+      const response = await fetch(`${env.API_URL}/api/v1/user/profile/update/${customerId}?role=admin`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
+  
+      if (response.ok) {
+        toast.success("Updated Succesfully");
+        setIsEditModalOpen(false)
+        fetchCustomerDetails() // Refresh the details
+      }
+    } catch (error) {
+      console.error('Error updating customer:', error)
+    }
+  }
+
   if (!isAuthenticated || loading) {
     return null
   }
@@ -39,10 +61,20 @@ export default function CustomerDetails() {
   return (
     <div className="space-y-8">
       {/* Page Header */}
-      <div>
-        <h1 className="text-2xl font-semibold">Customer Details</h1>
-        <p className="text-gray-600">View customer information and orders</p>
+      <div className="flex-row flex justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold">Customer Details</h1>
+          <p className="text-gray-600">View customer information and orders</p>
+        </div>
+        <button 
+          onClick={() => setIsEditModalOpen(true)}
+          className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+        >
+          Edit Customer
+        </button>
       </div>
+      
+      
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Customer Info */}
@@ -137,6 +169,12 @@ export default function CustomerDetails() {
           </div>
         </div>
       </div>
+      <EditCustomerModal 
+        customer={customer}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSaveCustomer}
+      />
     </div>
   )
 }

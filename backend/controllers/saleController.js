@@ -2,6 +2,7 @@ import fetch from 'node-fetch'
 import Sale from '../models/Sale.js';
 import productModel from '../models/productModel.js';
 import PDFDocument from 'pdfkit'
+import { emailService } from './emailService.js'
 
   const calculatePercentageChange = (previous, current) => {
     if (previous === 0) return current > 0 ? 100 : 0;
@@ -106,6 +107,8 @@ export const updateSaleStatus = async (req, res) => {
     try {
       const { id } = req.params;
       const { status } = req.body;
+
+      console.log('Updating order status:', { orderId: id, newStatus: status })
       
       const sale = await Sale.findByIdAndUpdate(
         id,
@@ -116,12 +119,23 @@ export const updateSaleStatus = async (req, res) => {
       if (!sale) {
         return res.status(404).json({ message: 'Sale not found' });
       }
+
+      console.log('Order found:', {
+        orderId: sale._id,
+        customer: sale.customer,
+        status: sale.orderStatus
+      })
   
-      // Future email service implementation
-      // await sendOrderStatusEmail(sale.customer.email, sale.orderStatus);
+      try {
+        await emailService.sendOrderStatusUpdate(sale, status)
+        console.log('Email sent successfully')
+      } catch (emailError) {
+        console.error('Email sending failed:', emailError)
+      }
   
       res.status(200).json(sale);
     } catch (error) {
+      console.error('Status update failed:', error)
       res.status(500).json({ message: error.message });
     }
   };
@@ -243,101 +257,234 @@ export const getDashboardStats = async (req, res) => {
         .populate('customer')
         .populate('orderItems.product')
       
-      const doc = new PDFDocument()
-      
-      // Company Branding
-      const imageUrl = 'https://res.cloudinary.com/daqh8noyb/image/upload/v1740427427/ecommerce/logo/dqfbmgopyjn4e6thkq9f.png'
-      const imageBuffer = await fetchImageBuffer(imageUrl)
-      doc.image(imageBuffer, 50, 45, { width: 80 })
-      doc.fontSize(24).text('Yarees', 50, 45, { align: 'right' , font: 'Helvetica-Bold' })
-      doc.fontSize(12).text('www.yarees.in', 50, 75, { align: 'right'})
-      doc.text('contact.yarees@gmail.com', 50, 90, { align: 'right'})
-      doc.text('+91 7051350219', 50, 105, { align: 'right'})
-      
-      // Invoice Header
-      doc.fontSize(20).text('INVOICE', 50, 160, { font: 'Helvetica-Bold' })
-      doc.fontSize(12)
-        .text(`Invoice #: ${sale._id}`, 50, 190)
-        .text(`Date: ${new Date(sale.createdAt).toLocaleString()}`, 50, 205)
-        .text(`Payment Method: ${sale.paymentMode}`, 50, 220)
-      
-      // Customer Details
-      doc.fontSize(14).text('BILL TO', 50, 260, { font: 'Helvetica-Bold' })
-      doc.fontSize(12)
-        .text(sale.customer.name, 50, 280)
-        .text(sale.customer.email, 50, 295)
-      
-      // Items Table Header
-      let y = 340
-      doc.strokeColor('#000000')
-      doc.lineWidth(1)
-      doc.moveTo(50, y).lineTo(550, y).stroke()
-
-      const columns = {
-        product: { x: 50, width: 180 }, // Increased width for product names
-        quantity: { x: 250, width: 80 },
-        price: { x: 350, width: 80 },
-        total: { x: 450, width: 80 }
-      }
-      
-      y += 20
-      doc.fontSize(12)
-        .text('Products', columns.product.x, y, { font: 'Helvetica-Bold' , width: columns.product.width})
-        .text('Quantity', columns.quantity.x, y, { font: 'Helvetica-Bold' , width: columns.quantity.width})
-        .text('Price', columns.price.x, y, { font: 'Helvetica-Bold' , width: columns.price.width})
-        .text('Total', columns.total.x, y, { font: 'Helvetica-Bold' , width: columns.total.width})
-      
-      // Items Table Content
-      y += 20
-      sale.orderItems.forEach(item => {
-        const heightOffset = doc.heightOfString(item.product.name, {
-          width: columns.product.width,
-          align: 'left'
-        })
-        
-        doc.text(item.product.name, columns.product.x, y, {
-          width: columns.product.width,
-          align: 'left'
-        })
-        doc.text(item.quantity.toString(), columns.quantity.x, y)
-        doc.text(`$${item.price.toFixed(2)}`, columns.price.x, y)
-        doc.text(`$${(item.price * item.quantity).toFixed(2)}`, columns.total.x, y)
-        
-        y += Math.max(heightOffset, 25) // Adjust row height based on content
+      const doc = new PDFDocument({
+        margins: { top: 50, bottom: 50, left: 50, right: 50 }
       })
       
-      // Total Section
-      doc.moveTo(50, y).lineTo(550, y).stroke()
-      y += 20
-      doc.fontSize(14)
-        .text('Total Amount:', 350, y, { font: 'Helvetica-Bold' })
-        .text(`$${sale.totalAmount.toFixed(2)}`, 450, y)
+      // Define colors
+      const primaryColor = '#c27c4c' // Orange/brown color from the design
+      const textColor = '#333333'
+      const lightGray = '#f5f5f5'
       
-      // Footer section with decorative elements
-      const startX = 50
-      const endX = 550
-      const y_position = y + 60
-      const dashLength = 5
-      const gapLength = 5
-
-      for (let x = startX; x <= endX; x += (dashLength + gapLength)) {
-        doc.moveTo(x, y_position)
-          .lineTo(Math.min(x + dashLength, endX), y_position)
-          .stroke()
-      }
-
+      // Company Logo (top right)
+      const imageUrl = 'https://res.cloudinary.com/daqh8noyb/image/upload/v1740427427/ecommerce/logo/dqfbmgopyjn4e6thkq9f.png'
+      const imageBuffer = await fetchImageBuffer(imageUrl)
+      doc.image(imageBuffer, 430, 45, { width: 120 })
+      
+      // INVOICE title and company details (top left)
+      doc.fillColor(textColor)
+        .fontSize(28)
+        .font('Helvetica-Bold')
+        .text('INVOICE', 50, 50)
+      
       doc.fontSize(10)
-        .text('Thank you for your business!', 50, y + 70, { align: 'center' })
-        .text('Shop with confidence at YAREES', 50, y + 80, { align: 'center' })
-
-      // Add decorative bottom border
-      doc.moveTo(50, y + 100).lineTo(550, y + 100).stroke()
-
-      // Add contact details at the very bottom
-      doc.fontSize(8)
-        .text('For support: contact@yarees.com | Website: www.yarees.com', 50, y + 110, { align: 'center' })
-
+        .font('Helvetica')
+        .text('www.yarees.in', 50, 85)
+        .text('support@yarees.in', 50, 100)
+        .text('+91 70050 71911', 50, 115)
       
+      // Add a line separator
+      doc.strokeColor('#e0e0e0')
+        .lineWidth(1)
+        .moveTo(50, 140)
+        .lineTo(550, 140)
+        .stroke()
+      
+      // ISSUED TO section
+      doc.fontSize(12)
+        .font('Helvetica-Bold')
+        .text('ISSUED TO:', 50, 160)
+      
+      doc.fontSize(10)
+        .font('Helvetica')
+        .text(sale.customer.name, 50, 180)
+        .text(sale.customer.email, 50, 195)
+      
+      // Invoice details (right side)
+      doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text('Invoice No:', 400, 160)
+        .text('Date:', 400, 175)
+      
+      doc.fontSize(10)
+        .font('Helvetica')
+        .text(sale._id, 470, 160)
+        .text(new Date(sale.createdAt).toLocaleDateString(), 470, 175)
+      
+      // Add payment method if needed
+      if (sale.paymentMode) {
+        doc.fontSize(10)
+          .font('Helvetica-Bold')
+          .text('Payment Method:', 400, 190)
+        
+        doc.fontSize(10)
+          .font('Helvetica')
+          .text(sale.paymentMode, 470, 190)
+      }
+      
+      // Table header
+      const tableTop = 240
+      const tableHeaders = [
+        { title: 'DESCRIPTION', x: 50, width: 250 },
+        { title: 'UNIT PRICE', x: 300, width: 80 },
+        { title: 'QTY', x: 380, width: 70 },
+        { title: 'TOTAL', x: 450, width: 80 }
+      ]
+      
+      // Draw table header background
+      doc.fillColor(primaryColor)
+        .rect(50, tableTop, 500, 25)
+        .fill()
+      
+      // Draw table header text
+      doc.fillColor('white')
+        .fontSize(10)
+        .font('Helvetica-Bold')
+      
+      tableHeaders.forEach(header => {
+        doc.text(
+          header.title,
+          header.x,
+          tableTop + 8,
+          { width: header.width, align: header.title === 'DESCRIPTION' ? 'left' : 'center' }
+        )
+      })
+      
+      // Reset fill color
+      doc.fillColor(textColor)
+      
+      // Table content
+      let y = tableTop + 25
+      let alternateRow = false
+      
+      sale.orderItems.forEach(item => {
+        // Calculate row height based on product name length
+        const heightOffset = Math.max(
+          doc.heightOfString(item.product.name, {
+            width: tableHeaders[0].width,
+            align: 'left'
+          }),
+          20
+        )
+        
+        // Draw alternating row background
+        if (alternateRow) {
+          doc.fillColor(lightGray)
+            .rect(50, y, 500, heightOffset)
+            .fill()
+          doc.fillColor(textColor)
+        }
+        alternateRow = !alternateRow
+        
+        // Product name
+        doc.fontSize(10)
+          .font('Helvetica')
+          .text(
+            item.product.name,
+            tableHeaders[0].x,
+            y + 5,
+            { width: tableHeaders[0].width, align: 'left' }
+          )
+        
+        // Unit price
+        doc.text(
+          `$${item.price.toFixed(2)}`,
+          tableHeaders[1].x,
+          y + 5,
+          { width: tableHeaders[1].width, align: 'center' }
+        )
+        
+        // Quantity
+        doc.text(
+          item.quantity.toString(),
+          tableHeaders[2].x,
+          y + 5,
+          { width: tableHeaders[2].width, align: 'center' }
+        )
+        
+        // Total
+        doc.text(
+          `$${(item.price * item.quantity).toFixed(2)}`,
+          tableHeaders[3].x,
+          y + 5,
+          { width: tableHeaders[3].width, align: 'center' }
+        )
+        
+        y += heightOffset
+      })
+      
+      // Tax line
+      doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text('Tax', 400, y + 15)
+      
+      doc.fontSize(10)
+        .font('Helvetica')
+        .text('0%', 500, y + 15, { align: 'right' })
+      
+      // Subtotal and Total
+      const summaryY = y + 40
+      
+      // Subtotal background
+      doc.fillColor(lightGray)
+        .rect(50, summaryY, 500, 25)
+        .fill()
+      
+      doc.fillColor(textColor)
+        .fontSize(10)
+        .font('Helvetica-Bold')
+        .text('SUBTOTAL', 60, summaryY + 8)
+      
+      doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text('TOTAL', 390, summaryY + 8)
+      
+      doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text(`$${sale.totalAmount.toFixed(2)}`, 500, summaryY + 8, { align: 'right' })
+      
+      // Thank you message
+      doc.fontSize(12)
+        .font('Helvetica-Bold')
+        .text('THANK YOU FOR YOUR BUSINESS!', 50, summaryY + 50, { align: 'center' })
+      
+      // Notes section
+      const notesY = summaryY + 90
+      doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text('NOTES:', 50, notesY)
+      
+      doc.fontSize(9)
+        .font('Helvetica')
+        .text(
+          'Please make the payment by the due date mentioned on the invoice. If you have any questions or require further details, feel free to contact us. We appreciate your prompt payment and look forward to serving you again.',
+          50,
+          notesY + 20,
+          { width: 300, align: 'left' }
+        )
+      
+      // Decorative diagonal element in bottom right
+      doc.save()
+      doc.fillColor('#e8e1d9')
+        .moveTo(550, notesY + 120)
+        .lineTo(550, notesY - 20)
+        .lineTo(400, notesY + 120)
+        .fill()
+      
+      doc.fillColor('#d9c3b0')
+        .moveTo(550, notesY + 120)
+        .lineTo(550, notesY + 40)
+        .lineTo(470, notesY + 120)
+        .fill()
+      
+      doc.fillColor(primaryColor)
+        .moveTo(550, notesY + 120)
+        .lineTo(550, notesY + 80)
+        .lineTo(510, notesY + 120)
+        .fill()
+      doc.restore()
+      
+      // Send the PDF
       res.setHeader('Content-Type', 'application/pdf')
       doc.pipe(res)
       doc.end()
@@ -347,107 +494,239 @@ export const getDashboardStats = async (req, res) => {
     }
   }
   
-  
-  // Download invoice
+  // Download invoice - same implementation but with download headers
   export const downloadInvoice = async (req, res) => {
     try {
       const sale = await Sale.findById(req.params.id)
         .populate('customer')
         .populate('orderItems.product')
       
-      const doc = new PDFDocument()
-      
-      // Company Branding
-      const imageUrl = 'https://res.cloudinary.com/daqh8noyb/image/upload/v1740427427/ecommerce/logo/dqfbmgopyjn4e6thkq9f.png'
-      const imageBuffer = await fetchImageBuffer(imageUrl)
-      doc.image(imageBuffer, 50, 45, { width: 80 })
-      doc.fontSize(24).text('Yarees', 50, 45, { align: 'right' , font: 'Helvetica-Bold' })
-      doc.fontSize(12).text('www.yarees.in', 50, 75, { align: 'right'})
-      doc.text('contact.yarees@gmail.com', 50, 90, { align: 'right'})
-      doc.text('+91 7051350219', 50, 105, { align: 'right'})
-      
-      // Invoice Header
-      doc.fontSize(20).text('INVOICE', 50, 160, { font: 'Helvetica-Bold' })
-      doc.fontSize(12)
-        .text(`Invoice #: ${sale._id}`, 50, 190)
-        .text(`Date: ${new Date(sale.createdAt).toLocaleString()}`, 50, 205)
-        .text(`Payment Method: ${sale.paymentMode}`, 50, 220)
-      
-      // Customer Details
-      doc.fontSize(14).text('BILL TO', 50, 260, { font: 'Helvetica-Bold' })
-      doc.fontSize(12)
-        .text(sale.customer.name, 50, 280)
-        .text(sale.customer.email, 50, 295)
-      
-      // Items Table Header
-      let y = 340
-      doc.strokeColor('#000000')
-      doc.lineWidth(1)
-      doc.moveTo(50, y).lineTo(550, y).stroke()
-
-      const columns = {
-        product: { x: 50, width: 180 }, // Increased width for product names
-        quantity: { x: 250, width: 80 },
-        price: { x: 350, width: 80 },
-        total: { x: 450, width: 80 }
-      }
-      
-      y += 20
-      doc.fontSize(12)
-        .text('Products', columns.product.x, y, { font: 'Helvetica-Bold' , width: columns.product.width})
-        .text('Quantity', columns.quantity.x, y, { font: 'Helvetica-Bold' , width: columns.quantity.width})
-        .text('Price', columns.price.x, y, { font: 'Helvetica-Bold' , width: columns.price.width})
-        .text('Total', columns.total.x, y, { font: 'Helvetica-Bold' , width: columns.total.width})
-      
-      // Items Table Content
-      y += 20
-      sale.orderItems.forEach(item => {
-        const heightOffset = doc.heightOfString(item.product.name, {
-          width: columns.product.width,
-          align: 'left'
-        })
-        
-        doc.text(item.product.name, columns.product.x, y, {
-          width: columns.product.width,
-          align: 'left'
-        })
-        doc.text(item.quantity.toString(), columns.quantity.x, y)
-        doc.text(`$${item.price.toFixed(2)}`, columns.price.x, y)
-        doc.text(`$${(item.price * item.quantity).toFixed(2)}`, columns.total.x, y)
-        
-        y += Math.max(heightOffset, 25) // Adjust row height based on content
+      const doc = new PDFDocument({
+        margins: { top: 50, bottom: 50, left: 50, right: 50 }
       })
       
-      // Total Section
-      doc.moveTo(50, y).lineTo(550, y).stroke()
-      y += 20
-      doc.fontSize(14)
-        .text('Total Amount:', 350, y, { font: 'Helvetica-Bold' })
-        .text(`$${sale.totalAmount.toFixed(2)}`, 450, y)
+      // Define colors
+      const primaryColor = '#c27c4c' // Orange/brown color from the design
+      const textColor = '#333333'
+      const lightGray = '#f5f5f5'
       
-      // Footer section with decorative elements
-      const startX = 50
-      const endX = 550
-      const y_position = y + 60
-      const dashLength = 5
-      const gapLength = 5
-
-      for (let x = startX; x <= endX; x += (dashLength + gapLength)) {
-        doc.moveTo(x, y_position)
-          .lineTo(Math.min(x + dashLength, endX), y_position)
-          .stroke()
-      }
-
+      // Company Logo (top right)
+      const imageUrl = 'https://res.cloudinary.com/daqh8noyb/image/upload/v1740427427/ecommerce/logo/dqfbmgopyjn4e6thkq9f.png'
+      const imageBuffer = await fetchImageBuffer(imageUrl)
+      doc.image(imageBuffer, 430, 45, { width: 120 })
+      
+      // INVOICE title and company details (top left)
+      doc.fillColor(textColor)
+        .fontSize(28)
+        .font('Helvetica-Bold')
+        .text('INVOICE', 50, 50)
+      
       doc.fontSize(10)
-        .text('Thank you for your business!', 50, y + 70, { align: 'center' })
-        .text('Shop with confidence at YAREES', 50, y + 80, { align: 'center' })
-
-      // Add decorative bottom border
-      doc.moveTo(50, y + 100).lineTo(550, y + 100).stroke()
-
-      // Add contact details at the very bottom
-      doc.fontSize(8)
-        .text('For support: contact@yarees.com | Website: www.yarees.com', 50, y + 110, { align: 'center' })
+        .font('Helvetica')
+        .text('www.yarees.in', 50, 85)
+        .text('support@yarees.in', 50, 100)
+        .text('+91 70050 71911', 50, 115)
+      
+      // Add a line separator
+      doc.strokeColor('#e0e0e0')
+        .lineWidth(1)
+        .moveTo(50, 140)
+        .lineTo(550, 140)
+        .stroke()
+      
+      // ISSUED TO section
+      doc.fontSize(12)
+        .font('Helvetica-Bold')
+        .text('ISSUED TO:', 50, 160)
+      
+      doc.fontSize(10)
+        .font('Helvetica')
+        .text(sale.customer.name, 50, 180)
+        .text(sale.customer.email, 50, 195)
+      
+      // Invoice details (right side)
+      doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text('Invoice No:', 400, 160)
+        .text('Date:', 400, 175)
+      
+      doc.fontSize(10)
+        .font('Helvetica')
+        .text(sale._id, 470, 160)
+        .text(new Date(sale.createdAt).toLocaleDateString(), 470, 175)
+      
+      // Add payment method if needed
+      if (sale.paymentMode) {
+        doc.fontSize(10)
+          .font('Helvetica-Bold')
+          .text('Payment Method:', 400, 190)
+        
+        doc.fontSize(10)
+          .font('Helvetica')
+          .text(sale.paymentMode, 470, 190)
+      }
+      
+      // Table header
+      const tableTop = 240
+      const tableHeaders = [
+        { title: 'DESCRIPTION', x: 50, width: 250 },
+        { title: 'UNIT PRICE', x: 300, width: 80 },
+        { title: 'QTY', x: 380, width: 70 },
+        { title: 'TOTAL', x: 450, width: 80 }
+      ]
+      
+      // Draw table header background
+      doc.fillColor(primaryColor)
+        .rect(50, tableTop, 500, 25)
+        .fill()
+      
+      // Draw table header text
+      doc.fillColor('white')
+        .fontSize(10)
+        .font('Helvetica-Bold')
+      
+      tableHeaders.forEach(header => {
+        doc.text(
+          header.title,
+          header.x,
+          tableTop + 8,
+          { width: header.width, align: header.title === 'DESCRIPTION' ? 'left' : 'center' }
+        )
+      })
+      
+      // Reset fill color
+      doc.fillColor(textColor)
+      
+      // Table content
+      let y = tableTop + 25
+      let alternateRow = false
+      
+      sale.orderItems.forEach(item => {
+        // Calculate row height based on product name length
+        const heightOffset = Math.max(
+          doc.heightOfString(item.product.name, {
+            width: tableHeaders[0].width,
+            align: 'left'
+          }),
+          20
+        )
+        
+        // Draw alternating row background
+        if (alternateRow) {
+          doc.fillColor(lightGray)
+            .rect(50, y, 500, heightOffset)
+            .fill()
+          doc.fillColor(textColor)
+        }
+        alternateRow = !alternateRow
+        
+        // Product name
+        doc.fontSize(10)
+          .font('Helvetica')
+          .text(
+            item.product.name,
+            tableHeaders[0].x,
+            y + 5,
+            { width: tableHeaders[0].width, align: 'left' }
+          )
+        
+        // Unit price
+        doc.text(
+          `$${item.price.toFixed(2)}`,
+          tableHeaders[1].x,
+          y + 5,
+          { width: tableHeaders[1].width, align: 'center' }
+        )
+        
+        // Quantity
+        doc.text(
+          item.quantity.toString(),
+          tableHeaders[2].x,
+          y + 5,
+          { width: tableHeaders[2].width, align: 'center' }
+        )
+        
+        // Total
+        doc.text(
+          `$${(item.price * item.quantity).toFixed(2)}`,
+          tableHeaders[3].x,
+          y + 5,
+          { width: tableHeaders[3].width, align: 'center' }
+        )
+        
+        y += heightOffset
+      })
+      
+      // Tax line
+      doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text('Tax', 400, y + 15)
+      
+      doc.fontSize(10)
+        .font('Helvetica')
+        .text('0%', 500, y + 15, { align: 'right' })
+      
+      // Subtotal and Total
+      const summaryY = y + 40
+      
+      // Subtotal background
+      doc.fillColor(lightGray)
+        .rect(50, summaryY, 500, 25)
+        .fill()
+      
+      doc.fillColor(textColor)
+        .fontSize(10)
+        .font('Helvetica-Bold')
+        .text('SUBTOTAL', 60, summaryY + 8)
+      
+      doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text('TOTAL', 390, summaryY + 8)
+      
+      doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text(`$${sale.totalAmount.toFixed(2)}`, 500, summaryY + 8, { align: 'right' })
+      
+      // Thank you message
+      doc.fontSize(12)
+        .font('Helvetica-Bold')
+        .text('THANK YOU FOR YOUR BUSINESS!', 50, summaryY + 50, { align: 'center' })
+      
+      // Notes section
+      const notesY = summaryY + 90
+      doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text('NOTES:', 50, notesY)
+      
+      doc.fontSize(9)
+        .font('Helvetica')
+        .text(
+          'Please make the payment by the due date mentioned on the invoice. If you have any questions or require further details, feel free to contact us. We appreciate your prompt payment and look forward to serving you again.',
+          50,
+          notesY + 20,
+          { width: 300, align: 'left' }
+        )
+      
+      // Decorative diagonal element in bottom right
+      doc.save()
+      doc.fillColor('#e8e1d9')
+        .moveTo(550, notesY + 120)
+        .lineTo(550, notesY - 20)
+        .lineTo(400, notesY + 120)
+        .fill()
+      
+      doc.fillColor('#d9c3b0')
+        .moveTo(550, notesY + 120)
+        .lineTo(550, notesY + 40)
+        .lineTo(470, notesY + 120)
+        .fill()
+      
+      doc.fillColor(primaryColor)
+        .moveTo(550, notesY + 120)
+        .lineTo(550, notesY + 80)
+        .lineTo(510, notesY + 120)
+        .fill()
+      doc.restore()
       
       // Set download headers
       res.setHeader('Content-Type', 'application/pdf')
