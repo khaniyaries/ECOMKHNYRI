@@ -34,7 +34,8 @@ const userSchema = new mongoose.Schema({
   otp: {
     code: String,
     expiresAt: Date
-  }
+  },
+  passwordResetToken: String
 }, { timestamps: true });
 
 export const User = mongoose.model('users', userSchema);

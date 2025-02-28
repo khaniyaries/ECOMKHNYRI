@@ -41,7 +41,7 @@ export default function VerifyOTP() {
 
   const handleResend = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/v1/auth/resend-otp`, {
+      const response = await fetch(`${env.API_URL}/api/v1/auth/resend-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

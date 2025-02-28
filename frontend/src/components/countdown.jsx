@@ -1,18 +1,33 @@
 "use client"
-
 import { useEffect, useState } from "react"
 import { formatTime } from "@/utils/format-time.js"
+import { env } from "../../config/config.js"
 
 export function Countdown() {
-  const [timeLeft, setTimeLeft] = useState(345600) // 4 days in seconds
+  const [flashSale, setFlashSale] = useState(null)
+  const [timeLeft, setTimeLeft] = useState(0)
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0))
-    }, 1000)
-
-    return () => clearInterval(timer)
+    const fetchFlashSale = async () => {
+      const response = await fetch(`${env.API_URL}/api/v1/flashsales/period`)
+      const data = await response.json()
+      setFlashSale(data)
+    }
+    fetchFlashSale()
   }, [])
+
+  useEffect(() => {
+    if (flashSale) {
+      const timer = setInterval(() => {
+        const now = new Date().getTime()
+        const end = new Date(flashSale.endTime).getTime()
+        const difference = Math.max(0, Math.floor((end - now) / 1000))
+        setTimeLeft(difference)
+      }, 1000)
+
+      return () => clearInterval(timer)
+    }
+  }, [flashSale])
 
   const time = formatTime(timeLeft)
 
@@ -28,4 +43,3 @@ export function Countdown() {
     </div>
   )
 }
-

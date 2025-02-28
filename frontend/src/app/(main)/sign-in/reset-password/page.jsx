@@ -38,7 +38,7 @@ export default function ResetPassword() {
         localStorage.removeItem("resetPasswordUserId")
         localStorage.removeItem("resetToken")
         toast.success("Password updated successfully")
-        router.push("/login")
+        router.push("/sign-in")
       } else {
         toast.error(data.message)
       }

@@ -262,39 +262,41 @@ export const getDashboardStats = async (req, res) => {
         .populate('orderItems.product')
       
       const doc = new PDFDocument({
-        margins: { top: 50, bottom: 50, left: 50, right: 50 }
+        margins: { top: 50, bottom: 50, left: 50, right: 50 },
+        size: 'A4'
       })
-      
-      // Define colors
-      const primaryColor = '#c27c4c' // Orange/brown color from the design
+
+      // Colors
+      const primaryColor = '#c27c4c'
       const textColor = '#333333'
       const lightGray = '#f5f5f5'
       
-      // Company Logo (top right)
+      // Logo
       const imageUrl = 'https://res.cloudinary.com/daqh8noyb/image/upload/v1740427427/ecommerce/logo/dqfbmgopyjn4e6thkq9f.png'
       const imageBuffer = await fetchImageBuffer(imageUrl)
       doc.image(imageBuffer, 430, 45, { width: 120 })
       
-      // INVOICE title and company details (top left)
+      // Invoice Title
       doc.fillColor(textColor)
         .fontSize(28)
         .font('Helvetica-Bold')
         .text('INVOICE', 50, 50)
       
+      // Company Details
       doc.fontSize(10)
         .font('Helvetica')
         .text('www.yarees.in', 50, 85)
         .text('support@yarees.in', 50, 100)
         .text('+91 70050 71911', 50, 115)
       
-      // Add a line separator
+      // Separator Line
       doc.strokeColor('#e0e0e0')
         .lineWidth(1)
         .moveTo(50, 140)
         .lineTo(550, 140)
         .stroke()
       
-      // ISSUED TO section
+      // Customer Section
       doc.fontSize(12)
         .font('Helvetica-Bold')
         .text('ISSUED TO:', 50, 160)
@@ -304,155 +306,148 @@ export const getDashboardStats = async (req, res) => {
         .text(sale.customer.name, 50, 180)
         .text(sale.customer.email, 50, 195)
       
-      // Invoice details (right side)
+      // Invoice Details
+      const detailsX = 350
+      const valueX = 450
+      
       doc.fontSize(10)
         .font('Helvetica-Bold')
-        .text('Invoice No:', 400, 160)
-        .text('Date:', 400, 175)
+        .text('Invoice No:', detailsX, 160)
+        .font('Helvetica')
+        .text(sale._id, valueX, 160, { width: 150 })
       
       doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text('Date:', detailsX, 180)
         .font('Helvetica')
-        .text(sale._id, 470, 160)
-        .text(new Date(sale.createdAt).toLocaleDateString(), 470, 175)
+        .text(new Date(sale.createdAt).toLocaleDateString(), valueX, 180)
       
-      // Add payment method if needed
       if (sale.paymentMode) {
         doc.fontSize(10)
           .font('Helvetica-Bold')
-          .text('Payment Method:', 400, 190)
-        
-        doc.fontSize(10)
+          .text('Payment Method:', detailsX, 200)
           .font('Helvetica')
-          .text(sale.paymentMode, 470, 190)
+          .text(sale.paymentMode, valueX, 200)
       }
       
-      // Table header
+      // Table Configuration
       const tableTop = 240
-      const tableHeaders = [
-        { title: 'DESCRIPTION', x: 50, width: 250 },
-        { title: 'UNIT PRICE', x: 300, width: 80 },
-        { title: 'QTY', x: 380, width: 70 },
-        { title: 'TOTAL', x: 450, width: 80 }
+      const tableWidth = 500
+      const columns = [
+        { title: 'DESCRIPTION', x: 50, width: 250, align: 'left' },
+        { title: 'UNIT PRICE', x: 300, width: 100, align: 'center' },
+        { title: 'QTY', x: 400, width: 50, align: 'center' },
+        { title: 'TOTAL', x: 450, width: 100, align: 'right' }
       ]
       
-      // Draw table header background
+      // Table Header
       doc.fillColor(primaryColor)
-        .rect(50, tableTop, 500, 25)
+        .rect(50, tableTop, tableWidth, 25)
         .fill()
       
-      // Draw table header text
       doc.fillColor('white')
         .fontSize(10)
         .font('Helvetica-Bold')
       
-      tableHeaders.forEach(header => {
+      columns.forEach(column => {
         doc.text(
-          header.title,
-          header.x,
+          column.title,
+          column.x,
           tableTop + 8,
-          { width: header.width, align: header.title === 'DESCRIPTION' ? 'left' : 'center' }
+          { width: column.width, align: column.align }
         )
       })
       
-      // Reset fill color
-      doc.fillColor(textColor)
-      
-      // Table content
+      // Table Content
       let y = tableTop + 25
       let alternateRow = false
       
+      doc.fillColor(textColor)
+      
       sale.orderItems.forEach(item => {
-        // Calculate row height based on product name length
-        const heightOffset = Math.max(
+        const rowHeight = Math.max(
           doc.heightOfString(item.product.name, {
-            width: tableHeaders[0].width,
+            width: columns[0].width,
             align: 'left'
           }),
           20
         )
         
-        // Draw alternating row background
         if (alternateRow) {
           doc.fillColor(lightGray)
-            .rect(50, y, 500, heightOffset)
+            .rect(50, y, tableWidth, rowHeight)
             .fill()
-          doc.fillColor(textColor)
         }
-        alternateRow = !alternateRow
         
-        // Product name
-        doc.fontSize(10)
+        doc.fillColor(textColor)
+          .fontSize(10)
           .font('Helvetica')
-          .text(
-            item.product.name,
-            tableHeaders[0].x,
-            y + 5,
-            { width: tableHeaders[0].width, align: 'left' }
-          )
         
-        // Unit price
+        // Product Details
         doc.text(
-          `$${item.price.toFixed(2)}`,
-          tableHeaders[1].x,
+          item.product.name,
+          columns[0].x,
           y + 5,
-          { width: tableHeaders[1].width, align: 'center' }
+          { width: columns[0].width, align: 'left' }
         )
         
-        // Quantity
+        doc.text(
+          `₹${item.price.toFixed(2)}`,
+          columns[1].x,
+          y + 5,
+          { width: columns[1].width, align: 'center', encoding: 'UTF-8' }
+        )
+        
         doc.text(
           item.quantity.toString(),
-          tableHeaders[2].x,
+          columns[2].x,
           y + 5,
-          { width: tableHeaders[2].width, align: 'center' }
+          { width: columns[2].width, align: 'center' }
         )
         
-        // Total
         doc.text(
-          `$${(item.price * item.quantity).toFixed(2)}`,
-          tableHeaders[3].x,
+          `₹${(item.price * item.quantity).toFixed(2)}`,
+          columns[3].x,
           y + 5,
-          { width: tableHeaders[3].width, align: 'center' }
+          { width: columns[3].width, align: 'right', encoding: 'UTF-8' }
         )
         
-        y += heightOffset
+        y += rowHeight
+        alternateRow = !alternateRow
       })
       
-      // Tax line
+      // Tax Row
       doc.fontSize(10)
         .font('Helvetica-Bold')
-        .text('Tax', 400, y + 15)
-      
-      doc.fontSize(10)
+        .text('Tax', columns[2].x, y + 15, { width: columns[2].width, align: 'right' })
         .font('Helvetica')
-        .text('0%', 500, y + 15, { align: 'right' })
+        .text('0%', columns[3].x, y + 15, { width: columns[3].width, align: 'right' })
       
-      // Subtotal and Total
+      // Summary Section
       const summaryY = y + 40
       
-      // Subtotal background
       doc.fillColor(lightGray)
-        .rect(50, summaryY, 500, 25)
+        .rect(50, summaryY, tableWidth, 25)
         .fill()
       
       doc.fillColor(textColor)
         .fontSize(10)
         .font('Helvetica-Bold')
-        .text('SUBTOTAL', 60, summaryY + 8)
+        .text('SUBTOTAL', columns[0].x, summaryY + 8)
+        .text('TOTAL', columns[2].x, summaryY + 8, { width: columns[2].width, align: 'right' })
+        .text(
+          `₹${sale.totalAmount.toFixed(2)}`,
+          columns[3].x,
+          summaryY + 8,
+          { width: columns[3].width, align: 'right', encoding: 'UTF-8' }
+        )
       
-      doc.fontSize(10)
-        .font('Helvetica-Bold')
-        .text('TOTAL', 390, summaryY + 8)
-      
-      doc.fontSize(10)
-        .font('Helvetica-Bold')
-        .text(`$${sale.totalAmount.toFixed(2)}`, 500, summaryY + 8, { align: 'right' })
-      
-      // Thank you message
+      // Thank You Message
       doc.fontSize(12)
         .font('Helvetica-Bold')
         .text('THANK YOU FOR YOUR BUSINESS!', 50, summaryY + 50, { align: 'center' })
       
-      // Notes section
+      // Notes Section
       const notesY = summaryY + 90
       doc.fontSize(10)
         .font('Helvetica-Bold')
@@ -464,31 +459,39 @@ export const getDashboardStats = async (req, res) => {
           'Please make the payment by the due date mentioned on the invoice. If you have any questions or require further details, feel free to contact us. We appreciate your prompt payment and look forward to serving you again.',
           50,
           notesY + 20,
-          { width: 300, align: 'left' }
+          { width: 300 }
         )
       
-      // Decorative diagonal element in bottom right
+      // Bottom Design
+      const designY = notesY + 40
+      const designWidth = 300
+      const designHeight = 150
+      
       doc.save()
+      
+      // Light beige section
       doc.fillColor('#e8e1d9')
-        .moveTo(550, notesY + 120)
-        .lineTo(550, notesY - 20)
-        .lineTo(400, notesY + 120)
+        .moveTo(550, designY)
+        .lineTo(550, designY + designHeight)
+        .lineTo(550 - designWidth, designY + designHeight)
         .fill()
       
+      // Medium beige section
       doc.fillColor('#d9c3b0')
-        .moveTo(550, notesY + 120)
-        .lineTo(550, notesY + 40)
-        .lineTo(470, notesY + 120)
+        .moveTo(550, designY + (designHeight * 0.35))
+        .lineTo(550, designY + designHeight)
+        .lineTo(550 - (designWidth * 0.65), designY + designHeight)
         .fill()
       
+      // Dark section
       doc.fillColor(primaryColor)
-        .moveTo(550, notesY + 120)
-        .lineTo(550, notesY + 80)
-        .lineTo(510, notesY + 120)
+        .moveTo(550, designY + (designHeight * 0.65))
+        .lineTo(550, designY + designHeight)
+        .lineTo(550 - (designWidth * 0.35), designY + designHeight)
         .fill()
+      
       doc.restore()
       
-      // Send the PDF
       res.setHeader('Content-Type', 'application/pdf')
       doc.pipe(res)
       doc.end()
@@ -498,7 +501,6 @@ export const getDashboardStats = async (req, res) => {
     }
   }
   
-  // Download invoice - same implementation but with download headers
   export const downloadInvoice = async (req, res) => {
     try {
       const sale = await Sale.findById(req.params.id)
@@ -506,39 +508,41 @@ export const getDashboardStats = async (req, res) => {
         .populate('orderItems.product')
       
       const doc = new PDFDocument({
-        margins: { top: 50, bottom: 50, left: 50, right: 50 }
+        margins: { top: 50, bottom: 50, left: 50, right: 50 },
+        size: 'A4'
       })
       
-      // Define colors
-      const primaryColor = '#c27c4c' // Orange/brown color from the design
+      // Colors
+      const primaryColor = '#c27c4c'
       const textColor = '#333333'
       const lightGray = '#f5f5f5'
       
-      // Company Logo (top right)
+      // Logo
       const imageUrl = 'https://res.cloudinary.com/daqh8noyb/image/upload/v1740427427/ecommerce/logo/dqfbmgopyjn4e6thkq9f.png'
       const imageBuffer = await fetchImageBuffer(imageUrl)
       doc.image(imageBuffer, 430, 45, { width: 120 })
       
-      // INVOICE title and company details (top left)
+      // Invoice Title
       doc.fillColor(textColor)
         .fontSize(28)
         .font('Helvetica-Bold')
         .text('INVOICE', 50, 50)
       
+      // Company Details
       doc.fontSize(10)
         .font('Helvetica')
         .text('www.yarees.in', 50, 85)
         .text('support@yarees.in', 50, 100)
         .text('+91 70050 71911', 50, 115)
       
-      // Add a line separator
+      // Separator Line
       doc.strokeColor('#e0e0e0')
         .lineWidth(1)
         .moveTo(50, 140)
         .lineTo(550, 140)
         .stroke()
       
-      // ISSUED TO section
+      // Customer Section
       doc.fontSize(12)
         .font('Helvetica-Bold')
         .text('ISSUED TO:', 50, 160)
@@ -548,155 +552,148 @@ export const getDashboardStats = async (req, res) => {
         .text(sale.customer.name, 50, 180)
         .text(sale.customer.email, 50, 195)
       
-      // Invoice details (right side)
+      // Invoice Details
+      const detailsX = 350
+      const valueX = 450
+      
       doc.fontSize(10)
         .font('Helvetica-Bold')
-        .text('Invoice No:', 400, 160)
-        .text('Date:', 400, 175)
+        .text('Invoice No:', detailsX, 160)
+        .font('Helvetica')
+        .text(sale._id, valueX, 160, { width: 150 })
       
       doc.fontSize(10)
+        .font('Helvetica-Bold')
+        .text('Date:', detailsX, 180)
         .font('Helvetica')
-        .text(sale._id, 470, 160)
-        .text(new Date(sale.createdAt).toLocaleDateString(), 470, 175)
+        .text(new Date(sale.createdAt).toLocaleDateString(), valueX, 180)
       
-      // Add payment method if needed
       if (sale.paymentMode) {
         doc.fontSize(10)
           .font('Helvetica-Bold')
-          .text('Payment Method:', 400, 190)
-        
-        doc.fontSize(10)
+          .text('Payment Method:', detailsX, 200)
           .font('Helvetica')
-          .text(sale.paymentMode, 470, 190)
+          .text(sale.paymentMode, valueX, 200)
       }
       
-      // Table header
+      // Table Configuration
       const tableTop = 240
-      const tableHeaders = [
-        { title: 'DESCRIPTION', x: 50, width: 250 },
-        { title: 'UNIT PRICE', x: 300, width: 80 },
-        { title: 'QTY', x: 380, width: 70 },
-        { title: 'TOTAL', x: 450, width: 80 }
+      const tableWidth = 500
+      const columns = [
+        { title: 'DESCRIPTION', x: 50, width: 250, align: 'left' },
+        { title: 'UNIT PRICE', x: 300, width: 100, align: 'center' },
+        { title: 'QTY', x: 400, width: 50, align: 'center' },
+        { title: 'TOTAL', x: 450, width: 100, align: 'right' }
       ]
       
-      // Draw table header background
+      // Table Header
       doc.fillColor(primaryColor)
-        .rect(50, tableTop, 500, 25)
+        .rect(50, tableTop, tableWidth, 25)
         .fill()
       
-      // Draw table header text
       doc.fillColor('white')
         .fontSize(10)
         .font('Helvetica-Bold')
       
-      tableHeaders.forEach(header => {
+      columns.forEach(column => {
         doc.text(
-          header.title,
-          header.x,
+          column.title,
+          column.x,
           tableTop + 8,
-          { width: header.width, align: header.title === 'DESCRIPTION' ? 'left' : 'center' }
+          { width: column.width, align: column.align }
         )
       })
       
-      // Reset fill color
-      doc.fillColor(textColor)
-      
-      // Table content
+      // Table Content
       let y = tableTop + 25
       let alternateRow = false
       
+      doc.fillColor(textColor)
+      
       sale.orderItems.forEach(item => {
-        // Calculate row height based on product name length
-        const heightOffset = Math.max(
+        const rowHeight = Math.max(
           doc.heightOfString(item.product.name, {
-            width: tableHeaders[0].width,
+            width: columns[0].width,
             align: 'left'
           }),
           20
         )
         
-        // Draw alternating row background
         if (alternateRow) {
           doc.fillColor(lightGray)
-            .rect(50, y, 500, heightOffset)
+            .rect(50, y, tableWidth, rowHeight)
             .fill()
-          doc.fillColor(textColor)
         }
-        alternateRow = !alternateRow
         
-        // Product name
-        doc.fontSize(10)
+        doc.fillColor(textColor)
+          .fontSize(10)
           .font('Helvetica')
-          .text(
-            item.product.name,
-            tableHeaders[0].x,
-            y + 5,
-            { width: tableHeaders[0].width, align: 'left' }
-          )
         
-        // Unit price
+        // Product Details
         doc.text(
-          `$${item.price.toFixed(2)}`,
-          tableHeaders[1].x,
+          item.product.name,
+          columns[0].x,
           y + 5,
-          { width: tableHeaders[1].width, align: 'center' }
+          { width: columns[0].width, align: 'left' }
         )
         
-        // Quantity
+        doc.text(
+          `₹${item.price.toFixed(2)}`,
+          columns[1].x,
+          y + 5,
+          { width: columns[1].width, align: 'center', encoding: 'UTF-8' }
+        )
+        
         doc.text(
           item.quantity.toString(),
-          tableHeaders[2].x,
+          columns[2].x,
           y + 5,
-          { width: tableHeaders[2].width, align: 'center' }
+          { width: columns[2].width, align: 'center' }
         )
         
-        // Total
         doc.text(
-          `$${(item.price * item.quantity).toFixed(2)}`,
-          tableHeaders[3].x,
+          `₹${(item.price * item.quantity).toFixed(2)}`,
+          columns[3].x,
           y + 5,
-          { width: tableHeaders[3].width, align: 'center' }
+          { width: columns[3].width, align: 'right', encoding: 'UTF-8' }
         )
         
-        y += heightOffset
+        y += rowHeight
+        alternateRow = !alternateRow
       })
       
-      // Tax line
+      // Tax Row
       doc.fontSize(10)
         .font('Helvetica-Bold')
-        .text('Tax', 400, y + 15)
-      
-      doc.fontSize(10)
+        .text('Tax', columns[2].x, y + 15, { width: columns[2].width, align: 'right' })
         .font('Helvetica')
-        .text('0%', 500, y + 15, { align: 'right' })
+        .text('0%', columns[3].x, y + 15, { width: columns[3].width, align: 'right' })
       
-      // Subtotal and Total
+      // Summary Section
       const summaryY = y + 40
       
-      // Subtotal background
       doc.fillColor(lightGray)
-        .rect(50, summaryY, 500, 25)
+        .rect(50, summaryY, tableWidth, 25)
         .fill()
       
       doc.fillColor(textColor)
         .fontSize(10)
         .font('Helvetica-Bold')
-        .text('SUBTOTAL', 60, summaryY + 8)
+        .text('SUBTOTAL', columns[0].x, summaryY + 8)
+        .text('TOTAL', columns[2].x, summaryY + 8, { width: columns[2].width, align: 'right' })
+        .text(
+          `₹${sale.totalAmount.toFixed(2)}`,
+          columns[3].x,
+          summaryY + 8,
+          { width: columns[3].width, align: 'right', encoding: 'UTF-8' }
+        )
       
-      doc.fontSize(10)
-        .font('Helvetica-Bold')
-        .text('TOTAL', 390, summaryY + 8)
-      
-      doc.fontSize(10)
-        .font('Helvetica-Bold')
-        .text(`$${sale.totalAmount.toFixed(2)}`, 500, summaryY + 8, { align: 'right' })
-      
-      // Thank you message
+      // Thank You Message
       doc.fontSize(12)
         .font('Helvetica-Bold')
         .text('THANK YOU FOR YOUR BUSINESS!', 50, summaryY + 50, { align: 'center' })
       
-      // Notes section
+      // Notes Section
       const notesY = summaryY + 90
       doc.fontSize(10)
         .font('Helvetica-Bold')
@@ -708,34 +705,41 @@ export const getDashboardStats = async (req, res) => {
           'Please make the payment by the due date mentioned on the invoice. If you have any questions or require further details, feel free to contact us. We appreciate your prompt payment and look forward to serving you again.',
           50,
           notesY + 20,
-          { width: 300, align: 'left' }
+          { width: 300 }
         )
       
-      // Decorative diagonal element in bottom right
+      // Bottom Design
+      const designY = notesY + 40
+      const designWidth = 300
+      const designHeight = 150
+      
       doc.save()
+      
+      // Light beige section
       doc.fillColor('#e8e1d9')
-        .moveTo(550, notesY + 120)
-        .lineTo(550, notesY - 20)
-        .lineTo(400, notesY + 120)
+        .moveTo(550, designY)
+        .lineTo(550, designY + designHeight)
+        .lineTo(550 - designWidth, designY + designHeight)
         .fill()
       
+      // Medium beige section
       doc.fillColor('#d9c3b0')
-        .moveTo(550, notesY + 120)
-        .lineTo(550, notesY + 40)
-        .lineTo(470, notesY + 120)
+        .moveTo(550, designY + (designHeight * 0.35))
+        .lineTo(550, designY + designHeight)
+        .lineTo(550 - (designWidth * 0.65), designY + designHeight)
         .fill()
       
+      // Dark section
       doc.fillColor(primaryColor)
-        .moveTo(550, notesY + 120)
-        .lineTo(550, notesY + 80)
-        .lineTo(510, notesY + 120)
+        .moveTo(550, designY + (designHeight * 0.65))
+        .lineTo(550, designY + designHeight)
+        .lineTo(550 - (designWidth * 0.35), designY + designHeight)
         .fill()
+      
       doc.restore()
       
-      // Set download headers
       res.setHeader('Content-Type', 'application/pdf')
       res.setHeader('Content-Disposition', `attachment; filename=invoice-${sale._id}.pdf`)
-      
       doc.pipe(res)
       doc.end()
       

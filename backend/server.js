@@ -13,6 +13,7 @@ import analyticsRoutes from './routes/analyticsRoutes.js'
 import addressRoutes from './routes/addressRoutes.js'
 import paymentMethodRoutes from './routes/paymentMethodRoutes.js'
 import reviewRoutes from './routes/reviewRoutes.js'
+import flashsaleRoutes from './routes/flashsaleRoutes.js'
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
 
@@ -47,6 +48,7 @@ app.use('/api/v1', analyticsRoutes);
 app.use('/api/v1/user/address',addressRoutes);
 app.use('/api/v1/user', paymentMethodRoutes);
 app.use('/api/v1', reviewRoutes);
+app.use('/api/v1/flashsales', flashsaleRoutes);
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);

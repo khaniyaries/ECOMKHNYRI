@@ -90,6 +90,10 @@ const productSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  flashSalePrice: {
+    type: Number,
+    min: 0
+  },
   reviews: [reviewSchema],
   averageRating: {
     type: Number,

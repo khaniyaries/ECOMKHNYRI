@@ -2,8 +2,10 @@
 import { useState } from "react"
 import toast from 'react-hot-toast'
 import { env } from "../../../../../config/config.js"
+import { useRouter } from "next/navigation"
 
 export default function ForgotPassword() {
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [showOTPForm, setShowOTPForm] = useState(false)
   const [otp, setOtp] = useState("")
@@ -43,14 +45,16 @@ export default function ForgotPassword() {
       })
   
       const data = await response.json()
+      
       if (response.ok) {
         localStorage.setItem("resetToken", data.resetToken)
         toast.success("OTP verified successfully")
-        return router.push("/reset-password")
+        router.push("/sign-in/reset-password")
+      } else {
+        toast.error(data.message)
       }
-      
-      toast.error(data.message)
     } catch (error) {
+      console.error('Verification error:', error)
       toast.error("Verification failed")
     }
   }
@@ -64,17 +68,9 @@ export default function ForgotPassword() {
           userId: localStorage.getItem("resetPasswordUserId")
         })
       })
-
+  
       const data = await response.json()
-      if (response.ok) {
-        if (data.validUntil) {
-          toast.success("Current OTP is still valid. Please check your email.")
-        } else {
-          toast.success("New OTP sent successfully!")
-        }
-      } else {
-        toast.error(data.message)
-      }
+      toast.success(data.message)
     } catch (error) {
       toast.error("Failed to resend OTP")
     }

@@ -14,13 +14,15 @@ const FlashSales = ({ numberOfProducts }) => {
     const fetchFlashSales = async () => {
       setIsLoading(true)
       try {
-        const url = numberOfProducts 
-          ? `${env.API_URL}/api/v1/products/flash-sale?limit=${numberOfProducts}`
-          : `${env.API_URL}/api/v1/products/flash-sale`
-        
-        const response = await fetch(url)
+        const response = await fetch(`${env.API_URL}/api/v1/flashsales/active`)
         const data = await response.json()
-        setProducts(data)
+        // Map the products with their flash sale prices
+        const flashSaleProducts = data.map(product => ({
+          ...product,
+          originalPrice: product.price,
+          price: product.flashSalePrice // Override price with flash sale price
+        }))
+        setProducts(flashSaleProducts)
       } catch (error) {
         console.error('Error fetching flash sales:', error)
       } finally {
@@ -62,7 +64,7 @@ const FlashSales = ({ numberOfProducts }) => {
         <>
           <div className="overflow-x-auto pb-4 scrollbar-hide flash-scroll-container">
             <div className="flex gap-6 min-w-max">
-              {visibleProducts.map((product) => (
+              {visibleProducts?.map((product) => (
                 <Link 
                 href={`/products/${product.category}/${product.subcategory}/${product._id}`}
                 className="w-[300px]" key={product._id}>
