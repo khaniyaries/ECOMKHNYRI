@@ -11,6 +11,14 @@ const orderItemSchema = new mongoose.Schema({
     required: true,
     min: 1
   },
+  size: {
+    type: String,
+    required: true
+  },
+  color: {
+    type: String,
+    required: true,
+  },
   price: {
     type: Number,
     required: true
@@ -40,7 +48,7 @@ const saleSchema = new mongoose.Schema({
   },
   orderStatus: {
     type: String,
-    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled','returned'],
+    enum: ['pending', 'processing', 'shipped', 'delivered', 'cancelled', 'returned'],
     default: 'pending'
   },
   cancellationDetails: {
@@ -48,8 +56,8 @@ const saleSchema = new mongoose.Schema({
     date: Date,
     refundStatus: {
       type: String,
-      enum: ['pending', 'processed', 'completed'],
-      default: 'pending'
+      enum: ['none', 'pending', 'processed', 'completed'],
+      default: 'none'
     }
   },
   returnDetails: {
@@ -57,28 +65,40 @@ const saleSchema = new mongoose.Schema({
     date: Date,
     status: {
       type: String,
-      enum: ['requested', 'approved', 'received', 'refunded'],
-      default: 'requested'
+      enum: ['none', 'requested', 'approved', 'received', 'refunded'],
+      default: 'none'
     },
     refundStatus: {
       type: String,
-      enum: ['pending', 'processed', 'completed'],
-      default: 'pending'
+      enum: ['none', 'pending', 'processed', 'completed'],
+      default: 'none'
     }
   },
   paymentMode: {
     type: String,
-    enum: ['cash', 'card', 'upi', 'netbanking'],
+    enum: ['bank', 'cash', 'card', 'upi', 'netbanking'],
     required: true
   },
   transactionId: {
     type: String,
     sparse: true
   },
+  shippingaddress: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "addresses",
+    required: true,
+  },
   saleDate: {
     type: Date,
     default: Date.now
-  }
+  },
+  orderId: {
+    type: String,
+    unique: true,
+    default: function () {
+        return "YRS-" + Math.floor(10000000 + Math.random() * 90000000);
+    }
+},
 }, {
   timestamps: true
 });

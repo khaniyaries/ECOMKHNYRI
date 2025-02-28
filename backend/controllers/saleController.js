@@ -2,6 +2,7 @@ import fetch from 'node-fetch'
 import Sale from '../models/Sale.js';
 import productModel from '../models/productModel.js';
 import PDFDocument from 'pdfkit'
+const Product = productModel;
 import { emailService } from './emailService.js'
 
   const calculatePercentageChange = (previous, current) => {
@@ -19,7 +20,7 @@ import { emailService } from './emailService.js'
 export const createSale = async (req, res) => {
   try {
     const saleData = req.body;
-    const sale = new Sale(saleData);
+    const sale = new Sale(saleData)
     await sale.save();
     res.status(201).json(sale);
   } catch (error) {
@@ -28,66 +29,66 @@ export const createSale = async (req, res) => {
 };
 
 export const getAllSales = async (req, res) => {
-    try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const skip = (page - 1) * limit;
-  
-      const totalItems = await Sale.countDocuments();
-      const totalPages = Math.ceil(totalItems / limit);
-  
-      const sales = await Sale.find()
-        .populate('customer', 'name email')
-        .populate('orderItems.product')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
-  
-      res.status(200).json({
-        orders: sales,
-        pagination: {
-          currentPage: page,
-          totalPages,
-          totalItems,
-          itemsPerPage: limit
-        }
-      });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  };
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalItems = await Sale.countDocuments();
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const sales = await Sale.find()
+      .populate('customer', 'name email')
+      .populate('orderItems.product')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      orders: sales,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+        itemsPerPage: limit
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
 
 
-  export const getUserOrders = async (req, res) => {
-    try {
-      const { userId } = req.params;
-      const page = parseInt(req.query.page) || 1;
-      const limit = parseInt(req.query.limit) || 10;
-      const skip = (page - 1) * limit;
-  
-      const totalItems = await Sale.countDocuments({ customer: userId });
-      const totalPages = Math.ceil(totalItems / limit);
-  
-      const orders = await Sale.find({ customer: userId })
-        .populate('orderItems.product')
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
-  
-      res.status(200).json({
-        orders,
-        pagination: {
-          currentPage: page,
-          totalPages,
-          totalItems,
-          itemsPerPage: limit
-        }
-      });
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  };
-  
+export const getUserOrders = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    const totalItems = await Sale.countDocuments({ customer: userId });
+    const totalPages = Math.ceil(totalItems / limit);
+
+    const orders = await Sale.find({ customer: userId })
+      .populate('orderItems.product')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.status(200).json({
+      orders,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems,
+        itemsPerPage: limit
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 
 export const getSaleById = async (req, res) => {
   try {
@@ -141,70 +142,73 @@ export const updateSaleStatus = async (req, res) => {
   };
 
 export const getDashboardStats = async (req, res) => {
-    try {
-      const currentDate = new Date();
-      const lastMonth = new Date(currentDate.setMonth(currentDate.getMonth() - 1));
-      const previousMonth = new Date(lastMonth.setMonth(lastMonth.getMonth() - 1));
+  try {
+    const currentDate = new Date();
+    const lastMonth = new Date(currentDate.setMonth(currentDate.getMonth() - 1));
+    const previousMonth = new Date(lastMonth.setMonth(lastMonth.getMonth() - 1));
 
-      const currentMonthOrders = await Sale.countDocuments({
-        createdAt: { $gte: lastMonth }
-      });
-  
-      // Previous month orders
-      const previousMonthOrders = await Sale.countDocuments({
-        createdAt: { $gte: previousMonth, $lt: lastMonth }
-      });
-  
-      // Calculate orders growth
-      const ordersGrowth = calculatePercentageChange(
-        previousMonthOrders,
-        currentMonthOrders
-      );
-  
-      // Current month customers
-      const currentMonthCustomers = await Sale.distinct('customer', {
-        createdAt: { $gte: lastMonth }
-      });
-  
-      // Previous month customers
-      const previousMonthCustomers = await Sale.distinct('customer', {
-        createdAt: { $gte: previousMonth, $lt: lastMonth }
-      });
-  
-      // Current month stock
-      const currentStock = await productModel.countDocuments({ 
-        createdAt: { $gte: lastMonth }
-      });
-  
-      // Previous month stock
-      const previousStock = await productModel.countDocuments({
-        createdAt: { $gte: previousMonth, $lt: lastMonth }
-      });
-  
-      // Calculate growth percentages
-      const customerGrowth = calculatePercentageChange(
-        previousMonthCustomers.length,
-        currentMonthCustomers.length
-      );
-  
-      const stockGrowth = calculatePercentageChange(
-        previousStock,
-        currentStock
-      );
+    const currentMonthOrders = await Sale.countDocuments({
+      createdAt: { $gte: lastMonth }
+    });
 
-  
-      // Current month revenue
-      const currentMonthRevenue = await Sale.aggregate([
-        { $match: { 
+    // Previous month orders
+    const previousMonthOrders = await Sale.countDocuments({
+      createdAt: { $gte: previousMonth, $lt: lastMonth }
+    });
+
+    // Calculate orders growth
+    const ordersGrowth = calculatePercentageChange(
+      previousMonthOrders,
+      currentMonthOrders
+    );
+
+    // Current month customers
+    const currentMonthCustomers = await Sale.distinct('customer', {
+      createdAt: { $gte: lastMonth }
+    });
+
+    // Previous month customers
+    const previousMonthCustomers = await Sale.distinct('customer', {
+      createdAt: { $gte: previousMonth, $lt: lastMonth }
+    });
+
+    // Current month stock
+    const currentStock = await Product.countDocuments({
+      createdAt: { $gte: lastMonth }
+    });
+
+    // Previous month stock
+    const previousStock = await Product.countDocuments({
+      createdAt: { $gte: previousMonth, $lt: lastMonth }
+    });
+
+    // Calculate growth percentages
+    const customerGrowth = calculatePercentageChange(
+      previousMonthCustomers.length,
+      currentMonthCustomers.length
+    );
+
+    const stockGrowth = calculatePercentageChange(
+      previousStock,
+      currentStock
+    );
+
+
+    // Current month revenue
+    const currentMonthRevenue = await Sale.aggregate([
+      {
+        $match: {
           orderStatus: 'delivered',
           createdAt: { $gte: lastMonth }
-        }},
-        { $group: { _id: null, total: { $sum: '$totalAmount' } }}
-      ]);
-  
-      // Previous month revenue
-      const previousMonthRevenue = await Sale.aggregate([
-        { $match: { 
+        }
+      },
+      { $group: { _id: null, total: { $sum: '$totalAmount' } } }
+    ]);
+
+    // Previous month revenue
+    const previousMonthRevenue = await Sale.aggregate([
+      {
+        $match: {
           orderStatus: 'delivered',
           createdAt: { $gte: previousMonth, $lt: lastMonth }
         }},
@@ -740,51 +744,51 @@ export const getDashboardStats = async (req, res) => {
     }
   }
 
-  export const getReturns = async (req, res) => {
-    try {
-      const returns = await Sale.find({
-        customer: req.query.userId,
-        orderStatus: 'returned'
-      }).populate('orderItems.product');
+export const getReturns = async (req, res) => {
+  try {
+    const returns = await Sale.find({
+      customer: req.query.userId,
+      orderStatus: 'returned'
+    }).populate('orderItems.product');
 
-      if (returns.length === 0) {
-        return res.status(200).json([]); 
-      }
-      
-      const formattedReturns = returns.map(returnItem => ({
-        id: returnItem._id,
-        item: returnItem.orderItems[0].product.name,
-        date: returnItem.returnDetails.date,
-        reason: returnItem.returnDetails.reason,
-        status: returnItem.returnDetails.status
-      }));
-      
-      res.status(200).json(formattedReturns);
-    } catch (error) {
-      res.status(500).json({ message: 'Error fetching returns' });
+    if (returns.length === 0) {
+      return res.status(200).json([]);
     }
-  };
-  
-  export const getCancellations = async (req, res) => {
-    try {
-      const cancellations = await Sale.find({
-        customer: req.query.userId,
-        orderStatus: 'cancelled'
-      }).populate('orderItems.product');
-      
-      const formattedCancellations = cancellations.map(cancel => ({
-        id: cancel._id,
-        item: cancel.orderItems[0].product.name,
-        date: cancel.cancellationDetails.date,
-        reason: cancel.cancellationDetails.reason,
-        refundStatus: cancel.cancellationDetails.refundStatus
-      }));
-      
-      res.status(200).json(formattedCancellations);
-    } catch (error) {
-      res.status(500).json({ message: 'Error fetching cancellations' });
-    }
-  };
-  
-  
-  
+
+    const formattedReturns = returns.map(returnItem => ({
+      id: returnItem._id,
+      item: returnItem.orderItems[0].product.name,
+      date: returnItem.returnDetails.date,
+      reason: returnItem.returnDetails.reason,
+      status: returnItem.returnDetails.status
+    }));
+
+    res.status(200).json(formattedReturns);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching returns' });
+  }
+};
+
+export const getCancellations = async (req, res) => {
+  try {
+    const cancellations = await Sale.find({
+      customer: req.query.userId,
+      orderStatus: 'cancelled'
+    }).populate('orderItems.product');
+
+    const formattedCancellations = cancellations.map(cancel => ({
+      id: cancel._id,
+      item: cancel.orderItems[0].product.name,
+      date: cancel.cancellationDetails.date,
+      reason: cancel.cancellationDetails.reason,
+      refundStatus: cancel.cancellationDetails.refundStatus
+    }));
+
+    res.status(200).json(formattedCancellations);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching cancellations' });
+  }
+};
+
+
+

@@ -5,24 +5,24 @@ export const cartController = {
     // Get user's cart with populated product details
     getUserCart: async (req, res) => {
         try {
-            const userId = req.user._id;
+            const userId = req.params.userid;
             const cart = await Cart.findOne({ userId })
                 .populate('items.productId', 'name price images stock');
-            
+
             if (!cart) {
                 return res.json({ items: [] });
             }
             res.json(cart);
         } catch (error) {
-            res.status(500).json({ message: 'Error fetching cart' });
+            res.status(500).json({ message: "Error fetching cart" });
         }
     },
 
     // Add item to cart
     addToCart: async (req, res) => {
         try {
-            const userId = req.user._id;
-            const { productId, quantity } = req.body;
+
+            const { userId, productId, quantity } = req.body;
 
             // Verify product exists and has enough stock
             const product = await Product.findById(productId);

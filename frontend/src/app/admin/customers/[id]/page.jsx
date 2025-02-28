@@ -14,6 +14,7 @@ export default function CustomerDetails() {
   const [customer, setCustomer] = useState(null)
   const [loading, setLoading] = useState(true)
   const params = useParams()
+  const [usernotfound, setusernotfound] = useState(false)
   const customerId = params.id
 
   useEffect(() => {
@@ -26,8 +27,12 @@ export default function CustomerDetails() {
     try {
       const response = await fetch(`${env.API_URL}/api/v1/user/customers/${customerId}`)
       const data = await response.json()
+      if (!response.ok) {
+        setusernotfound(true)
+      }
       setCustomer(data)
       setLoading(false)
+
     } catch (error) {
       console.error('Error fetching customer details:', error)
       setLoading(false)
@@ -58,6 +63,19 @@ export default function CustomerDetails() {
     return null
   }
 
+  if (usernotfound) {
+    return (
+      <div className="space-x-5">
+        <div className="text-3xl">
+          Customer not found...
+
+
+        </div>
+
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-8">
       {/* Page Header */}
@@ -80,6 +98,32 @@ export default function CustomerDetails() {
         {/* Customer Info */}
         <div className="lg:col-span-3">
           <div className="bg-white p-6 rounded-lg shadow-sm">
+            <div className="flex justify-end">
+              <button
+                onClick={async () => {
+                  try {
+                    const response = await fetch(`${env.API_URL}/api/v1/user/customers/${customer._id}`, {
+                      method: 'DELETE',
+                    });
+
+                    if (response.ok) {
+                      toast.success('user deleted successfully');
+                      window.location.href = '/admin/customers'
+
+                    } else {
+                      throw new Error('Failed to delete user');
+                    }
+                  } catch (error) {
+                    toast.error('Failed to delete user');
+                  }
+
+                }}
+
+                className="bg-red-500 text-white px-3 py-2 rounded-md"
+              >
+                Delete
+              </button>
+            </div>
             <div className="flex items-center space-x-4 mb-6">
               <Image
                 src={`https://ui-avatars.com/api/?name=${customer.name}&size=80`}
@@ -149,11 +193,10 @@ export default function CustomerDetails() {
                       ${order.totalAmount?.toFixed(2)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        order.orderStatus === "delivered" ? "bg-green-100 text-green-800" : 
-                        order.orderStatus === "cancelled" ? "bg-red-100 text-red-800" : 
-                        "bg-yellow-100 text-yellow-800"
-                      }`}>
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.orderStatus === "delivered" ? "bg-green-100 text-green-800" :
+                        order.orderStatus === "cancelled" ? "bg-red-100 text-red-800" :
+                          "bg-yellow-100 text-yellow-800"
+                        }`}>
                         {order.orderStatus.charAt(0).toUpperCase() + order.orderStatus.slice(1)}
                       </span>
                     </td>

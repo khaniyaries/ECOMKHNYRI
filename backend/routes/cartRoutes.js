@@ -4,7 +4,7 @@ import { cartController } from '../controllers/cartController.js';
 const router = express.Router();
 
 // Get user's cart
-router.get('/user', cartController.getUserCart);
+router.get('/:userid', cartController.getUserCart);
 
 // Add item to cart
 router.post('/add', cartController.addToCart);

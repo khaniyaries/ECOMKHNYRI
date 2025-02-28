@@ -104,7 +104,7 @@ export default function Customers() {
       </div>
 
       {/* Customers Table */}
-      <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+      <div className="bg-white rounded-lg  overflow-x-auto shadow-sm overflow-hidden">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
             <tr>
@@ -131,7 +131,7 @@ export default function Customers() {
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-white divide-y  divide-gray-200">
             {customers?.map((customer) => (
               <tr key={customer._id}>
                 <td className="px-6 py-4 whitespace-nowrap">

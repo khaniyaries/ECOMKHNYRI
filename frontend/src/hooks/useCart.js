@@ -5,6 +5,7 @@ import { cartApi } from '@/utils/cartapi.js';
 import { env } from "../../config/config.js"
 
 export const useCart = () => {
+  
     const { user } = useAuth();
     const [cartProducts, setCartProducts] = useState([]);
     const [quantities, setQuantities] = useState({});
@@ -16,10 +17,12 @@ export const useCart = () => {
 
     const loadCartProducts = async () => {
         setIsLoading(true);
+        
         try {
+            const userId = localStorage.getItem('userId');
             let products = [];  // Initialize with empty array
             if (user) {
-                const response = await fetch(`${env.API_URL}/api/v1/cart/user`);
+                const response = await fetch(`${env.API_URL}/api/v1/cart/${userId}`);
                 products = await response.json();
             } else {
                 const cartItems = cartStorage.getCartItems();
@@ -33,11 +36,11 @@ export const useCart = () => {
                     }));
                 }
             }
-            
-            setCartProducts(products || []); 
-            setQuantities(products.reduce((acc, product) => ({
+
+            setCartProducts(products || []);
+            setQuantities(products.items.reduce((acc, product) => ({
                 ...acc,
-                [product._id]: product.quantity
+                [product.productId._id]: product.quantity
             }), {}));
         } finally {
             setIsLoading(false);
@@ -45,10 +48,11 @@ export const useCart = () => {
     };
     const addToCart = async (productId, quantity) => {
         if (user) {
+            const userId = localStorage.getItem('userId');
             const response = await fetch(`${env.API_URL}/api/v1/cart/add`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ productId, quantity })
+                body: JSON.stringify({userId, productId, quantity })
             });
             if (response.ok) {
                 loadCartProducts();
@@ -59,5 +63,5 @@ export const useCart = () => {
         }
     };
 
-    return { cartProducts, quantities, setQuantities, isLoading, refreshCart: loadCartProducts, addToCart};
+    return { cartProducts, quantities, setQuantities, isLoading, refreshCart: loadCartProducts, addToCart };
 };

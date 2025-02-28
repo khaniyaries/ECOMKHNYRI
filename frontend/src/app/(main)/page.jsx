@@ -5,7 +5,7 @@ import FlashSales from "@/components/FlashSale.jsx";
 import { HiOutlineArrowSmLeft, HiOutlineArrowSmRight } from "react-icons/hi";
 import { Countdown } from "@/components/countdown";
 import CategoryCard from "@/components/CategoryCard.jsx";
-import React, {useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import ServiceBenefitsFooter from "@/components/ServiceBenefitsFooter";
 import BestSellers from "@/components/BestSellers.jsx";
 import OurProducts from "@/components/OurProducts.jsx";
@@ -25,124 +25,128 @@ export default function Home() {
   const [activeIndex, setActiveIndex] = useState(2);
 
   const handleDotClick = (index) => {
-      setActiveIndex(index);
-      // Here you can add functionality to navigate slides when a dot is clicked
-    };
+    setActiveIndex(index);
+    // Here you can add functionality to navigate slides when a dot is clicked
+  };
 
   // Create separate scroll handlers for each component
-const scrollFlashSales = (direction) => {
-  if (window.scrollFlashSales) {
-    window.scrollFlashSales(direction)
-  }
-};
-
-useEffect(() => {
-  const fetchCategories = async () => {
-    try {
-      const response = await fetch(`${env.API_URL}/api/v1/categories`)
-      const data = await response.json()
-      setCategories(data)
-      
-      // Split categories and subcategories
-      setMainCategories(data.filter(cat => !cat.isSubcategory))
-      setSubCategories(data.filter(cat => cat.isSubcategory))
-    } catch (error) {
-      console.error('Error fetching categories:', error)
-    } finally {
-      setIsLoading(false)
+  const scrollFlashSales = (direction) => {
+    if (window.scrollFlashSales) {
+      window.scrollFlashSales(direction)
     }
-  }
+  };
 
-  fetchCategories()
-}, [])
+  useEffect(() => {
 
 
-const scrollCategories = (direction) => {
-  const container = document.querySelector('.category-scroll-container');
-  const scrollAmount = 340;
-  
-  if (container) {
-    container.scrollBy({
-      left: direction === 'left' ? -scrollAmount : scrollAmount,
-      behavior: 'smooth'
-    });
-  }
-};
+    const userid = localStorage.getItem("userId");
+
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${env.API_URL}/api/v1/categories`)
+        const data = await response.json()
+        setCategories(data)
+
+        // Split categories and subcategories
+        setMainCategories(data.filter(cat => !cat.isSubcategory))
+        setSubCategories(data.filter(cat => cat.isSubcategory))
+      } catch (error) {
+        console.error('Error fetching categories:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchCategories()
+  }, [])
+
+
+  const scrollCategories = (direction) => {
+    const container = document.querySelector('.category-scroll-container');
+    const scrollAmount = 340;
+
+    if (container) {
+      container.scrollBy({
+        left: direction === 'left' ? -scrollAmount : scrollAmount,
+        behavior: 'smooth'
+      });
+    }
+  };
 
 
   const scrollProducts = (direction) => {
     const container = document.querySelector('.product-scroll-container');
-    
+
     if (container) {
-        if (direction === 'left') {
-            setCurrentPage(prev => Math.max(0, prev - 1));
-        } else {
-            setCurrentPage(prev => Math.min(totalPages - 1, prev + 1));
-        }
+      if (direction === 'left') {
+        setCurrentPage(prev => Math.max(0, prev - 1));
+      } else {
+        setCurrentPage(prev => Math.min(totalPages - 1, prev + 1));
+      }
     }
-};
+  };
 
   return (
     <div className="w-full h-full">
       <div className="flex md:px-10 lg:px-40 p-20 px-5 flex-col md:flex-row w-full justify-evenly">
         <div className="hidden md:flex md:w-[15%] md:flex-col">
           {mainCategories?.map((category) => (
-              <div key={category._id} className="group">
-                <a
-                  href={`/products/${category._id}`}
-                  className="py-2 text-black font-poppins text-sm lg:text-base font-normal relative w-full flex justify-between items-center"
-                >
-                  {category.name}
-                  {(category.name === "Women's Fashion" || category.name === "Men's Fashion") && (
-                    <span className="text-black font-bold">›</span>
-                  )}
-                  <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 ease-in-out group-hover:w-full"></span>
-                </a>
-              </div>
-            ))}
+            <div key={category._id} className="group">
+              <a
+                href={`/products/${category._id}`}
+                className="py-2 text-black font-poppins text-sm lg:text-base font-normal relative w-full flex justify-between items-center"
+              >
+                {category.name}
+                {(category.name === "Women's Fashion" || category.name === "Men's Fashion") && (
+                  <span className="text-black font-bold">›</span>
+                )}
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-black transition-all duration-300 ease-in-out group-hover:w-full"></span>
+              </a>
+            </div>
+          ))}
         </div>
         {/* <div className="border-l border-black mx-8 h-[360px]" /> */}
         <div className="h-[60vh]  md:h-full z-5 md:w-[70%] bg-black lg:py-10 lg:px-14 md:py-10 md:px-5 p-10 flex flex-col md:flex-row justify-center gap-5 md:gap-3 lg:gap-5 relative">
           <div className="w-full h-[50%] md:w-[50%] md:h-full flex flex-col gap-5 md:gap-10 items-start">
             <div className="flex flex-row items-center justify-center gap-2">
-              <FaApple color="white" className="h-10 w-10"/>
+              <FaApple color="white" className="h-10 w-10" />
               <h2 className="text-base text-white font-normal font-poppins">
                 iPhone 14 Series
               </h2>
             </div>
             <h1 className="lg:text-4xl md:3xl text-white font-semibold font-inter">
-              Up to 10% <br/> off Voucher 
+              Up to 10% <br /> off Voucher
             </h1>
-            <Link 
-            href="/products"
-            className="text-white text-base font-medium font-poppins underline flex items-center gap-2 justify-center"
+            <Link
+              href="/products"
+              className="text-white text-base font-medium font-poppins underline flex items-center gap-2 justify-center"
             >
-              Shop Now! <span className="no-underline"><BsArrowRight/></span>
+              Shop Now! <span className="no-underline"><BsArrowRight /></span>
             </Link>
           </div>
           <div className="w-full h-[50%] md:w-[70%] md:h-auto relative">
             <div className="relative h-full w-full">
               <Image
-                  src="/images/iphone.png"
-                  alt="Product Picture"
-                  fill
-                  className=" object-containz-50 relative"
+                src="/images/iphone.png"
+                alt="Product Picture"
+                fill
+                className=" object-containz-50 relative"
               />
             </div>
           </div>
           <div className="absolute bottom-5 left-1/2 transform -translate-x-1/2 flex justify-center gap-2">
             {[0, 1, 2, 3, 4].map((index) => (
-                <button
-                    key={index} 
-                    className={`w-3 h-3 rounded-full transition-all duration-300
-                    ${activeIndex === index 
-                        ? "bg-red-500 border-2 border-white outline outline-2 outline-gray-400" 
-                        : "bg-gray-400"
-                    }`}
-                    onClick={() => handleDotClick(index)}
-                ></button>
+              <button
+                key={index}
+                className={`w-3 h-3 rounded-full transition-all duration-300
+                    ${activeIndex === index
+                    ? "bg-red-500 border-2 border-white outline outline-2 outline-gray-400"
+                    : "bg-gray-400"
+                  }`}
+                onClick={() => handleDotClick(index)}
+              ></button>
             ))}
-        </div>
+          </div>
         </div>
 
       </div>
@@ -179,15 +183,15 @@ const scrollCategories = (direction) => {
 
         {/* 🔄 Second row for small screens - centered navigation */}
         <div className="hidden md:flex justify-center mt-5 md:mt-0 md:justify-end gap-2 md:ml-auto w-full md:w-auto">
-        <button onClick={() => scrollFlashSales('left')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
-          <HiOutlineArrowSmLeft className="w-6 h-6" />
-        </button>
-        <button onClick={() => scrollFlashSales('right')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
-          <HiOutlineArrowSmRight className="w-6 h-6" />
-        </button>
+          <button onClick={() => scrollFlashSales('left')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
+            <HiOutlineArrowSmLeft className="w-6 h-6" />
+          </button>
+          <button onClick={() => scrollFlashSales('right')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
+            <HiOutlineArrowSmRight className="w-6 h-6" />
+          </button>
         </div>
       </div>
-      <FlashSales/>
+      <FlashSales />
       <div className="flex flex-col md:py-16 lg:px-40 md:px-20 px-5 py-5">
         {/* 🔄 First row for small screens */}
         <div className="flex justify-between items-start w-full">
@@ -199,16 +203,16 @@ const scrollCategories = (direction) => {
             <h2 className="md:text-2xl lg:text-4xl text-2xl font-bold">Browse By Category</h2>
           </div>
           <div className="hidden md:flex mt-12 justify-end gap-2 ml-auto w-auto">
-          <button onClick={() => scrollCategories('left')} className="p-2 border bg-gray-100 rounded-full hover:bg-gray-200">
-            <HiOutlineArrowSmLeft className="w-6 h-6" />
-          </button>
-          <button onClick={() => scrollCategories('right')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
-            <HiOutlineArrowSmRight className="w-6 h-6" />
-          </button>
+            <button onClick={() => scrollCategories('left')} className="p-2 border bg-gray-100 rounded-full hover:bg-gray-200">
+              <HiOutlineArrowSmLeft className="w-6 h-6" />
+            </button>
+            <button onClick={() => scrollCategories('right')} className="p-2 border rounded-full bg-gray-100 hover:bg-gray-200">
+              <HiOutlineArrowSmRight className="w-6 h-6" />
+            </button>
           </div>
         </div>
         <div className="w-full">
-          <CategoryCard categories={mainCategories}/>
+          <CategoryCard categories={mainCategories} />
         </div>
       </div>
       <div className="flex flex-col md:py-0 lg:px-40 md:px-20 px-5 py-5">
@@ -225,7 +229,7 @@ const scrollCategories = (direction) => {
           </button>
         </div>
         <div className="w-full">
-          <BestSellers numberOfProducts={4}/>
+          <BestSellers numberOfProducts={4} />
         </div>
       </div>
       {/* <div className="md:py-0 lg:px-40 md:px-14 h-full w-full px-5 py-20 flex flex-col md:flex-row">
@@ -292,10 +296,10 @@ const scrollCategories = (direction) => {
           </div>
         </div>
         <div className="w-full">
-          <OurProducts 
-          currentPage={currentPage} 
-          rows={2}
-          setTotalPages={setTotalPages}/>
+          <OurProducts
+            currentPage={currentPage}
+            rows={2}
+            setTotalPages={setTotalPages} />
         </div>
       </div>
 
@@ -303,8 +307,8 @@ const scrollCategories = (direction) => {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
-              <div className="w-5 h-10 bg-red-500 rounded" />
-              <span className="text-red-500 font-bold text-xs">Featured</span>
+            <div className="w-5 h-10 bg-red-500 rounded" />
+            <span className="text-red-500 font-bold text-xs">Featured</span>
           </div>
           <h2 className="text-4xl font-semibold font-inter">New Arrival</h2>
         </div>
