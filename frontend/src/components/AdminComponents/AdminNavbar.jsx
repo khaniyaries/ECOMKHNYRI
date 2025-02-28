@@ -6,6 +6,8 @@ import Image from "next/image"
 import { TbLogout2 } from "react-icons/tb";
 import { MdCategory, MdDiscount } from "react-icons/md";
 import { GiKnightBanner } from "react-icons/gi";
+import { IoIosFlash } from "react-icons/io";
+
 
 const AdminNavbar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false)
@@ -192,6 +194,14 @@ const AdminNavbar = () => {
           >
             <GiKnightBanner />
             Banners
+          </Link>
+          <Link 
+            href="/admin/flash-sales" 
+            className="flex items-center gap-2 p-2 hover:bg-gray-50 rounded-lg"
+            onClick={() => isMobile && setIsSidebarOpen(false)}
+          >
+            <IoIosFlash />
+            Flash-Sale
           </Link>
           <Link 
             href="/admin/saleheader" 
