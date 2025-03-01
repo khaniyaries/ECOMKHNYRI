@@ -12,6 +12,7 @@ const FlashSaleManager = () => {
   const [loading, setLoading] = useState(true)
   const [currentStartTime, setCurrentStartTime] = useState('')
   const [currentEndTime, setCurrentEndTime] = useState('')
+  const [activeStatus, setActiveStatus] = useState(false)
 
   useEffect(() => {
   fetchFlashSaleData()
@@ -47,6 +48,7 @@ const FlashSaleManager = () => {
       const startDateTime = new Date(data.startTime)
       const endDateTime = new Date(data.endTime)
       
+      setActiveStatus(data.isActive);
       setCurrentStartTime(startDateTime.toLocaleString())
       setCurrentEndTime(endDateTime.toLocaleString())
       setStartTime(startDateTime.toISOString().slice(0, 16))
@@ -64,10 +66,17 @@ const FlashSaleManager = () => {
 
   const handleSetPeriod = async () => {
     try {
+      // Convert to UTC ISO strings for consistent timezone handling
+      const startTimeUTC = new Date(startTime).toISOString()
+      const endTimeUTC = new Date(endTime).toISOString()
+  
       const response = await fetch(`${env.API_URL}/api/v1/flashsales/period`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ startTime, endTime })
+        body: JSON.stringify({ 
+          startTime: startTimeUTC, 
+          endTime: endTimeUTC 
+        })
       })
       
       if (response.ok) {
@@ -110,6 +119,16 @@ const FlashSaleManager = () => {
       })
       
       if (response.ok) {
+        setAllProducts(prev => prev.filter(p => p._id !== productId))
+      
+        const addedProduct = allProducts.find(p => p._id === productId)
+        setFlashSale(prev => ({
+          ...prev,
+          products: [...(prev?.products || []), {
+            product: addedProduct,
+            flashSalePrice: Number(flashSalePrice)
+          }]
+        }))
         toast.success('Product added to flash sale!')
         fetchFlashSaleData()
       } else {
@@ -129,6 +148,13 @@ const FlashSaleManager = () => {
       })
       
       if (response.ok) {
+        const removedProduct = flashSale.products.find(p => p.product._id === productId)
+        setFlashSale(prev => ({
+          ...prev,
+          products: prev.products.filter(p => p.product._id !== productId)
+        }))
+        
+        setAllProducts(prev => [...prev, removedProduct.product])
         toast.success('Product removed from flash sale!')
         fetchFlashSaleData()
         fetchAllProducts()
@@ -175,10 +201,10 @@ const FlashSaleManager = () => {
           <button
             onClick={handleToggleStatus}
             className={`px-4 py-2 rounded ${
-              flashSale?.isActive ? 'bg-red-500' : 'bg-green-500'
+              activeStatus ? 'bg-red-500' : 'bg-green-500'
             } text-white`}
           >
-            {flashSale?.isActive ? 'Stop' : 'Start'} Flash Sale
+            {activeStatus ? 'Stop' : 'Start'} Flash Sale
           </button>
         </div>
       </div>
@@ -237,6 +263,11 @@ const FlashSaleManager = () => {
                 </button>
               </div>
             ))}
+            {(flashSale?.products?.length===0 || !flashSale?.products) && (
+              <div>
+                <p>No Products added</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

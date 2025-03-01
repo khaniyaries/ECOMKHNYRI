@@ -104,11 +104,11 @@ export default function SignupPage() {
 
                             <div>
                               <input
-                                  type="text"  // Changed from email to text
+                                  type="email"  // Changed from email to text
                                   name="emailOrPhone"  // Changed from email
                                   value={formData.emailOrPhone}
                                   onChange={handleChange}
-                                  placeholder="Email or Phone Number"
+                                  placeholder="Email"
                                   className="w-full px-4 py-3 border-b border-gray-300 focus:border-red-500 focus:outline-none transition-colors"
                                   required
                                />

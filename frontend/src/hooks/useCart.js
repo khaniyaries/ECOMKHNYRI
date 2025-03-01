@@ -63,5 +63,48 @@ export const useCart = () => {
         }
     };
 
-    return { cartProducts, quantities, setQuantities, isLoading, refreshCart: loadCartProducts, addToCart };
+    const removeFromCart = async (productId) => {
+        const userId = localStorage.getItem('userId');
+        try {
+          if (user) {
+            await fetch(`${env.API_URL}/api/v1/cart/${userId}/remove/${productId}`, {
+              method: 'DELETE'
+            });
+          } else {
+            cartStorage.removeItem(productId);
+          }
+          await loadCartProducts();
+        } catch (error) {
+          console.error('Error removing item:', error);
+        }
+      };
+
+      const updateQuantity = async (productId, quantity) => {
+        const userId = localStorage.getItem('userId');
+        try {
+          if (user) {
+            await fetch(`${env.API_URL}/api/v1/cart/update-quantity`, {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ userId, productId, quantity })
+            });
+          } else {
+            cartStorage.updateQuantity(productId, quantity);
+          }
+          await loadCartProducts();
+        } catch (error) {
+          console.error('Error updating quantity:', error);
+        }
+      };
+
+      return { 
+        cartProducts, 
+        quantities, 
+        setQuantities, 
+        isLoading, 
+        refreshCart: loadCartProducts, 
+        addToCart,
+        removeFromCart,  // Add this line
+        updateQuantity   // Add this for future use
+    };
 };

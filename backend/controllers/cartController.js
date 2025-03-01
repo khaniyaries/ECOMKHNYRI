@@ -86,7 +86,7 @@ export const cartController = {
     // Remove item from cart
     removeItem: async (req, res) => {
         try {
-            const userId = req.user._id;
+            const userId = req.query._id;
             const { productId } = req.params;
 
             const cart = await Cart.findOne({ userId });

@@ -24,8 +24,9 @@ export default function AccountPage() {
     firstName: '',
     lastName: '',
     email: '',
+    phone: '', 
     address: '',
-    authProvider: 'local' // default value
+    authProvider: 'local'
   })
 
   
@@ -72,12 +73,14 @@ export default function AccountPage() {
         const [firstName = '', lastName = ''] = data.user.name?.split(' ') || []
             
         setUserData({
-            firstName,
-            lastName,
-            email: data.user.email || '',
-            address: data.user.address || '',
-            authProvider: data.user.authProvider || 'local'
+          firstName,
+          lastName,
+          email: data.user.email || '',
+          phone: data.user.phone || '', // Add mobile number from response
+          address: data.user.address || '',
+          authProvider: data.user.authProvider || 'local'
         })
+        
       } catch (error) {
         toast.error('Failed to load profile data')
       }
@@ -95,6 +98,7 @@ export default function AccountPage() {
       const updateData = {
         name: `${userData.firstName} ${userData.lastName}`,
         email: userData.email,
+        phone: userData.phone, // Add mobile number to update data
         address: userData.address
       }
 
@@ -218,6 +222,16 @@ export default function AccountPage() {
                   <input 
                     value={userData.email}
                     onChange={(e) => setUserData({...userData, email: e.target.value})}
+                    className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm md:text-base font-poppins font-normal block mb-1">Mobile Number</label>
+                  <input 
+                    type="tel"
+                    value={userData.phone}
+                    onChange={(e) => setUserData({...userData, phone: e.target.value})}
+                    placeholder="mobile number"
                     className="w-full px-3 py-2 border bg-black/5 placeholder:text-black/60 rounded-md"
                   />
                 </div>

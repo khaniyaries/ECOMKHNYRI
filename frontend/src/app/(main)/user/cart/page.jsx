@@ -8,11 +8,22 @@ import { useState } from "react"
 import { env } from "../../../../../config/config.js"
 
 
-const QuantityInput = ({ value, onChange }) => {
+const QuantityInput = ({ value, onChange, onRemove }) => {
+  const handleDecrease = () => {
+    if (value === 1) {
+      // Show confirmation dialog
+      if (window.confirm('Do you want to remove this item from cart?')) {
+        onRemove();
+      }
+    } else {
+      onChange(value - 1);
+    }
+  };
+
   return (
     <div className="flex items-center">
       <button
-        onClick={() => onChange(Math.max(1, value - 1))}
+        onClick={handleDecrease}
         className="px-2 py-1 border rounded-l-md hover:bg-gray-50"
       >
         -
@@ -35,13 +46,25 @@ const QuantityInput = ({ value, onChange }) => {
 
 export default function ShoppingCart() {
 
-  const { cartProducts, quantities, setQuantities, isLoading } = useCart();
+  const { cartProducts, quantities, setQuantities, isLoading, removeFromCart} = useCart();
    
   const handleQuantityChange = (productId, newQuantity) => {
     setQuantities(prev => ({
       ...prev,
       [productId]: newQuantity
     }));
+  };
+
+  const handleRemoveItem = async (productId) => {
+    try {
+      const userId = localStorage.getItem('userId');
+      await fetch(`${env.API_URL}/api/v1/cart/${productId}?userId=${userId}`, {
+        method: 'DELETE',
+      });
+      removeFromCart(productId);
+    } catch (error) {
+      console.error('Error removing item:', error);
+    }
   };
 
   if (isLoading) return <LoadingSpinner />;
@@ -84,6 +107,7 @@ export default function ShoppingCart() {
                 <QuantityInput
                   value={quantities[product.productId._id]}
                   onChange={(newQuantity) => handleQuantityChange(product.productId._id, newQuantity)}
+                  onRemove={() => handleRemoveItem(product.productId._id)}
                 />
               </div>
               <div className="md:text-right">
@@ -96,7 +120,7 @@ export default function ShoppingCart() {
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-8">
           <Link
-            href="/user/products"
+            href="/products"
             className="bg-white -mt-2 text-black text-base font-poppins font-medium py-2 px-8 rounded-md border border-black/50"
           >
             Return To Shop

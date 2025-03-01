@@ -255,6 +255,47 @@ export const getDashboardStats = async (req, res) => {
     }
   };
 
+  export const cancelOrder = async (req, res) => {
+    try {
+      const { orderId } = req.params;
+      const { reason } = req.body;
+  
+      const order = await Sale.findById(orderId);
+  
+      if (!order) {
+        return res.status(404).json({ message: 'Order not found' });
+      }
+  
+      // Check if order is within 4 hours
+      const orderTime = new Date(order.createdAt);
+      const currentTime = new Date();
+      const hoursDiff = (currentTime - orderTime) / (1000 * 60 * 60);
+  
+      if (hoursDiff > 4) {
+        return res.status(400).json({ 
+          message: 'Orders can only be cancelled within 4 hours of placing' 
+        });
+      }
+  
+      order.orderStatus = 'cancelled';
+      order.cancellationDetails = {
+        reason,
+        date: new Date(),
+        refundStatus: 'pending'
+      };
+  
+      await order.save();
+  
+      res.status(200).json({
+        message: 'Order cancelled successfully',
+        order
+      });
+  
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  };
+
   export const viewInvoice = async (req, res) => {
     try {
       const sale = await Sale.findById(req.params.id)
