@@ -59,8 +59,7 @@ export const cartController = {
     // Update cart item quantity
     updateQuantity: async (req, res) => {
         try {
-            const userId = req.user._id;
-            const { productId, quantity } = req.body;
+            const { userId, productId, quantity } = req.body;
 
             const cart = await Cart.findOne({ userId });
             if (!cart) {
@@ -86,7 +85,7 @@ export const cartController = {
     // Remove item from cart
     removeItem: async (req, res) => {
         try {
-            const userId = req.query._id;
+            const userId = req.params.userid;
             const { productId } = req.params;
 
             const cart = await Cart.findOne({ userId });
@@ -122,31 +121,50 @@ export const cartController = {
     // Migrate guest cart to user cart
     migrateGuestCart: async (req, res) => {
         try {
-            const userId = req.user._id;
-            const { items } = req.body;
-
-            let cart = await Cart.findOne({ userId });
-            if (!cart) {
-                cart = new Cart({ userId, items: [] });
+            const { userId, items } = req.body;
+            
+            console.log('Received migration request:', { userId, items }); // Debug log
+    
+            if (!userId || !items || !Array.isArray(items)) {
+                return res.status(400).json({ message: 'Invalid request data' });
             }
-
-            // Merge guest items with existing cart
-            for (const guestItem of items) {
-                const existingItem = cart.items.find(
-                    item => item.productId.toString() === guestItem.productId
-                );
-
-                if (existingItem) {
-                    existingItem.quantity += guestItem.quantity;
-                } else {
-                    cart.items.push(guestItem);
+    
+            let cart = await Cart.findOne({ userId });
+            
+            if (!cart) {
+                cart = new Cart({ 
+                    userId,
+                    items: items.map(item => ({
+                        productId: item.productId,
+                        quantity: item.quantity,
+                        addedAt: new Date()
+                    }))
+                });
+            } else {
+                for (const guestItem of items) {
+                    const existingItem = cart.items.find(
+                        item => item.productId.toString() === guestItem.productId
+                    );
+    
+                    if (existingItem) {
+                        existingItem.quantity += guestItem.quantity;
+                    } else {
+                        cart.items.push({
+                            productId: guestItem.productId,
+                            quantity: guestItem.quantity,
+                            addedAt: new Date()
+                        });
+                    }
                 }
             }
-
-            await cart.save();
-            res.json(cart);
+    
+            const savedCart = await cart.save();
+            console.log('Cart saved successfully:', savedCart); // Debug log
+            
+            res.json(savedCart);
         } catch (error) {
-            res.status(500).json({ message: 'Error migrating cart' });
+            console.error('Cart migration error:', error); // Debug log
+            res.status(500).json({ message: error.message || 'Error migrating cart' });
         }
     }
 };

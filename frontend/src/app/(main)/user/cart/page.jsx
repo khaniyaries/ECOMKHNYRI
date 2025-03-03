@@ -6,6 +6,7 @@ import { useCart } from '@/hooks/useCart.js';
 import { LoadingSpinner } from "@/components/LoadingSpinner.jsx";
 import { useState } from "react"
 import { env } from "../../../../../config/config.js"
+import toast from "react-hot-toast";
 
 
 const QuantityInput = ({ value, onChange, onRemove }) => {
@@ -48,17 +49,51 @@ export default function ShoppingCart() {
 
   const { cartProducts, quantities, setQuantities, isLoading, removeFromCart} = useCart();
    
-  const handleQuantityChange = (productId, newQuantity) => {
+  const handleQuantityChange = async (productId, newQuantity) => {
+
+    const stockResponse = await fetch(`${env.API_URL}/api/v1/products/${productId}`);
+    const productData = await stockResponse.json();
+    
+    if (newQuantity > productData.stock) {
+        toast.error(`Only ${productData.stock} items available in stock`);
+        return;
+    }
+
+    // Update UI state
     setQuantities(prev => ({
-      ...prev,
-      [productId]: newQuantity
+        ...prev,
+        [productId]: newQuantity
     }));
-  };
+
+    // Get user status
+    const user = localStorage.getItem('userId');
+
+    if (user) {
+        // Handle logged-in user
+        await fetch(`${env.API_URL}/api/v1/cart/update-quantity`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: user, productId, quantity: newQuantity })
+        });
+    } else {
+        // Handle guest user - update local storage
+        const cartData = localStorage.getItem('guestCart');
+        if (cartData) {
+            const cart = JSON.parse(cartData);
+            cart.items = cart.items.map(item => 
+                item.productId === productId 
+                    ? { ...item, quantity: newQuantity }
+                    : item
+            );
+            localStorage.setItem('guestCart', JSON.stringify(cart));
+        }
+    }
+};
 
   const handleRemoveItem = async (productId) => {
     try {
       const userId = localStorage.getItem('userId');
-      await fetch(`${env.API_URL}/api/v1/cart/${productId}?userId=${userId}`, {
+      await fetch(`${env.API_URL}/api/v1/cart/${userId}/remove/${productId}`, {
         method: 'DELETE',
       });
       removeFromCart(productId);
@@ -87,7 +122,7 @@ export default function ShoppingCart() {
 
         <div className="space-y-6">
           {cartProducts.items.map((product) => (
-            <div key={product._id} className="grid mx-auto w-[80%] md:w-full md:grid-cols-[2fr,1fr,1fr,1fr] gap-4 items-center p-4 shadow-[0_0_15px_rgba(0,0,0,0.05)]">
+            <div key={product._id || product.productId}  className="grid mx-auto w-[80%] md:w-full md:grid-cols-[2fr,1fr,1fr,1fr] gap-4 items-center p-4 shadow-[0_0_15px_rgba(0,0,0,0.05)]">
               <div className="flex items-center gap-4">
                 <Image
                   src={product.productId.images[0]?.url || '/images/placeholder.svg'}

@@ -20,7 +20,7 @@ export const useCart = () => {
         
         try {
             const userId = localStorage.getItem('userId');
-            let products = [];  // Initialize with empty array
+            let products = { items: [] }; 
             if (user) {
                 const response = await fetch(`${env.API_URL}/api/v1/cart/${userId}`);
                 products = await response.json();
@@ -30,18 +30,21 @@ export const useCart = () => {
                     const response = await cartApi.fetchProductsByIds(
                         cartItems.map(item => item.productId)
                     );
-                    products = response.data.map(product => ({
-                        ...product,
-                        quantity: cartItems.find(item => item.productId === product._id).quantity
-                    }));
+                    products = {
+                      items: response.data.map(product => ({
+                          productId: product,
+                          quantity: cartItems.find(item => item.productId === product._id).quantity
+                      }))
+                  };
                 }
             }
 
             setCartProducts(products || []);
-            setQuantities(products.items.reduce((acc, product) => ({
-                ...acc,
-                [product.productId._id]: product.quantity
-            }), {}));
+            const newQuantities = {};
+            products.items.forEach(item => {
+                newQuantities[item.productId._id] = item.quantity;
+            });
+            setQuantities(newQuantities);
         } finally {
             setIsLoading(false);
         }

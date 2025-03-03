@@ -105,18 +105,20 @@ export default function ProductsByCategoryPage() {
               <Link
                 href={`/products/${category}/${subcat._id}`}
                 key={subcat?._id}
-                className="flex flex-col items-center justify-center w-[120px] h-[120px] bg-white rounded-full transition-all hover:bg-white/5 border shrink-0"
+                className="flex flex-col items-center justify-center gap-2 shrink-0"
               >
+              <div className="rounded-full flex justify-center w-[120px] h-[120px] bg-white transition-all hover:bg-white/5 border-2">
                 {subcat?.image && (
-                  <Image
-                    src={subcat.image?.url}
-                    alt={subcat?.name}
-                    width={50}
-                    height={50}
-                    className="rounded-full mb-2 object-cover "
-                  />
-                )}
-                <span className="text-sm font-medium text-center px-2 line-clamp-2">{subcat?.name}</span>
+                    <Image
+                      src={subcat.image?.url}
+                      alt={subcat?.name}
+                      height={120}
+                      width={120}
+                      className="rounded-full"
+                    />
+                  )}
+              </div>
+              <span className="text-sm font-medium text-center px-2 line-clamp-2">{subcat?.name}</span>
               </Link>
             ))}
           </div>

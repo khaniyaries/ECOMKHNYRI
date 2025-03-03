@@ -1,3 +1,4 @@
+import { cartApi } from "./cartapi.js";
 const GUEST_CART_DAYS = 14;
 
 export const cartStorage = {
@@ -22,34 +23,69 @@ export const cartStorage = {
     },
     
     removeItem: (productId) => {
-        const cart = cartStorage.getCartItems();
-        const filtered = cart.filter(item => item.productId !== productId);
-        localStorage.setItem('cart', JSON.stringify(filtered));
-      },
-      
-      updateQuantity: (productId, quantity) => {
-        const cart = cartStorage.getCartItems();
-        const item = cart.find(item => item.productId === productId);
-        if (item) item.quantity = quantity;
-        localStorage.setItem('cart', JSON.stringify(cart));
+        const cartData = localStorage.getItem('guestCart');
+        if (!cartData) return;
+        
+        const cart = JSON.parse(cartData);
+        cart.items = cart.items.filter(item => item.productId !== productId);
+        
+        // Maintain the same structure as MongoDB cart
+        localStorage.setItem('guestCart', JSON.stringify({
+            items: cart.items,
+            expiryDate: cart.expiryDate
+        }));
+    },
+    
+    updateQuantity: (productId, quantity) => {
+        const cartData = localStorage.getItem('guestCart');
+        if (!cartData) return;
+        
+        const cart = JSON.parse(cartData);
+        const itemIndex = cart.items.findIndex(item => item.productId === productId);
+        
+        if (itemIndex !== -1) {
+            cart.items[itemIndex].quantity = quantity;
+        }
+        
+        localStorage.setItem('guestCart', JSON.stringify({
+            items: cart.items,
+            expiryDate: cart.expiryDate
+        }));
     },
     
     getCartItems: () => {
         const cartData = localStorage.getItem('guestCart');
         if (!cartData) return [];
         
-        const { items, expiryDate } = JSON.parse(cartData);
-        if (new Date() > new Date(expiryDate)) {
+        const cart = JSON.parse(cartData);
+        
+        if (new Date() > new Date(cart.expiryDate)) {
             localStorage.removeItem('guestCart');
             return [];
         }
-        return items; // Array of { productId, quantity }
+        
+        return cart.items || [];
     },
-    migrateAndClear: async () => {
+
+    clearCart: () => {
+        localStorage.removeItem('guestCart');
+    },
+
+    migrateAndClear: async (userId) => {
         const items = cartStorage.getCartItems();
         if (items.length > 0) {
-            await cartApi.migrateGuestCart(items);
-            localStorage.removeItem('guestCart');
+            try {
+                const result = await cartApi.migrateGuestCart(userId, items);
+                if (result) {
+                    cartStorage.clearCart();
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Failed to migrate cart:', error);
+                return false;
+            }
         }
+        return true;
     }
 };

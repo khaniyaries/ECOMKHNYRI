@@ -34,8 +34,7 @@ export function useAuth() {
 
         const guestCartItems = cartStorage.getCartItems()
         if (guestCartItems.length > 0) {
-            await cartApi.migrateGuestCart(guestCartItems)
-            cartStorage.clearCart()
+            await cartStorage.migrateAndClear(userData._id);
         }
     }
 

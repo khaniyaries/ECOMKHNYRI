@@ -10,12 +10,22 @@ export const cartApi = {
         return response.json();
     },
 
-    migrateGuestCart: async (cartItems) => {
+    migrateGuestCart: async (userId, cartItems) => {
+        console.log('Migrating cart with data:', { userId, cartItems });
+        
         const response = await fetch(`${env.API_URL}/api/v1/cart/migrate`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ items: cartItems })
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            body: JSON.stringify({ userId, items: cartItems })
         });
-        return response.json();
+        
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.message || 'Failed to migrate cart');
+        }
+        return data;
     }
 };
