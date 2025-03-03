@@ -85,15 +85,11 @@ export default function CheckoutPage() {
         setimage(product.images[0].url)
         setname(product.name);
         setprice(product.price);
-        console.log(p)
         setcolor(p[2]);
         setsize(p[1]);
         setquantity(p[0]);
         settotalamount((prev) => (prev + (product.price * p[0])))
         fetchaddress();
-
-
-
 
       } catch (error) {
         console.error('Error fetching product:', error)
