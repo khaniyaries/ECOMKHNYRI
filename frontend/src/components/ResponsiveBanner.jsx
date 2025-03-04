@@ -90,7 +90,7 @@ export default function ResponsiveBanner({ banners = [], autoSlideInterval = 300
     <div className="w-full relative">
       {/* Banner Container - Responsive height based on screen size */}
       <div
-        className="w-full overflow-hidden rounded-md relative h-[35vh] md:h-[60vh]"
+        className="w-full overflow-hidden rounded-md relative h-[40vh] lg:h-[60vh]"
       >
         {/* Banner Slider */}
         <div

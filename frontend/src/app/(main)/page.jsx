@@ -148,7 +148,7 @@ export default function Home() {
           {/* Banner Section */}
           <section>
             {isLoading ? (
-              <div className="w-full h-[30vh] md:h-[60vh] bg-gray-200 animate-pulse rounded-md"></div>
+              <div className="w-full h-[40vh] lg:h-[60vh] bg-gray-200 animate-pulse rounded-md"></div>
             ) : (
               <ResponsiveBanner banners={banners} autoSlideInterval={5000} />
             )}
