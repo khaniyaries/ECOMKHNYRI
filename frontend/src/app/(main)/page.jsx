@@ -9,14 +9,11 @@ import React, { useState, useEffect } from "react";
 import ServiceBenefitsFooter from "@/components/ServiceBenefitsFooter";
 import BestSellers from "@/components/BestSellers.jsx";
 import OurProducts from "@/components/OurProducts.jsx";
-import { FaApple } from "react-icons/fa";
-import { BsArrowRight } from "react-icons/bs";
+import ResponsiveBanner from "@/components/ResponsiveBanner.jsx";
 import { env } from "../../../config/config.js";
 
 export default function Home() {
   const [currentIndex, setCurrentIndex] = useState(0);
-
-
   const [categories, setCategories] = useState([])
   const [mainCategories, setMainCategories] = useState([])
   const [subCategories, setSubCategories] = useState([])
@@ -25,13 +22,7 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(0)
   const [totalPages, setTotalPages] = useState(0)
   const [activeIndex, setActiveIndex] = useState(2);
-  const [banners, setbanners] = useState([])
-
-
-  const handleDotClick = (index) => {
-    setCurrentIndex(index);
-    // Here you can add functionality to navigate slides when a dot is clicked
-  };
+  const [banners, setBanners] = useState([])
 
   // Create separate scroll handlers for each component
   const scrollFlashSales = (direction) => {
@@ -41,45 +32,23 @@ export default function Home() {
   };
 
   useEffect(() => {
-    const interval = setInterval(nextSlide, 3000); // Change slide every 3 seconds
-    return () => clearInterval(interval); // Cleanup to avoid memory leaks
-  }, []);
-
-  const nextSlide = () => {
-
-    setCurrentIndex((prev) => (prev + 1) % 5);
-  };
-
-  const prevSlide = () => {
-    setCurrentIndex((prev) => (prev - 1 + 5) % 5);
-  };
-
-
-  useEffect(() => {
-    const fetchbanners = async () => {
+    const fetchBanners = async () => {
       try {
-        const response = await fetch(`${env.API_URL}/api/v1/banners`);
-        console.log(response)
+        const response = await fetch(`${env.API_URL}/api/v1/banners`)
         if (response.ok) {
           const data = await response.json()
-          console.log(data.banners)
-          setbanners(data.banners)
+          setBanners(data.banners || [])
         }
-        // Destructure only what you're using
-        // const [productsRes] = await Promise.all([
-        //fetchProducts()
-        // ]);
-        // // setBanners(bannersRes.data); // Commented out since bannersRes isn't defined
-        // setProducts(productsRes.data || []); // Add fallback empty array
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setbanners([]); // Set empty array on error
+        console.error("Error fetching banners:", error)
+      } finally {
+        setIsLoading(false)
       }
     }
-    fetchbanners();
 
-
+    fetchBanners()
   }, [])
+
   useEffect(() => {
 
 
@@ -175,95 +144,15 @@ export default function Home() {
             </div>
           ))}
         </div>
-        {/* <div className="border-l border-black mx-8 h-[360px]" /> */}
-        <div className=" md:max-h-[33vh] max-h-[30vh]   z-5 md:w-[70%]  rounded-md  flex flex-col justify-center gap-3  relative">
-          {/* <div className="w-full h-[50%] md:w-[50%] md:h-full flex flex-col gap-5 md:gap-10 items-start"> */}
-          {/* <div className="flex flex-row items-center justify-center gap-2">
-              <FaApple color="white" className="h-10 w-10" />
-              <h2 className="text-base text-white font-normal font-poppins">
-                iPhone 14 Series
-              </h2>
-            </div> */}
-          {/* <h1 className="lg:text-4xl md:3xl text-white font-semibold font-inter">
-              Up to 10% <br /> off Voucher
-            </h1>
-            <Link
-              href="/products"
-              className="text-white text-base font-medium font-poppins underline flex items-center gap-2 justify-center"
-            >
-              Shop Now! <span className="no-underline"><BsArrowRight /></span>
-            </Link> */}
-          {/* </div> */}
-          <div className="w-full h-fit md:h-full relative "
-          // onTouchStart={handleTouchStart}
-          // onTouchEnd={handleTouchEnd}
-          >
-            <div className="relative h-[18vh]  md:h-full md:flex md:justify-center w-full flex transition-transform duration-500 ease-in-out">
-
-              {/* <Image
-                src="/images/banner.png"
-                alt="Product Picture"
-                fill
-                className=" h-fit object-contain z-50 relative"
-              /> */}
-              <div
-                className="relative w-full  mx-auto overflow-hidden"
-              // onTouchStart={handleTouchStart}
-              // onTouchEnd={handleTouchEnd}
-              >
-                <div className="flex w-[100%]  transition-transform duration-1000 ease-in-out"
-                  style={{ transform: `translateX(-${currentIndex * 100}%)` }}>
-                  {banners.map((banner) => (
-
-                    <img
-                      key={banner.index - 1}
-                      src={banners[banner.index - 1]?.url}
-                      alt={`Slide ${banner.index}`}
-                      loading="lazy"
-                      className=" w-[100%] flex-shrink-0 object-contain z-50 relative h-fit "
-                    />
-                  ))}
-
-
-                </div>
-                <Link href={banners[currentIndex] ? banners[currentIndex].link : ""}>
-                  <div style={{ zIndex: "100" }} className='flex m-0 text-[10px] md:text-sm p-0 absolute text-wrap bottom-0 w-full bg-black  rounded-t-md text-white font-bold md'>
-                    <div className='w-[50%] ml-3'>
-                      {banners[currentIndex]?.linktitle}
-                    </div>
-                    <div className=" flex w-full m-0 mr-1  justify-end">
-                      <HiOutlineArrowSmRight className="w-6 h-6" />
-                    </div>
-                  </div>
-                </Link>
-
-              </div>
-              {/* <img
-                  src="/images/banner.png"
-                  alt="Product Picture"
-                  loading="lazy"
-                  className="object-contain z-50 relative h-fit md:h-full"
-                /> */}
-
-            </div>
-
-          </div>
-
-
-          <div className=" md:top-5 top-3  transform flex  relative justify-center gap-2">
-            {/* {[0, 1, 2, 3, 4].map((index) => ( */}
-            {banners.map((banner) => (
-              <button
-                key={banner.index}
-                className={`w-2 md:w-3 md:h-3 h-2 rounded-full transition-all duration-300
-                    ${currentIndex === banner.index - 1
-                    ? "bg-red-500 border md:border-2 border-white outline md:outline-2 outline-gray-400"
-                    : "bg-gray-400"
-                  }`}
-                onClick={() => handleDotClick(banner.index - 1)}
-              ></button>
-            ))}
-          </div>
+        <div className="w-full h-[30vh] md:h-[60vh] max-w-7xl mx-auto mb-8 mt-4">
+          {/* Banner Section */}
+          <section>
+            {isLoading ? (
+              <div className="w-full h-[30vh] md:h-[60vh] bg-gray-200 animate-pulse rounded-md"></div>
+            ) : (
+              <ResponsiveBanner banners={banners} autoSlideInterval={5000} />
+            )}
+        </section>
         </div>
 
       </div>

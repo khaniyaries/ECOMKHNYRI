@@ -17,7 +17,7 @@ import {
   getProductRatings,
   deleteCloudinaryImages
 } from '../controllers/productController.js';
-import { addbanner,getAllBanners,updateBanner } from '../controllers/bannerController.js';
+import { addbanner, getAllBanners, updateBanner, reorderBanners } from '../controllers/bannerController.js';
 
 const router = express.Router();
 
@@ -45,8 +45,9 @@ router.post('/delete-images', deleteCloudinaryImages);
 router.put('/products/:id', upload.array('images'), updateProduct);
 router.delete('/products/:id', deleteProduct);
 
-router.post('/banners',addbanner)
-router.get('/banners',getAllBanners)
-router.put('/banners',updateBanner)
+router.post('/banners', addbanner)
+router.get('/banners', getAllBanners)
+router.put('/banners', updateBanner)
+router.post("/banners/reorder", reorderBanners)
 
 export default router;
