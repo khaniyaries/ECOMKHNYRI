@@ -412,7 +412,6 @@ export default function Banners() {
               <input
                 type="number"
                 min="1"
-                max="5"
                 value={order}
                 onChange={(e) => setOrder(Number.parseInt(e.target.value))}
                 className="w-full p-2 border rounded-md"
