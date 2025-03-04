@@ -51,54 +51,46 @@ export const getAllBanners = async (req, res) => {
 }
 
 export const addbanner = async (req, res) => {
-  try {
-    const { url, responsiveUrls, index, linktitle, link, dimensions } = req.body
-
-    // Find the document
-    let bannerData = await Banner.findOne({}).exec()
-
-    // If document doesn't exist, create one
-    if (!bannerData) {
-      bannerData = await Banner.create({ banners: [] })
-    }
-
-    // Check if banners array exists and its length
-    if (bannerData.banners.length >= 5) {
-      return res.status(400).json({ message: "Maximum of 5 banners reached" })
-    }
-
-    const indexExists = bannerData.banners.some((banner) => banner.index === index)
-    if (indexExists) {
-      return res.status(400).json({ message: "Order already exists. Choose a unique index." })
-    }
-
-    // Add new banner data
-    const updatedBanner = await Banner.findOneAndUpdate(
-      {},
-      {
-        $push: {
-          banners: {
-            url,
-            responsiveUrls: responsiveUrls || {},
-            index,
-            linktitle,
-            link,
-            dimensions: dimensions || {
-              mobile: { width: 300, height: 250 },
-              tablet: { width: 728, height: 90 },
-              desktop: { width: 970, height: 250 },
+    try {
+      const { url, responsiveUrls, index, linktitle, link, dimensions } = req.body
+  
+      let bannerData = await Banner.findOne({}).exec()
+  
+      if (!bannerData) {
+        bannerData = await Banner.create({ banners: [] })
+      }
+  
+      const indexExists = bannerData.banners.some((banner) => banner.index === index)
+      if (indexExists) {
+        return res.status(400).json({ message: "Order already exists. Choose a unique index." })
+      }
+  
+      const updatedBanner = await Banner.findOneAndUpdate(
+        {},
+        {
+          $push: {
+            banners: {
+              url,
+              responsiveUrls: responsiveUrls || {},
+              index,
+              linktitle,
+              link,
+              dimensions: dimensions || {
+                mobile: { width: 300, height: 250 },
+                tablet: { width: 728, height: 90 },
+                desktop: { width: 970, height: 250 },
+              },
             },
           },
         },
-      },
-      { new: true, runValidators: true },
-    ).exec()
-
-    res.status(200).json({ message: "Banner added successfully", data: updatedBanner })
-  } catch (error) {
-    res.status(400).json({ message: error.message })
+        { new: true, runValidators: true },
+      ).exec()
+  
+      res.status(200).json({ message: "Banner added successfully", data: updatedBanner })
+    } catch (error) {
+      res.status(400).json({ message: error.message })
+    }
   }
-}
 
 // New function to reorder banners
 export const reorderBanners = async (req, res) => {
@@ -133,4 +125,36 @@ export const reorderBanners = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message })
   }
+}
+
+export const deleteBanner = async (req, res) => {
+    try {
+        const { index } = req.params
+
+        const result = await Banner.findOneAndUpdate(
+        {},
+        { $pull: { banners: { index: parseInt(index) } } },
+        { new: true }
+        )
+
+        if (!result) {
+        return res.status(404).json({ message: "Banner not found" })
+        }
+
+        // Reorder remaining banners
+        const updatedBanners = result.banners.map((banner, idx) => ({
+        ...banner.toObject(),
+        index: idx + 1
+        }))
+
+        await Banner.findOneAndUpdate(
+        {},
+        { $set: { banners: updatedBanners } },
+        { new: true }
+        )
+
+        res.status(200).json({ message: "Banner deleted successfully" })
+    } catch (error) {
+        res.status(500).json({ message: error.message })
+    }
 }

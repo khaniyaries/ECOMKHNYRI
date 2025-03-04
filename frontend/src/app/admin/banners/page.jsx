@@ -17,7 +17,7 @@ import { CSS } from "@dnd-kit/utilities"
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers"
 
 // Sortable Banner Item Component
-const SortableBannerItem = ({ banner, onEdit }) => {
+const SortableBannerItem = ({ banner, onEdit, onDelete }) => {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id: banner.index })
 
   const style = {
@@ -35,12 +35,20 @@ const SortableBannerItem = ({ banner, onEdit }) => {
     >
       <div className="flex justify-between items-center mb-2">
         <h3 className="font-medium">Banner #{banner.index}</h3>
-        <button
-          onClick={() => onEdit(banner)}
-          className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600"
-        >
-          Edit
-        </button>
+        <div className="space-x-2">
+          <button
+            onClick={() => onEdit(banner)}
+            className="px-3 py-1 bg-blue-500 text-white rounded-md text-sm hover:bg-blue-600"
+          >
+            Edit
+          </button>
+          <button
+            onClick={() => onDelete(banner.index)}
+            className="px-3 py-1 bg-red-500 text-white rounded-md text-sm hover:bg-red-600"
+          >
+            Delete
+          </button>
+        </div>
       </div>
 
       <div className="max-h-[20vh] overflow-hidden relative rounded-md">
@@ -283,6 +291,26 @@ export default function Banners() {
     }
   }
 
+  const handleDeleteBanner = async (index) => {
+    if (!confirm('Are you sure you want to delete this banner?')) return
+  
+    try {
+      const response = await fetch(`${env.API_URL}/api/v1/banners/${index}`, {
+        method: 'DELETE',
+      })
+  
+      if (response.ok) {
+        toast.success('Banner deleted successfully')
+        fetchBanners() // Refresh the list
+      } else {
+        toast.error('Failed to delete banner')
+      }
+    } catch (error) {
+      console.error('Error deleting banner:', error)
+      toast.error('An error occurred while deleting the banner')
+    }
+  }
+
   if (isLoading && banners.length === 0) {
     return <LoadingSpinner />
   }
@@ -316,9 +344,14 @@ export default function Banners() {
           >
             <SortableContext items={banners.map((b) => b.index)} strategy={verticalListSortingStrategy}>
               <div className="space-y-4">
-                {banners.map((banner) => (
-                  <SortableBannerItem key={banner.index} banner={banner} onEdit={handleEditBanner} />
-                ))}
+              {banners.map((banner) => (
+                <SortableBannerItem 
+                  key={banner.index} 
+                  banner={banner} 
+                  onEdit={handleEditBanner}
+                  onDelete={handleDeleteBanner}
+                />
+              ))}
               </div>
             </SortableContext>
           </DndContext>

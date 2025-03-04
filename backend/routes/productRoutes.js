@@ -17,7 +17,7 @@ import {
   getProductRatings,
   deleteCloudinaryImages
 } from '../controllers/productController.js';
-import { addbanner, getAllBanners, updateBanner, reorderBanners } from '../controllers/bannerController.js';
+import { addbanner, getAllBanners, updateBanner, reorderBanners, deleteBanner } from '../controllers/bannerController.js';
 
 const router = express.Router();
 
@@ -49,5 +49,6 @@ router.post('/banners', addbanner)
 router.get('/banners', getAllBanners)
 router.put('/banners', updateBanner)
 router.post("/banners/reorder", reorderBanners)
+router.delete('/banners/:index', deleteBanner)
 
 export default router;
