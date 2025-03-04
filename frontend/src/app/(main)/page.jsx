@@ -144,7 +144,7 @@ export default function Home() {
             </div>
           ))}
         </div>
-        <div className="w-full h-[30vh] md:h-[60vh] md:w-[70%] mx-auto mb-8 mt-4">
+        <div className="w-full h-[40vh] lg:h-[60vh] md:w-[70%] mx-auto mb-8 mt-4">
           {/* Banner Section */}
           <section>
             {isLoading ? (

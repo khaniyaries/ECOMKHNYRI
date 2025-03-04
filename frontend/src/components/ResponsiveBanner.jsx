@@ -97,7 +97,7 @@ export default function ResponsiveBanner({ banners = [], autoSlideInterval = 300
           className="flex transition-transform duration-1000 ease-in-out w-full h-full"
           style={{ transform: `translateX(-${currentIndex * 100}%)` }}
         >
-          {sortedBanners.map((banner, index) => (
+          {sortedBanners?.map((banner, index) => (
             <div
               key={banner.index || index}
               className="w-full flex-shrink-0 relative"
@@ -137,7 +137,7 @@ export default function ResponsiveBanner({ banners = [], autoSlideInterval = 300
 
         {/* Navigation Dots */}
         <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-2 z-30">
-          {sortedBanners.map((banner, index) => (
+          {sortedBanners?.map((banner, index) => (
             <button
               key={banner.index || index}
               className={`w-2 h-2 md:w-3 md:h-3 rounded-full transition-all duration-300 ${

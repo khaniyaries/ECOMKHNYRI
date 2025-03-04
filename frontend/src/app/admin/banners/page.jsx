@@ -84,7 +84,7 @@ const BannerSizeSelector = ({ selectedSize, onChange }) => {
     <div className="mb-4">
       <label className="block mb-2 font-medium">Select Banner Size</label>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-        {commonSizes.map((size) => (
+        {commonSizes?.map((size) => (
           <button
             key={`${size.device}-${size.width}x${size.height}`}
             type="button"
@@ -255,23 +255,25 @@ export default function Banners() {
       const newIndex = banners.findIndex((b) => b.index === over.id)
   
       if (oldIndex !== -1 && newIndex !== -1) {
+        // Create new array with reordered items
         const reorderedBanners = [...banners]
         const [movedItem] = reorderedBanners.splice(oldIndex, 1)
         reorderedBanners.splice(newIndex, 0, movedItem)
   
-        // Update indices sequentially
-        const updatedBanners = reorderedBanners.map((banner, idx) => ({
+        // Create the updated order with new indices
+        const updatedBanners = reorderedBanners?.map((banner, idx) => ({
           ...banner,
           index: idx + 1
         }))
   
-        // Update UI immediately
+        // Update UI first
         setBanners(updatedBanners)
   
-        // Prepare data for API
-        const bannerOrder = updatedBanners.map((banner) => ({
+        // Send the exact order to the backend
+        const bannerOrder = reorderedBanners?.map((banner, idx) => ({
+          id: banner._id, // Make sure to include the banner's unique ID
           oldIndex: banner.index,
-          newIndex: banner.index
+          newIndex: idx + 1
         }))
   
         try {
@@ -281,16 +283,16 @@ export default function Banners() {
             body: JSON.stringify({ bannerOrder }),
           })
   
-          if (response.ok) {
-            toast.success("Banner order updated")
-            fetchBanners()
-          } else {
-            toast.error("Failed to update banner order")
-            fetchBanners()
+          if (!response.ok) {
+            throw new Error('Reorder failed')
           }
+  
+          toast.success("Banner order updated")
+          // No need to fetch banners again since we already updated the UI
         } catch (error) {
           console.error("Error reordering banners:", error)
           toast.error("An error occurred while reordering banners")
+          // Only fetch banners if the API call fails to reset to the server state
           fetchBanners()
         }
       }
@@ -348,9 +350,9 @@ export default function Banners() {
             onDragEnd={handleDragEnd}
             modifiers={[restrictToVerticalAxis]}
           >
-            <SortableContext items={banners.map((b) => b.index)} strategy={verticalListSortingStrategy}>
+            <SortableContext items={banners?.map((b) => b.index)} strategy={verticalListSortingStrategy}>
               <div className="space-y-4">
-              {banners.map((banner) => (
+              {banners?.map((banner) => (
                 <SortableBannerItem 
                   key={banner.index} 
                   banner={banner} 
