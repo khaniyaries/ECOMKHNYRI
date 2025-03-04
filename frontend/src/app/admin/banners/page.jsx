@@ -247,45 +247,49 @@ export default function Banners() {
 
   const handleDragEnd = async (event) => {
     const { active, over } = event
-
+  
     if (active.id !== over.id) {
-      // Find the indices of the dragged and target items
       const oldIndex = banners.findIndex((b) => b.index === active.id)
       const newIndex = banners.findIndex((b) => b.index === over.id)
-
+  
       if (oldIndex !== -1 && newIndex !== -1) {
-        // Create a new array with the updated order
         const reorderedBanners = [...banners]
         const [movedItem] = reorderedBanners.splice(oldIndex, 1)
         reorderedBanners.splice(newIndex, 0, movedItem)
-
-        // Update the UI immediately for better UX
-        setBanners(reorderedBanners)
-
-        // Prepare the data for the API
-        const bannerOrder = reorderedBanners.map((banner, idx) => ({
-          oldIndex: banner.index,
-          newIndex: idx + 1,
+  
+        // Update indices sequentially
+        const updatedBanners = reorderedBanners.map((banner, idx) => ({
+          ...banner,
+          index: idx + 1
         }))
-
+  
+        // Update UI immediately
+        setBanners(updatedBanners)
+  
+        // Prepare data for API
+        const bannerOrder = updatedBanners.map((banner) => ({
+          oldIndex: banner.index,
+          newIndex: banner.index
+        }))
+  
         try {
           const response = await fetch(`${env.API_URL}/api/v1/banners/reorder`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ bannerOrder }),
           })
-
+  
           if (response.ok) {
             toast.success("Banner order updated")
-            fetchBanners() // Refresh to get the updated order from the server
+            fetchBanners()
           } else {
             toast.error("Failed to update banner order")
-            fetchBanners() // Reset to the original order
+            fetchBanners()
           }
         } catch (error) {
           console.error("Error reordering banners:", error)
           toast.error("An error occurred while reordering banners")
-          fetchBanners() // Reset to the original order
+          fetchBanners()
         }
       }
     }
