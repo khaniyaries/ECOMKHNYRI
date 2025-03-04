@@ -146,7 +146,9 @@ export default function Banners() {
       const response = await fetch(`${env.API_URL}/api/v1/banners`)
       if (response.ok) {
         const data = await response.json()
-        setBanners(data.banners || [])
+        // Sort banners by index before setting them in state
+        const sortedBanners = (data.banners || []).sort((a, b) => a.index - b.index)
+        setBanners(sortedBanners)
       }
     } catch (error) {
       console.error("Error fetching banners:", error)
